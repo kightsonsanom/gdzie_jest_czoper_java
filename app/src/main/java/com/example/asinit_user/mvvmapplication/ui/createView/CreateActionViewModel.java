@@ -1,4 +1,4 @@
-package com.example.asinit_user.mvvmapplication.createView;
+package com.example.asinit_user.mvvmapplication.ui.createView;
 
 
 import android.arch.lifecycle.ViewModel;

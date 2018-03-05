@@ -1,8 +1,8 @@
 package com.example.asinit_user.mvvmapplication.di;
 
 
-import com.example.asinit_user.mvvmapplication.createView.CreateActionActivity;
-import com.example.asinit_user.mvvmapplication.mainView.MainActivity;
+import com.example.asinit_user.mvvmapplication.ui.createView.CreateActionActivity;
+import com.example.asinit_user.mvvmapplication.ui.mainView.MainActivity;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;

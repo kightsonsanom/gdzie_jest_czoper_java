@@ -1,24 +1,33 @@
 package com.example.asinit_user.mvvmapplication.di;
 
 import android.app.Application;
-import android.view.View;
 
-import com.example.asinit_user.mvvmapplication.createView.CreateActionActivity;
-import com.example.asinit_user.mvvmapplication.createView.CreateActionViewModel;
-import com.example.asinit_user.mvvmapplication.mainView.MainActivity;
-import com.example.asinit_user.mvvmapplication.mainView.MainViewModel;
+import com.example.asinit_user.mvvmapplication.App;
+import com.example.asinit_user.mvvmapplication.ui.createView.CreateActionActivity;
+import com.example.asinit_user.mvvmapplication.ui.createView.CreateActionViewModel;
+import com.example.asinit_user.mvvmapplication.ui.mainView.MainActivity;
+import com.example.asinit_user.mvvmapplication.ui.mainView.MainViewModel;
 
 import javax.inject.Singleton;
 
+import dagger.BindsInstance;
 import dagger.Component;
+import dagger.android.AndroidInjectionModule;
 
 @Singleton
-@Component(modules = {AppModule.class, RoomModule.class, ViewModelModule.class})
+@Component(modules = {AndroidInjectionModule.class, AppModule.class, ActivityBuilderModule.class})
 public interface AppComponent {
-    void inject(MainViewModel mainViewModel);
-    void inject(CreateActionViewModel createActionViewModel);
-    void inject(CreateActionActivity createActionActivity);
-    void inject(MainActivity mainActivity);
 
-    Application application();
+//  Component.Builder is a custom builder for AppComponent. We provide BindsInstance for the application.
+//  That's how AppModule knows to get application without @Provides @Singleton. We use custom builder so
+//  we don't need to pass objects via the AppModule constructor.
+
+    @Component.Builder
+    interface Builder {
+        @BindsInstance
+        Builder application(Application application);
+        AppComponent build();
+    }
+    void inject(App app);
+
 }

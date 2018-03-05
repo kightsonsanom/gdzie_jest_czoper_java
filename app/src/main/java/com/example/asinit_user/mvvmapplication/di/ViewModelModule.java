@@ -4,8 +4,8 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
 import com.example.asinit_user.mvvmapplication.ViewModelFactory;
-import com.example.asinit_user.mvvmapplication.createView.CreateActionViewModel;
-import com.example.asinit_user.mvvmapplication.mainView.MainViewModel;
+import com.example.asinit_user.mvvmapplication.ui.createView.CreateActionViewModel;
+import com.example.asinit_user.mvvmapplication.ui.mainView.MainViewModel;
 
 import dagger.Binds;
 import dagger.Module;
@@ -13,7 +13,6 @@ import dagger.multibindings.IntoMap;
 
 @Module
 public abstract class ViewModelModule {
-
 
     @Binds
     @IntoMap

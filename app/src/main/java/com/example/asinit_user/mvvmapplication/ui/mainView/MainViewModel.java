@@ -1,13 +1,11 @@
-package com.example.asinit_user.mvvmapplication.mainView;
+package com.example.asinit_user.mvvmapplication.ui.mainView;
 
 
-import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.os.AsyncTask;
 
-import com.example.asinit_user.mvvmapplication.App;
 import com.example.asinit_user.mvvmapplication.db.Repository;
 import com.example.asinit_user.mvvmapplication.db.entities.ActionEntity;
 
@@ -20,11 +18,11 @@ public class MainViewModel extends ViewModel {
 
     private final MediatorLiveData<List<ActionEntity>> mObservableActions;
 
-    @Inject
     Repository repository;
 
     @Inject
-    public MainViewModel(){
+    public MainViewModel(Repository repository){
+        this.repository = repository;
         mObservableActions = new MediatorLiveData<>();
         mObservableActions.setValue(null);
 

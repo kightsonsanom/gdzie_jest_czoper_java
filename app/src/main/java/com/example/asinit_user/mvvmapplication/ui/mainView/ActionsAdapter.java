@@ -1,4 +1,4 @@
-package com.example.asinit_user.mvvmapplication.mainView;
+package com.example.asinit_user.mvvmapplication.ui.mainView;
 
 
 import android.databinding.DataBindingUtil;
@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.example.asinit_user.mvvmapplication.R;
 import com.example.asinit_user.mvvmapplication.databinding.RecyclerItemBinding;
+import com.example.asinit_user.mvvmapplication.db.entities.ActionEntity;
 import com.example.asinit_user.mvvmapplication.model.Action;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class ActionsAdapter extends RecyclerView.Adapter<ActionsAdapter.ActionVi
     }
 
 
-    public void setActionList(final List<? extends Action> actionsList) {
+    public void setActionList(final List<ActionEntity> actionsList) {
         if (actionEntityList == null) {
             actionEntityList = actionsList;
 //            notifyItemRangeInserted(0, productList.size());

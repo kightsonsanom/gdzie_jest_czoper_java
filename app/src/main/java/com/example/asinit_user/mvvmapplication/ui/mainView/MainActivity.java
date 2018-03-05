@@ -1,4 +1,4 @@
-package com.example.asinit_user.mvvmapplication.mainView;
+package com.example.asinit_user.mvvmapplication.ui.mainView;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -8,15 +8,15 @@ import android.os.Bundle;
 
 import com.example.asinit_user.mvvmapplication.R;
 import com.example.asinit_user.mvvmapplication.ViewModelFactory;
-import com.example.asinit_user.mvvmapplication.createView.CreateActionActivity;
 import com.example.asinit_user.mvvmapplication.databinding.ActivityMainBinding;
+import com.example.asinit_user.mvvmapplication.ui.createView.CreateActionActivity;
 
 import javax.inject.Inject;
 
+import dagger.android.AndroidInjection;
+
 public class MainActivity extends AppCompatActivity {
 
-
-    private MainViewModel viewModel;
     @Inject
     ViewModelFactory viewModelFactory;
 
@@ -25,16 +25,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         ActivityMainBinding mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
+        MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
 
         mBinding.setMainModel(viewModel);
 
         viewModel.initActions();
 
         recyclerAdapter = new ActionsAdapter();
+//        recyclerAdapter.setActionList(viewModel.getActions());
         mBinding.mainRecycler.setAdapter(recyclerAdapter);
         viewModel.getActions().observe(this, actions -> {
             if (actions != null) {

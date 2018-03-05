@@ -8,7 +8,7 @@
     <data>
         <variable
             name="mainModel"
-            type="com.example.asinit_user.mvvmapplication.mainView.MainViewModel">
+            type="com.example.asinit_user.mvvmapplication.ui.mainView.MainViewModel">
 
         </variable>
     </data>
@@ -18,7 +18,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center"
-        tools:context="com.example.asinit_user.mvvmapplication.mainView.MainActivity">
+        tools:context=".ui.mainView.MainActivity">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/main_recycler"

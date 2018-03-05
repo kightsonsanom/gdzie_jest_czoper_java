@@ -1,4 +1,4 @@
-package com.example.asinit_user.mvvmapplication.createView;
+package com.example.asinit_user.mvvmapplication.ui.createView;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
@@ -12,6 +12,8 @@ import com.example.asinit_user.mvvmapplication.db.entities.ActionEntity;
 
 import javax.inject.Inject;
 
+import dagger.android.AndroidInjection;
+
 public class CreateActionActivity extends AppCompatActivity {
 
 
@@ -22,6 +24,7 @@ public class CreateActionActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         actionBinding = DataBindingUtil.setContentView(this,R.layout.activity_create_action);
 

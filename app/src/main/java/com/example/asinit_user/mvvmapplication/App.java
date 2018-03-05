@@ -3,6 +3,8 @@ package com.example.asinit_user.mvvmapplication;
 import android.app.Activity;
 import android.app.Application;
 
+import com.example.asinit_user.mvvmapplication.di.DaggerAppComponent;
+
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjector;
@@ -19,6 +21,11 @@ public class App extends Application implements HasActivityInjector {
     @Override
     public void onCreate() {
         super.onCreate();
+        DaggerAppComponent
+                .builder()
+                .application(this)
+                .build()
+                .inject(this);
         mAppExecutors = new AppExecutors();
     }
 
