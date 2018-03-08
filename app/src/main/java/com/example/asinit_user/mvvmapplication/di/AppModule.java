@@ -8,6 +8,7 @@ import com.example.asinit_user.mvvmapplication.App;
 import com.example.asinit_user.mvvmapplication.db.AppDatabase;
 import com.example.asinit_user.mvvmapplication.db.Repository;
 import com.example.asinit_user.mvvmapplication.db.dao.ActionDao;
+import com.example.asinit_user.mvvmapplication.db.dao.GeoDao;
 
 import javax.inject.Singleton;
 
@@ -21,14 +22,20 @@ public class AppModule {
 
     @Provides
     @Singleton
-    Repository provideListItemRepository(ActionDao actionDao){
-        return new Repository(actionDao);
+    Repository provideRepository(ActionDao actionDao, GeoDao geoDao){
+        return new Repository(actionDao, geoDao);
     }
 
     @Provides
     @Singleton
-    ActionDao provideListItemDao(AppDatabase database){
+    ActionDao provideActionDao(AppDatabase database){
         return database.actionDao();
+    }
+
+    @Provides
+    @Singleton
+    GeoDao provideGeoDao(AppDatabase database){
+        return database.geoDao();
     }
 
     @Provides

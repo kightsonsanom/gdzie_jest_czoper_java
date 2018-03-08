@@ -8,21 +8,21 @@
     <data>
 
         <variable
-            name="action"
-            type="com.example.asinit_user.mvvmapplication.model.Action" />
+            name="geo"
+            type="com.example.asinit_user.mvvmapplication.db.entities.Geo" />
     </data>
 
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:gravity="center">
 
         <TextView
-            android:id="@+id/action_text"
+            android:id="@+id/geo_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{action.text}"/>
+            android:text="@{geo.location}"/>
 
     </LinearLayout>
 

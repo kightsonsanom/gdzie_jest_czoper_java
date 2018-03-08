@@ -4,10 +4,9 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
-import com.example.asinit_user.mvvmapplication.model.Action;
 
 @Entity(tableName = "actions")
-public class ActionEntity implements Action {
+public class ActionEntity {
 
     @PrimaryKey
     @ColumnInfo(name = "actionId")
@@ -33,10 +32,5 @@ public class ActionEntity implements Action {
     public ActionEntity(int ID, String tekst) {
         this.ID = ID;
         this.tekst = tekst;
-    }
-
-    @Override
-    public String getText() {
-        return null;
     }
 }

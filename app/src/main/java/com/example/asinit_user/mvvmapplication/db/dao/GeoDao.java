@@ -1,29 +1,30 @@
 package com.example.asinit_user.mvvmapplication.db.dao;
 
+
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
-import com.example.asinit_user.mvvmapplication.db.entities.ActionEntity;
+import com.example.asinit_user.mvvmapplication.db.entities.Geo;
 
 import java.util.List;
 
 import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 
 @Dao
-public interface ActionDao {
+public interface GeoDao {
 
-    @Query("SELECT * FROM actions")
-    LiveData<List<ActionEntity>> loadActions();
+    @Query("SELECT * FROM geo")
+    LiveData<List<Geo>> loadGeos();
 
-    @Query("SELECT * FROM actions i WHERE i.actionId = :actionId")
-    LiveData<ActionEntity> loadAction(int actionId);
+    @Query("SELECT * FROM geo i WHERE i.geoID = :geoID")
+    LiveData<Geo> loadGeo(int geoID);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAll(List<ActionEntity> actionEntityEntities);
+    void insertAll(List<Geo> geos);
 
     @Insert(onConflict = REPLACE)
-    void insertAction(ActionEntity actionEntity);
+    void insertGeo(Geo geo);
 }

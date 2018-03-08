@@ -6,8 +6,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
-            name="mainModel"
+            name="model"
             type="com.example.asinit_user.mvvmapplication.ui.mainView.MainViewModel">
 
         </variable>
@@ -16,20 +17,42 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:gravity="center"
+        android:orientation="vertical"
         tools:context=".ui.mainView.MainActivity">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/main_recycler"
+
+        <TextView
+            android:id="@+id/action_tv"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:text="@{model.action.tekst}" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/action_recycler"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="50dp"
+                app:layoutManager="LinearLayoutManager" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/geo_recycler"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layoutManager="LinearLayoutManager" />
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/add_action_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="dodaj akcje"/>
+            android:text="dodaj akcje" />
 
     </LinearLayout>
 

@@ -2,6 +2,8 @@ package com.example.asinit_user.mvvmapplication;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.Service;
+
 
 import com.example.asinit_user.mvvmapplication.di.DaggerAppComponent;
 
@@ -10,28 +12,37 @@ import javax.inject.Inject;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
+import dagger.android.HasServiceInjector;
+import timber.log.Timber;
 
-public class App extends Application implements HasActivityInjector {
+public class App extends Application implements HasActivityInjector, HasServiceInjector {
 
     @Inject
-    DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
+    DispatchingAndroidInjector<Activity> dispatchingActivityInjector;
 
-    private AppExecutors mAppExecutors;
+    @Inject
+    DispatchingAndroidInjector<Service> dispatchingServiceInjector;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        Timber.plant(new Timber.DebugTree());
+
         DaggerAppComponent
                 .builder()
                 .application(this)
                 .build()
                 .inject(this);
-        mAppExecutors = new AppExecutors();
     }
 
 
     @Override
     public AndroidInjector<Activity> activityInjector() {
-        return dispatchingAndroidInjector;
+        return dispatchingActivityInjector;
+    }
+
+    @Override
+    public AndroidInjector<Service> serviceInjector() {
+        return dispatchingServiceInjector;
     }
 }

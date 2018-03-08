@@ -23,12 +23,15 @@ import android.support.annotation.NonNull;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import javax.inject.Singleton;
+
 /**
  * Global executor pools for the whole application.
  * <p>
  * Grouping tasks like this avoids the effects of task starvation (e.g. disk reads don't wait behind
  * webservice requests).
  */
+@Singleton
 public class AppExecutors {
 
     //wątek używany do wypełnienia bazy danych początkowymi danymi w trakcie jej tworzenia

@@ -22,6 +22,8 @@ public class CreateActionViewModel extends ViewModel {
         new AddItemTask().execute(actionEntity);
     }
 
+
+
     private class AddItemTask extends AsyncTask<ActionEntity, Void, Void> {
 
         @Override
