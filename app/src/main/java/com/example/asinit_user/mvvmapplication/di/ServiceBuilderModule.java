@@ -8,6 +8,7 @@ import dagger.android.ContributesAndroidInjector;
 @Module
 abstract class ServiceBuilderModule {
 
-    @ContributesAndroidInjector
+    @ServiceScope
+    @ContributesAndroidInjector(modules = GeoServiceModule.class)
     abstract GeoService contributeGeoService();
 }

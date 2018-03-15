@@ -23,6 +23,7 @@ import android.support.annotation.NonNull;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
@@ -41,6 +42,7 @@ public class AppExecutors {
 
     private final Executor mMainThread;
 
+
     private AppExecutors(Executor diskIO, Executor networkIO, Executor mainThread) {
         this.mDiskIO = diskIO;
         this.mNetworkIO = networkIO;
@@ -48,8 +50,9 @@ public class AppExecutors {
     }
 
     //tworzymy jeden wątek dla obsługi pamięci, 3 wątki sieciowe i referencję do wątku UI
+    @Inject
     public AppExecutors() {
-        this(Executors.newSingleThreadExecutor(), Executors.newFixedThreadPool(3),
+        this(Executors.newFixedThreadPool(2), Executors.newFixedThreadPool(3),
                 new MainThreadExecutor());
     }
 

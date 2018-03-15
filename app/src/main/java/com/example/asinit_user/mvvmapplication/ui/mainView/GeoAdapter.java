@@ -30,7 +30,6 @@ public class GeoAdapter extends RecyclerView.Adapter<GeoAdapter.GeoViewHolder> {
 
 
     public void setGeoList(final List<Geo> newGeoList) {
-        Timber.d("setting new geo list" + newGeoList);
         if (geoList == null) {
             geoList = newGeoList;
             notifyItemRangeInserted(0, newGeoList.size());
@@ -73,7 +72,6 @@ public class GeoAdapter extends RecyclerView.Adapter<GeoAdapter.GeoViewHolder> {
 
     @Override
     public int getItemCount() {
-        Log.d("ACTIONSADAPTER", "getItemCount");
         return geoList == null ? 0 : geoList.size();
     }
 

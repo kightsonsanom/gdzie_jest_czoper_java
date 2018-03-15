@@ -7,10 +7,13 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.asinit_user.mvvmapplication.AppExecutors;
-import com.example.asinit_user.mvvmapplication.db.dao.ActionDao;
+import com.example.asinit_user.mvvmapplication.db.dao.PositionDao;
 import com.example.asinit_user.mvvmapplication.db.dao.GeoDao;
-import com.example.asinit_user.mvvmapplication.db.entities.ActionEntity;
+import com.example.asinit_user.mvvmapplication.db.dao.PositionGeoJoinDao;
+import com.example.asinit_user.mvvmapplication.db.entities.Position;
 import com.example.asinit_user.mvvmapplication.db.entities.Geo;
+import com.example.asinit_user.mvvmapplication.db.entities.PositionGeoJoin;
+import com.example.asinit_user.mvvmapplication.services.PositionManagerCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,86 +26,103 @@ import timber.log.Timber;
 @Singleton
 public class Repository {
 
-    private MediatorLiveData<ActionEntity> observableAction;
-    private MediatorLiveData<List<ActionEntity>> observableActions;
+    PositionManagerCallback positionManagerCallback;
+    private MediatorLiveData<List<Position>> observablePositions;
     private MediatorLiveData<List<Geo>> observableGeos;
+//    private MediatorLiveData<Geo> observableGeo;
 
-    private ActionDao actionDao;
+    private PositionDao positionDao;
     private GeoDao geoDao;
+    private AppExecutors appExecutors;
+    private PositionGeoJoinDao positionGeoJoinDao;
+    private Geo latestGeoFromDb;
+    private Position latestPositionFromDb;
+    private List<Geo> allGeos;
 
-    public Repository(ActionDao actionDao, GeoDao geoDao) {
-        this.actionDao = actionDao;
+    @Inject
+    public Repository(PositionDao positionDao, GeoDao geoDao, PositionGeoJoinDao positionGeoJoinDao, AppExecutors appExecutors) {
+        this.appExecutors = appExecutors;
+        this.positionDao = positionDao;
+        this.positionGeoJoinDao = positionGeoJoinDao;
         this.geoDao = geoDao;
-        initActions();
 
-        observableActions = new MediatorLiveData<>();
-        observableActions.addSource(actionDao.loadActions(),
-                actions -> observableActions.postValue(actions));
-
-        observableAction = new MediatorLiveData<>();
-        observableAction.addSource(actionDao.loadAction(0),
-                action -> observableAction.postValue(action));
+        observablePositions = new MediatorLiveData<>();
+        observablePositions.addSource(positionDao.loadPositions(),
+                positions -> observablePositions.postValue(positions));
 
         observableGeos = new MediatorLiveData<>();
         observableGeos.addSource(geoDao.loadGeos(),
                 geos -> observableGeos.postValue(geos));
 
 
-    }
-    public LiveData<ActionEntity> getAction() {
-        Log.d("REPOSITORY", "get action " + observableAction + " from the database");
-        return observableAction;
+//        observableGeo = new MediatorLiveData<>();
+//        observableGeo.addSource(geoDao.loadLatestLiveDataGeo(),
+//                geo -> observableGeo.postValue(geo));
+
     }
 
-    public LiveData<List<ActionEntity>> getActions() {
-        return observableActions;
+    public void setPositionManagerCallback(PositionManagerCallback positionManagerCallback) {
+        this.positionManagerCallback = positionManagerCallback;
+    }
+
+    public LiveData<List<Position>> getPositions() {
+        return observablePositions;
     }
 
     public LiveData<List<Geo>> getGeos() {
         return observableGeos;
     }
 
-    public void postAction(ActionEntity actionEntity){
-        Timber.d("writing action " + actionEntity.toString() + " to the database");
-        actionDao.insertAction(actionEntity);
+    public void postPosition(Position position) {
+        appExecutors.diskIO().execute(() -> positionDao.insertPosition(position));
     }
 
-    public void postActions(List<ActionEntity> actionEntities){
-        actionDao.insertAll(actionEntities);
+    private void postPositions(List<Position> positionList) {
+        appExecutors.diskIO().execute(() -> positionDao.insertAll(positionList));
     }
 
-    public void postGeo(Geo geo){
-        Timber.d("dodajemy nowe geo = " + geo);
-//        new AddGeo().execute(geo);
-        geoDao.insertGeo(geo);
+    public void postGeo(Geo geo) {
+
+        appExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                Timber.d("inserting geo into DB " + geo.toString());
+                geoDao.insertGeo(geo);
+            }
+        });
     }
 
-
-
-    public void initActions() {
-        List<ActionEntity> actionEntityList = new ArrayList<>();
-        for (int i = 0; i < 15; i++) {
-            actionEntityList.add(new ActionEntity(i, "akcja numer " + i));
-        }
-        new AddItemsTask().execute(actionEntityList);
+    public void getLatestGeo() {
+        appExecutors.diskIO().execute(() -> {
+            latestGeoFromDb = geoDao.loadLatestGeo();
+            if (latestGeoFromDb != null) {
+                Timber.d("latestGeoFromDb ID = " + latestGeoFromDb.getId());
+            } else {
+                Timber.d("latestGeoFromDb is null");
+            }
+            positionManagerCallback.setLatestGeoFromDb(latestGeoFromDb);
+        });
     }
 
-
-    private class AddItemsTask extends AsyncTask<List<ActionEntity>, Void, Void> {
-
-        @Override
-        protected Void doInBackground(List<ActionEntity>... list) {
-            postActions(list[0]);
-            return null;
-        }
+    public void getLatestPosition() {
+            appExecutors.diskIO().execute(() -> {
+                latestPositionFromDb = positionDao.loadLatestPosition();
+                if (latestPositionFromDb != null) {
+                    Timber.d("latestPositionFromDb ID = " + latestPositionFromDb.getId());
+                } else {
+                    Timber.d("latestPositionFromDb is null");
+                }
+                positionManagerCallback.setLatestPositionFromDb(latestPositionFromDb);
+            });
     }
 
-    private class AddGeo extends AsyncTask<Geo, Void, Void> {
+    public void assignGeoToPosition(PositionGeoJoin positionGeoJoin) {
+        appExecutors.diskIO().execute(() -> positionGeoJoinDao.insert(positionGeoJoin));
+    }
 
-        @Override
-        protected Void doInBackground(Geo... geo) {
-            geoDao.insertGeo(geo[0]);
-            return null;
-        }
+    public void updatePosition(Position position) {
+        Timber.d("updating position " + position.toString());
+        appExecutors.diskIO().execute(() -> positionDao.updatePosition(position));
+
     }
 }

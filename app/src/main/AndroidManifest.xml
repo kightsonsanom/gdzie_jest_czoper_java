@@ -22,6 +22,7 @@
         <activity android:name=".ui.createView.CreateActionActivity"></activity>
 
         <service android:name=".services.GeoService" />
+        <service android:name=".services.GeocodeAddressIntentService" />
     </application>
 
 </manifest>

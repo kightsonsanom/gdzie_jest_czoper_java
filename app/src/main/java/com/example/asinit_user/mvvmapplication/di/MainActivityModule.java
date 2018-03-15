@@ -1,6 +1,6 @@
 package com.example.asinit_user.mvvmapplication.di;
 
-import com.example.asinit_user.mvvmapplication.ui.mainView.ActionsAdapter;
+import com.example.asinit_user.mvvmapplication.ui.mainView.PositionsAdapter;
 import com.example.asinit_user.mvvmapplication.ui.mainView.GeoAdapter;
 
 import dagger.Module;
@@ -11,8 +11,8 @@ public class MainActivityModule {
 
     @Provides
     @ActivityScope
-    ActionsAdapter provideActionsAdapter (){
-        return new ActionsAdapter();
+    PositionsAdapter providePositionsAdapter (){
+        return new PositionsAdapter();
     }
 
     @Provides

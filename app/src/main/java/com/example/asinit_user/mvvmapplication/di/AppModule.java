@@ -4,11 +4,10 @@ package com.example.asinit_user.mvvmapplication.di;
 import android.app.Application;
 import android.arch.persistence.room.Room;
 
-import com.example.asinit_user.mvvmapplication.App;
 import com.example.asinit_user.mvvmapplication.db.AppDatabase;
-import com.example.asinit_user.mvvmapplication.db.Repository;
-import com.example.asinit_user.mvvmapplication.db.dao.ActionDao;
+import com.example.asinit_user.mvvmapplication.db.dao.PositionDao;
 import com.example.asinit_user.mvvmapplication.db.dao.GeoDao;
+import com.example.asinit_user.mvvmapplication.db.dao.PositionGeoJoinDao;
 
 import javax.inject.Singleton;
 
@@ -22,13 +21,7 @@ public class AppModule {
 
     @Provides
     @Singleton
-    Repository provideRepository(ActionDao actionDao, GeoDao geoDao){
-        return new Repository(actionDao, geoDao);
-    }
-
-    @Provides
-    @Singleton
-    ActionDao provideActionDao(AppDatabase database){
+    PositionDao provideActionDao(AppDatabase database){
         return database.actionDao();
     }
 
@@ -36,6 +29,12 @@ public class AppModule {
     @Singleton
     GeoDao provideGeoDao(AppDatabase database){
         return database.geoDao();
+    }
+
+    @Provides
+    @Singleton
+    PositionGeoJoinDao providePositionnGeoJoinDao(AppDatabase database){
+        return database.positionGeoJoinDao();
     }
 
     @Provides

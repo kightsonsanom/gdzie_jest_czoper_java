@@ -16,13 +16,17 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.ResultReceiver;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 
+import com.example.asinit_user.mvvmapplication.AppExecutors;
 import com.example.asinit_user.mvvmapplication.db.Repository;
 import com.example.asinit_user.mvvmapplication.db.entities.Geo;
+import com.example.asinit_user.mvvmapplication.utils.Constants;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -42,13 +46,14 @@ import timber.log.Timber;
 
 public class GeoService extends Service {
 
+    public static final int GEO_SERVICE_FREQUENCY = 10000;
     public static boolean GPSserviceStarted;
     private Context context;
     private Geo geo;
 
-    @Inject
-    Repository repository;
 
+    @Inject
+    PositionManager positionManager;
 
     @Nullable
     @Override
@@ -66,8 +71,8 @@ public class GeoService extends Service {
         LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                Timber.d("new location arrived to listener");
-                manageLocation(location);
+                Timber.d("new location arrived to listener = " + location.toString());
+                positionManager.getLocationAddress(location);
             }
 
             @Override
@@ -98,7 +103,7 @@ public class GeoService extends Service {
         drogi od jakiej się oddaliliśmy od ostatniego punktu, a nie czasu kiedy była ostatnia geolokalizacja
 
         */
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, GEO_SERVICE_FREQUENCY, 0, locationListener);
         GPSserviceStarted = true;
 
 
@@ -118,27 +123,6 @@ public class GeoService extends Service {
 
     public int onStartCommand(Intent intent, int flags, int startId) {
         return START_STICKY;
-    }
-
-
-    public void manageLocation(Location location) {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-
-        String newLocationPlace = location.toString();
-        String newLocationTime = new Date().toString();
-//        String day = setDate(location.getTime());
-
-
-// zaczynamy przygodę
-        geo = new Geo(newLocationTime, newLocationPlace);
-
-        sendGeo(geo);
-    }
-
-    private void sendGeo(Geo geo) {
-        repository.postGeo(geo);
     }
 }
 

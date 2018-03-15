@@ -1,7 +1,6 @@
 package com.example.asinit_user.mvvmapplication.di;
 
 
-import com.example.asinit_user.mvvmapplication.ui.createView.CreateActionActivity;
 import com.example.asinit_user.mvvmapplication.ui.mainView.MainActivity;
 
 import dagger.Module;
@@ -21,7 +20,4 @@ public abstract class ActivityBuilderModule {
     @ActivityScope
     @ContributesAndroidInjector(modules = MainActivityModule.class)
     abstract MainActivity contributeMainActivity();
-
-    @ContributesAndroidInjector
-    abstract CreateActionActivity contributeCreateActionActivity();
 }

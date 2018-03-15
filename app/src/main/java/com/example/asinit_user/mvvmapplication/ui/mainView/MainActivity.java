@@ -1,24 +1,30 @@
 package com.example.asinit_user.mvvmapplication.ui.mainView;
 
 import android.Manifest;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.View;
 
 import com.example.asinit_user.mvvmapplication.R;
 import com.example.asinit_user.mvvmapplication.ViewModelFactory;
 import com.example.asinit_user.mvvmapplication.databinding.ActivityMainBinding;
+import com.example.asinit_user.mvvmapplication.db.entities.Geo;
+import com.example.asinit_user.mvvmapplication.db.entities.Position;
 import com.example.asinit_user.mvvmapplication.services.GeoService;
-import com.example.asinit_user.mvvmapplication.ui.createView.CreateActionActivity;
 
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
+import timber.log.Timber;
 
 @RuntimePermissions
 public class MainActivity extends AppCompatActivity {
@@ -27,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     ViewModelFactory viewModelFactory;
 
     @Inject
-    ActionsAdapter actionsAdapter;
+    PositionsAdapter positionsAdapter;
 
     @Inject
     GeoAdapter geoAdapter;
@@ -39,40 +45,61 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ActivityMainBinding mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
+        setRecyclersHeight(mBinding);
+
         MainActivityPermissionsDispatcher.startGeoServiceWithPermissionCheck(this);
 
         MainViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
 
         mBinding.setModel(viewModel);
 
-        viewModel.getObservableAction().observe(this, action -> {
-            if (action!=null) {
-                viewModel.setAction(action);
-            }
-        });
+//        mBinding.getLatestGeoBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                mBinding.latestGeoFromButtonTextView.setText(viewModel.getLatestGeo());
+//            }
+//        });
+//
+//
+//        viewModel.getObservableGeo().observe(this, new Observer<Geo>() {
+//            @Override
+//            public void onChanged(@Nullable Geo geo) {
+//                viewModel.setGeo(geo);
+//            }
+//        });
 
-        mBinding.actionRecycler.setAdapter(actionsAdapter);
+
+        mBinding.positionRecycler.setAdapter(positionsAdapter);
         mBinding.geoRecycler.setAdapter(geoAdapter);
 
-        viewModel.getObservableActions().observe(this, actions -> {
-            if (actions != null) {
-                actionsAdapter.setActionList(actions);
+        viewModel.getObservablePositions().observe(this, positions-> {
+            Timber.d("position data changed");
+            if (positions != null) {
+                for (Position p: positions) {
+                    Timber.d("Position = " + p.toString());
+                }
+                positionsAdapter.setPositionsList(positions);
             }
         });
 
 
         viewModel.getObservableGeos().observe(this, geos -> {
+            Timber.d("geo data changed");
             if (geos != null) {
                 geoAdapter.setGeoList(geos);
             }
         });
 
+    }
 
-        mBinding.addActionBtn.setOnClickListener(v -> {
-            startActivity(new Intent(this, CreateActionActivity.class));
-            }
-        );
+    private void setRecyclersHeight(ActivityMainBinding mBinding) {
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
 
+        int height =  (displaymetrics.heightPixels*35)/100;
+
+        mBinding.positionRecycler.getLayoutParams().height = height;
+        mBinding.geoRecycler.getLayoutParams().height = height;
     }
 
     @NeedsPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -85,6 +112,6 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        MainActivityPermissionsDispatcher.onRequestPermissionsResult(this,requestCode,grantResults);
+        MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 }
