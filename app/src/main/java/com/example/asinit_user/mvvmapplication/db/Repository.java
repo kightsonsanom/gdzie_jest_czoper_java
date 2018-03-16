@@ -26,7 +26,7 @@ import timber.log.Timber;
 @Singleton
 public class Repository {
 
-    PositionManagerCallback positionManagerCallback;
+    private PositionManagerCallback positionManagerCallback;
     private MediatorLiveData<List<Position>> observablePositions;
     private MediatorLiveData<List<Geo>> observableGeos;
 //    private MediatorLiveData<Geo> observableGeo;

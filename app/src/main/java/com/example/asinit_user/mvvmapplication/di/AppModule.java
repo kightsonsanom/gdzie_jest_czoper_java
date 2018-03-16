@@ -33,7 +33,7 @@ public class AppModule {
 
     @Provides
     @Singleton
-    PositionGeoJoinDao providePositionnGeoJoinDao(AppDatabase database){
+    PositionGeoJoinDao providePositionGeoJoinDao(AppDatabase database){
         return database.positionGeoJoinDao();
     }
 

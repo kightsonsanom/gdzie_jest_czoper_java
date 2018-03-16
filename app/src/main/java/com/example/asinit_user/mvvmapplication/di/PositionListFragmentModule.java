@@ -1,22 +1,23 @@
 package com.example.asinit_user.mvvmapplication.di;
 
-import com.example.asinit_user.mvvmapplication.ui.mainView.PositionsAdapter;
+
 import com.example.asinit_user.mvvmapplication.ui.mainView.GeoAdapter;
+import com.example.asinit_user.mvvmapplication.ui.mainView.PositionsAdapter;
 
 import dagger.Module;
 import dagger.Provides;
 
 @Module
-public class MainActivityModule {
+class PositionListFragmentModule {
 
     @Provides
-    @ActivityScope
+    @PositionListFragmentScope
     PositionsAdapter providePositionsAdapter (){
         return new PositionsAdapter();
     }
 
     @Provides
-    @ActivityScope
+    @PositionListFragmentScope
     GeoAdapter provideGeoAdapter (){
         return new GeoAdapter();
     }

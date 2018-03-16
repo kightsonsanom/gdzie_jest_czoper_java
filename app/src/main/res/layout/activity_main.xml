@@ -1,81 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <data>
-
-        <variable
-            name="model"
-            type="com.example.asinit_user.mvvmapplication.ui.mainView.MainViewModel">
-
-        </variable>
-    </data>
-
-    <LinearLayout
+    <FrameLayout
+        android:id="@+id/main_frame_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        tools:context=".ui.mainView.MainActivity">
+        android:layout_height="0dp"
+        android:layout_weight="1">
+    </FrameLayout>
 
-        <!--<TextView-->
-            <!--android:id="@+id/latest_geo_live_data"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="@{model.geo.displayText}"/>-->
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="?android:attr/windowBackground"
+        app:menu="@menu/bottom_navigation_items" />
 
-        <!--<Button-->
-            <!--android:id="@+id/get_latest_geo_btn"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="GET LATEST GEO"/>-->
-
-
-        <!--<TextView-->
-            <!--android:id="@+id/latest_geo_from_button_text_view"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content" />-->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center"
-            >
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Lista Pozycji"
-                android:gravity="center"
-                android:textStyle="bold"
-                android:textSize="20sp"/>
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/position_recycler"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layoutManager="LinearLayoutManager"
-                android:layout_marginBottom="20dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Lista Geo"
-                android:gravity="center"
-                android:textStyle="bold"
-                android:textSize="20sp"/>
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/geo_recycler"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layoutManager="LinearLayoutManager" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-</layout>
+</LinearLayout>

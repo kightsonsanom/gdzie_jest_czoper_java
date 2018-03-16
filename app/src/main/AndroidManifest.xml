@@ -12,17 +12,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.mainView.MainActivity">
+
+
+        <service android:name=".services.GeoService" />
+        <service android:name=".services.GeocodeAddressIntentService" />
+
+        <!--<activity-->
+            <!--android:name=".ui.mainView.MainActivity"-->
+            <!--android:label="@string/title_activity_navigation">-->
+        <!--</activity>-->
+
+
+        <activity android:name=".ui.mainView.NavigationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.createView.CreateActionActivity"></activity>
-
-        <service android:name=".services.GeoService" />
-        <service android:name=".services.GeocodeAddressIntentService" />
     </application>
 
 </manifest>
