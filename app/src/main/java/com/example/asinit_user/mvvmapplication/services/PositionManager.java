@@ -29,7 +29,10 @@ import timber.log.Timber;
 
 public class PositionManager implements PositionManagerCallback {
 
-    private final static int ACCEPTABLE_DISTANCE_BETWEEN_GEO = 100;
+
+    private final static float ACCEPTABLE_DISTANCE_BETWEEN_GEO = 100f;
+    // kiedy konczy sie ruch i zaczyna postoj to postoj musi byc bardziej aktualny od ruchu
+    private static final long NEW_POSITION_OFFSET = 1;
     Repository repository;
 
     private Context context;
@@ -49,14 +52,9 @@ public class PositionManager implements PositionManagerCallback {
         repository.setPositionManagerCallback(this);
 
     }
-    private void getLastGeoFromDb() {
-        repository.getLatestGeo();
-    }
 
     public void setLocationPosition() {
         sendGeo(newGeo);
-        Timber.d("latestGeoFromDb = " + latestGeoFromDb);
-        Timber.d("latestPositionFromDb = " + latestPositionFromDb);
 
         if (latestGeoFromDb == null || isLatestGeoFromDbTooOld()) {
             Timber.d("latestPositionFromDb is null lub geo za stare");
@@ -75,6 +73,7 @@ public class PositionManager implements PositionManagerCallback {
             newPosition.setStartLocation(locationAddress);
             newPosition.setStartDate(setDate(newGeo.getDate()));
             newPosition.setStatus("Nieznany");
+            newPosition.setLastLocationDate(newGeo.getDate());
 
             sendPosition(newPosition);
 
@@ -84,17 +83,21 @@ public class PositionManager implements PositionManagerCallback {
             if (isLastGeoFarAway()) {
                 Timber.d("bylo przemieszczenie");
                 latestPositionFromDb.setStatus("Ruch");
+                latestPositionFromDb.setLastLocationDate(newGeo.getDate());
 
             } else {
                 Timber.d("nie bylo przemieszczenia");
                 latestPositionFromDb.setStatus("Postój");
             }
 
+            latestPositionFromDb.setLastLocationDate(newGeo.getDate());
             updatePosition(latestPositionFromDb);
 
         } else if (latestPositionFromDb.getStatus().equals("Postój")) {
+            Timber.d("status geo postój");
 
             latestPositionFromDb.setEndDate(setDate(newGeo.getDate()));
+            latestPositionFromDb.setLastLocationDate(newGeo.getDate());
             updatePosition(latestPositionFromDb);
 
             if (isLastGeoFarAway()) {
@@ -104,11 +107,15 @@ public class PositionManager implements PositionManagerCallback {
                 newPosition = new Position();
                 newPosition.setStatus("Ruch");
                 newPosition.setStartLocation(locationAddress);
+                newPosition.setLastLocationDate(newGeo.getDate() + NEW_POSITION_OFFSET);
                 newPosition.setStartDate(setDate(newGeo.getDate()));
                 sendPosition(newPosition);
             }
 
         } else if (latestPositionFromDb.getStatus().equals("Ruch")) {
+            Timber.d("status geo ruch");
+
+            latestPositionFromDb.setLastLocationDate(newGeo.getDate());
             latestPositionFromDb.setEndDate(setDate(newGeo.getDate()));
             updatePosition(latestPositionFromDb);
             if (isLastGeoFarAway()) {
@@ -122,6 +129,7 @@ public class PositionManager implements PositionManagerCallback {
                 newPosition.setStatus("Postój");
                 newPosition.setStartLocation(locationAddress);
                 newPosition.setStartDate(setDate(newGeo.getDate()));
+                newPosition.setLastLocationDate(newGeo.getDate() + NEW_POSITION_OFFSET);
                 sendPosition(newPosition);
             }
 
@@ -145,7 +153,9 @@ public class PositionManager implements PositionManagerCallback {
     }
 
     private boolean isLastGeoFarAway() {
-        return newGeo.getLocation().distanceTo(latestGeoFromDb.getLocation()) > ACCEPTABLE_DISTANCE_BETWEEN_GEO;
+        float distance = newGeo.getLocation().distanceTo(latestGeoFromDb.getLocation());
+        Timber.d("distance between locations = " + distance);
+        return  distance > ACCEPTABLE_DISTANCE_BETWEEN_GEO;
     }
 
     public void getLocationAddress(Location location) {
@@ -190,14 +200,34 @@ public class PositionManager implements PositionManagerCallback {
 
     @Override
     public void setLatestPositionFromDb(Position position) {
+
         latestPositionFromDb = position;
-        setLocationPosition();
+        if (position != null) {
+            String positionStatus = position.getStatus();
+            if (positionStatus.equals("Ruch") || positionStatus.equals("Nieznany")) {
+                getLastGeoFromDb();
+            } else if (positionStatus.equals("Postój")) {
+                getOldestGeoForPositionFromDb();
+            }
+        } else {
+            getLastGeoFromDb();
+        }
+
+    }
+
+    private void getOldestGeoForPositionFromDb() {
+        repository.getOldestGeoForPosition(latestPositionFromDb.getId());
+    }
+
+
+    private void getLastGeoFromDb() {
+        repository.getLatestGeo();
     }
 
     @Override
     public void setLatestGeoFromDb(Geo geo) {
         latestGeoFromDb = geo;
-        getLastPositionFromDb();
+        setLocationPosition();
     }
 
     private void getLastPositionFromDb() {
@@ -213,7 +243,7 @@ public class PositionManager implements PositionManagerCallback {
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
             locationAddress = resultData.getString(Constants.RESULT_DATA_KEY);
-            getLastGeoFromDb();
+            getLastPositionFromDb();
         }
     }
 

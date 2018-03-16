@@ -73,18 +73,13 @@ public class MainActivity extends AppCompatActivity {
         mBinding.geoRecycler.setAdapter(geoAdapter);
 
         viewModel.getObservablePositions().observe(this, positions-> {
-            Timber.d("position data changed");
             if (positions != null) {
-                for (Position p: positions) {
-                    Timber.d("Position = " + p.toString());
-                }
                 positionsAdapter.setPositionsList(positions);
             }
         });
 
 
         viewModel.getObservableGeos().observe(this, geos -> {
-            Timber.d("geo data changed");
             if (geos != null) {
                 geoAdapter.setGeoList(geos);
             }

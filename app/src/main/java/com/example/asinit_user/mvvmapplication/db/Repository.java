@@ -74,7 +74,10 @@ public class Repository {
     }
 
     public void postPosition(Position position) {
-        appExecutors.diskIO().execute(() -> positionDao.insertPosition(position));
+        appExecutors.diskIO().execute(() -> {
+            Timber.d("inserting position into DB ID: " + position.getId() + " czas: " + position.getLastLocationDate());
+            positionDao.insertPosition(position);
+        });
     }
 
     private void postPositions(List<Position> positionList) {
@@ -86,7 +89,7 @@ public class Repository {
         appExecutors.diskIO().execute(new Runnable() {
             @Override
             public void run() {
-                Timber.d("inserting geo into DB " + geo.toString());
+                Timber.d("inserting geo into DB ID: " + geo.getId() + " czas: " + geo.getDate());
                 geoDao.insertGeo(geo);
             }
         });
@@ -96,7 +99,7 @@ public class Repository {
         appExecutors.diskIO().execute(() -> {
             latestGeoFromDb = geoDao.loadLatestGeo();
             if (latestGeoFromDb != null) {
-                Timber.d("latestGeoFromDb ID = " + latestGeoFromDb.getId());
+                Timber.d("latestGeoFromDb ID = " + latestGeoFromDb.getId() + " czas: " + latestGeoFromDb.getDate());
             } else {
                 Timber.d("latestGeoFromDb is null");
             }
@@ -108,7 +111,7 @@ public class Repository {
             appExecutors.diskIO().execute(() -> {
                 latestPositionFromDb = positionDao.loadLatestPosition();
                 if (latestPositionFromDb != null) {
-                    Timber.d("latestPositionFromDb ID = " + latestPositionFromDb.getId());
+                    Timber.d("latestPositionFromDb ID = " + latestPositionFromDb.getId() + " czas: " + latestPositionFromDb.getLastLocationDate());
                 } else {
                     Timber.d("latestPositionFromDb is null");
                 }
@@ -116,12 +119,23 @@ public class Repository {
             });
     }
 
+    public void getOldestGeoForPosition(String positionID) {
+        appExecutors.diskIO().execute(() -> {
+            latestGeoFromDb = positionGeoJoinDao.getOldestGeoForPosition(positionID);
+            if (latestGeoFromDb != null) {
+                Timber.d("latestGeoFromDb ID = " + latestGeoFromDb.getId() + " czas: " + latestGeoFromDb.getDate());
+            } else {
+                Timber.d("latestGeoFromDb is null");
+            }
+            positionManagerCallback.setLatestGeoFromDb(latestGeoFromDb);
+        });
+    }
     public void assignGeoToPosition(PositionGeoJoin positionGeoJoin) {
         appExecutors.diskIO().execute(() -> positionGeoJoinDao.insert(positionGeoJoin));
     }
 
     public void updatePosition(Position position) {
-        Timber.d("updating position " + position.toString());
+        Timber.d("updating position ID = " + position.getId() + " czas: " + position.getLastLocationDate() + " status = " + position.getStatus());
         appExecutors.diskIO().execute(() -> positionDao.updatePosition(position));
 
     }

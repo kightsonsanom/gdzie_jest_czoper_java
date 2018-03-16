@@ -46,7 +46,7 @@ import timber.log.Timber;
 
 public class GeoService extends Service {
 
-    public static final int GEO_SERVICE_FREQUENCY = 10000;
+    public static final int GEO_SERVICE_FREQUENCY = 420000;
     public static boolean GPSserviceStarted;
     private Context context;
     private Geo geo;

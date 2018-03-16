@@ -22,6 +22,11 @@ public interface PositionGeoJoinDao {
             "WHERE position_geo_join.positionID=:positionID")
     LiveData<List<Geo>> getGeoForPosition(final String positionID);
 
+    @Query("SELECT * FROM (SELECT * FROM geo " +
+            "INNER JOIN position_geo_join ON geo.id = position_geo_join.geoID " +
+            "WHERE position_geo_join.positionID=:positionID)" +
+            "ORDER BY date LIMIT 1")
+    Geo getOldestGeoForPosition(final String positionID);
 
 
 }

@@ -22,12 +22,6 @@ public interface GeoDao {
     @Query("SELECT * FROM geo i WHERE i.id = :geoID")
     LiveData<Geo> loadGeo(String geoID);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAll(List<Geo> geos);
-
-    @Insert(onConflict = REPLACE)
-    void insertGeo(Geo geo);
-
     @Query("SELECT * FROM geo ORDER BY date DESC LIMIT 1")
     Geo loadLatestGeo();
 
@@ -36,4 +30,12 @@ public interface GeoDao {
 
     @Query("SELECT * FROM geo")
     List<Geo> getAllGeos();
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAll(List<Geo> geos);
+
+    @Insert(onConflict = REPLACE)
+    void insertGeo(Geo geo);
+
+
 }

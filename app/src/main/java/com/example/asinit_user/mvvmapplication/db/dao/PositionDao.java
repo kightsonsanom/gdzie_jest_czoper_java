@@ -22,14 +22,14 @@ public interface PositionDao {
     @Query("SELECT * FROM position i WHERE i.id = :positionID")
     LiveData<Position> loadPosition(String positionID);
 
+    @Query("SELECT * FROM position ORDER BY lastLocationDate DESC LIMIT 1")
+    Position loadLatestPosition();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<Position> positions);
 
     @Insert(onConflict = REPLACE)
     void insertPosition (Position position);
-
-    @Query("SELECT * FROM position ORDER BY lastLocationDate DESC LIMIT 1")
-    Position loadLatestPosition();
 
     @Update(onConflict = REPLACE)
     void updatePosition(Position position);
