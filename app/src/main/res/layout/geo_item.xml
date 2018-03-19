@@ -9,7 +9,7 @@
 
         <variable
             name="geo"
-            type="com.example.asinit_user.mvvmapplication.db.entities.Geo" />
+            type="com.example.asinit_user.gdziejestczoper.db.entities.Geo" />
     </data>
 
 

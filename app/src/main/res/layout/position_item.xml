@@ -9,7 +9,7 @@
 
         <variable
             name="position"
-            type="com.example.asinit_user.mvvmapplication.db.entities.Position" />
+            type="com.example.asinit_user.gdziejestczoper.db.entities.Position" />
     </data>
 
 
