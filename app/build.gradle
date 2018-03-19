@@ -16,6 +16,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
     dataBinding {
         enabled = true
     }
@@ -56,4 +57,7 @@ dependencies {
     implementation 'com.android.support:design:26.1.0'
     //    GoogleMaps
     implementation 'com.google.android.gms:play-services-maps:10.2.6'
+
 }
+
+

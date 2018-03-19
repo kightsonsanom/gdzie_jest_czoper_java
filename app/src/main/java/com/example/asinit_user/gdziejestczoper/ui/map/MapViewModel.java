@@ -18,16 +18,21 @@ public class MapViewModel extends ViewModel {
     public ObservableField<LatLng> mMapLatLng = new ObservableField<>();
     private final MediatorLiveData<Geo> mObservableGeo;
 
-
     @Inject
     public MapViewModel(Repository repository) {
         this.repository = repository;
-
         mObservableGeo = new MediatorLiveData<>();
         mObservableGeo.setValue(null);
 
         LiveData<Geo> observableGeo = repository.getGeo();
-
         mObservableGeo.addSource(observableGeo, mObservableGeo::setValue);
+    }
+
+    public LiveData<Geo> getObservableGeo() {
+        return mObservableGeo;
+    }
+
+    public void setLatLng(LatLng latLng) {
+        mMapLatLng.set(latLng);
     }
 }

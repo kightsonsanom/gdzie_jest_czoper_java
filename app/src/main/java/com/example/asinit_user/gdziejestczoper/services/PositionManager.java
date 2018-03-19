@@ -28,7 +28,7 @@ import timber.log.Timber;
 public class PositionManager implements PositionManagerCallback {
 
 
-    private final static float ACCEPTABLE_DISTANCE_BETWEEN_GEO = 100f;
+    private final static float ACCEPTABLE_DISTANCE_BETWEEN_GEO = 125f;
     // kiedy konczy sie ruch i zaczyna postoj to postoj musi byc bardziej aktualny od ruchu
     private static final long NEW_POSITION_OFFSET = 1;
     Repository repository;

@@ -25,7 +25,7 @@ import timber.log.Timber;
 
 public class GeoService extends Service {
 
-    public static final int GEO_SERVICE_FREQUENCY = 420000;
+    public static final int GEO_SERVICE_FREQUENCY = 300000;
     public static boolean GPSserviceStarted;
     private Context context;
     private Geo geo;
@@ -82,6 +82,7 @@ public class GeoService extends Service {
         drogi od jakiej się oddaliliśmy od ostatniego punktu, a nie czasu kiedy była ostatnia geolokalizacja
 
         */
+
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, GEO_SERVICE_FREQUENCY, 0, locationListener);
         GPSserviceStarted = true;
 

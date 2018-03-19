@@ -71,6 +71,7 @@ public class Repository {
     }
 
     public LiveData<Geo> getGeo() {
+        Timber.d("getting latest geo");
         return observableGeo;
     }
 
