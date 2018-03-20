@@ -16,7 +16,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import timber.log.Timber;
 
-public class customBindings {
+public class CustomBindings {
 
     @BindingAdapter("initMap")
     public static void initMap(final MapView mapView, final LatLng latLng) {

@@ -2,7 +2,7 @@ package com.example.asinit_user.gdziejestczoper.di;
 
 
 import com.example.asinit_user.gdziejestczoper.ui.mainView.GeoAdapter;
-import com.example.asinit_user.gdziejestczoper.ui.mainView.PositionsAdapter;
+import com.example.asinit_user.gdziejestczoper.ui.geoList.PositionsAdapter;
 
 import dagger.Module;
 import dagger.Provides;

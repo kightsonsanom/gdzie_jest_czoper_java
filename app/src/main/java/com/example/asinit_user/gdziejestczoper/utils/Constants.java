@@ -12,4 +12,9 @@ public final class Constants {
     public static final String LOCATION_DATA_EXTRA = PACKAGE_NAME +
             ".LOCATION_DATA_EXTRA";
 
+    public static final int SERVICE_NOTIFICATION_ID = 1337;
+
+    public static final String START_DATE = "START_DATE";
+    public static final String END_DATE = "END_DATE";
+
 }

@@ -12,6 +12,7 @@ import com.example.asinit_user.gdziejestczoper.db.entities.Position;
 import com.example.asinit_user.gdziejestczoper.db.entities.Geo;
 import com.example.asinit_user.gdziejestczoper.db.entities.PositionGeoJoin;
 import com.example.asinit_user.gdziejestczoper.services.PositionManagerCallback;
+import com.example.asinit_user.gdziejestczoper.ui.search.SearchFragmentViewModelCallback;
 
 import java.util.List;
 
@@ -24,14 +25,19 @@ import timber.log.Timber;
 public class Repository {
 
     private PositionManagerCallback positionManagerCallback;
+    private SearchFragmentViewModelCallback searchFragmentViewModelCallback;
+
     private MediatorLiveData<List<Position>> observablePositions;
     private MediatorLiveData<List<Geo>> observableGeos;
     private MediatorLiveData<Geo> observableGeo;
 
     private PositionDao positionDao;
     private GeoDao geoDao;
-    private AppExecutors appExecutors;
     private PositionGeoJoinDao positionGeoJoinDao;
+
+    private AppExecutors appExecutors;
+
+
     private Geo latestGeoFromDb;
     private Position latestPositionFromDb;
     private List<Geo> allGeos;
@@ -60,6 +66,10 @@ public class Repository {
 
     public void setPositionManagerCallback(PositionManagerCallback positionManagerCallback) {
         this.positionManagerCallback = positionManagerCallback;
+    }
+
+    public void setSearchFragmentViewModelCallback(SearchFragmentViewModelCallback searchFragmentViewModelCallback) {
+        this.searchFragmentViewModelCallback = searchFragmentViewModelCallback;
     }
 
     public LiveData<List<Position>> getPositions() {
@@ -140,5 +150,14 @@ public class Repository {
         Timber.d("updating position ID = " + position.getId() + " czas: " + position.getLastLocationDate() + " status = " + position.getStatus());
         appExecutors.diskIO().execute(() -> positionDao.updatePosition(position));
 
+    }
+
+    public void getPositionForToday(String parseString) {
+        appExecutors.diskIO().execute(() -> {
+            List<Position> todayPositionList = positionDao.getPositionForToday(parseString);
+
+            searchFragmentViewModelCallback.setPositionForToday(todayPositionList);
+
+        });
     }
 }

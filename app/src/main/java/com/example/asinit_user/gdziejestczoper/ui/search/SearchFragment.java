@@ -1,16 +1,109 @@
 package com.example.asinit_user.gdziejestczoper.ui.search;
 
-
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.Intent;
+import android.databinding.DataBindingUtil;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.example.asinit_user.gdziejestczoper.R;
+import com.example.asinit_user.gdziejestczoper.databinding.SearchFragmentBinding;
+import com.example.asinit_user.gdziejestczoper.ui.searchResult.SearchResultList;
+import com.example.asinit_user.gdziejestczoper.utils.Constants;
+
+import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
+import timber.log.Timber;
 
-public class SearchFragment extends Fragment {
+public class SearchFragment extends Fragment{
+
+
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
+
+    private DatePickerFragment datePickerFragment;
+    private SearchFragmentViewModel viewModel;
+    private SearchFragmentBinding binding;
 
     @Override
     public void onAttach(Context context) {
         AndroidSupportInjection.inject(this);
+        Timber.d("onAttach from SearchFragment");
         super.onAttach(context);
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Timber.d("onResume from SearchFragment");
+        DatePickerFragment fragment = (DatePickerFragment) getChildFragmentManager().findFragmentByTag("dialogFragment");
+        if (fragment != null) {
+            fragment.updateListener(viewModel);
+        }
+    }
+
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        binding = DataBindingUtil.inflate(inflater, R.layout.search_fragment, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(SearchFragmentViewModel.class);
+        binding.setModel(viewModel);
+
+        setOnClickListeners();
+
+        subscribeToModel(viewModel);
+
+
+    }
+
+    private void subscribeToModel(SearchFragmentViewModel viewModel) {
+
+    }
+
+
+    private void setOnClickListeners() {
+        binding.startdateImageView.setOnClickListener((v) -> {
+            datePickerFragment = DatePickerFragment.newInstance(Constants.START_DATE);
+            datePickerFragment.setDatePickerCallback(viewModel);
+            datePickerFragment.show(getChildFragmentManager(), "dialogFragment");
+        });
+
+
+        binding.stopdateImageView.setOnClickListener((v) -> {
+            datePickerFragment = DatePickerFragment.newInstance(Constants.END_DATE);
+            datePickerFragment.setDatePickerCallback(viewModel);
+            datePickerFragment.show(getChildFragmentManager(), "dialogFragment");
+        });
+
+        binding.searchButton.setOnClickListener((v) -> {
+           Intent intent = new Intent(getActivity(), SearchResultList.class);
+           intent.putExtra("startDate", viewModel.startDate);
+           intent.putExtra("endDate", viewModel.endDate);
+
+           startActivity(intent);
+           getActivity().finish();
+
+        });
+
+        binding.getPosBtn.setOnClickListener((v) -> {
+            viewModel.getPositionForToday();
+
+        });
+    }
 }
+

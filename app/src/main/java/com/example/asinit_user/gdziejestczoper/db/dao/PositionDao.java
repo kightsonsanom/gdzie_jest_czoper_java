@@ -19,11 +19,14 @@ public interface PositionDao {
     @Query("SELECT * FROM position")
     LiveData<List<Position>> loadPositions();
 
-    @Query("SELECT * FROM position i WHERE i.id = :positionID")
+    @Query("SELECT * FROM position i WHERE i.id =:positionID")
     LiveData<Position> loadPosition(String positionID);
 
     @Query("SELECT * FROM position ORDER BY lastLocationDate DESC LIMIT 1")
     Position loadLatestPosition();
+
+    @Query("SELECT * FROM position WHERE position.startDate =:today")
+    List<Position> getPositionForToday(String today);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<Position> positions);

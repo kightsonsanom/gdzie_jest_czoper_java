@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 
 import com.example.asinit_user.gdziejestczoper.R;
 import com.example.asinit_user.gdziejestczoper.databinding.PositionListFragmentViewBinding;
-import com.example.asinit_user.gdziejestczoper.ui.mainView.PositionsAdapter;
 
 import javax.inject.Inject;
 

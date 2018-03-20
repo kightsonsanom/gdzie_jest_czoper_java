@@ -13,6 +13,7 @@ import com.example.asinit_user.gdziejestczoper.db.entities.Geo;
 import com.example.asinit_user.gdziejestczoper.db.entities.Position;
 import com.example.asinit_user.gdziejestczoper.db.entities.PositionGeoJoin;
 import com.example.asinit_user.gdziejestczoper.utils.Constants;
+import com.example.asinit_user.gdziejestczoper.utils.Converters;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -60,8 +61,8 @@ public class PositionManager implements PositionManagerCallback {
             if (isLatestGeoFromDbTooOld()) {
                 Timber.d("Geo za stare");
                 newPosition = new Position();
-                newPosition.setStartDate(setDate(latestGeoFromDb.getDate()));
-                newPosition.setEndDate(setDate(newGeo.getDate()));
+                newPosition.setStartDate(Converters.longToString(latestGeoFromDb.getDate()));
+                newPosition.setEndDate(Converters.longToString(newGeo.getDate()));
                 newPosition.setStatus("Przerwa");
 
                 sendPosition(newPosition);
@@ -69,7 +70,7 @@ public class PositionManager implements PositionManagerCallback {
 
             newPosition = new Position();
             newPosition.setStartLocation(locationAddress);
-            newPosition.setStartDate(setDate(newGeo.getDate()));
+            newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
             newPosition.setStatus("Nieznany");
             newPosition.setLastLocationDate(newGeo.getDate());
 
@@ -94,7 +95,7 @@ public class PositionManager implements PositionManagerCallback {
         } else if (latestPositionFromDb.getStatus().equals("Postój")) {
             Timber.d("status geo postój");
 
-            latestPositionFromDb.setEndDate(setDate(newGeo.getDate()));
+            latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
             latestPositionFromDb.setLastLocationDate(newGeo.getDate());
             updatePosition(latestPositionFromDb);
 
@@ -106,7 +107,7 @@ public class PositionManager implements PositionManagerCallback {
                 newPosition.setStatus("Ruch");
                 newPosition.setStartLocation(locationAddress);
                 newPosition.setLastLocationDate(newGeo.getDate() + NEW_POSITION_OFFSET);
-                newPosition.setStartDate(setDate(newGeo.getDate()));
+                newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
                 sendPosition(newPosition);
             }
 
@@ -114,7 +115,7 @@ public class PositionManager implements PositionManagerCallback {
             Timber.d("status geo ruch");
 
             latestPositionFromDb.setLastLocationDate(newGeo.getDate());
-            latestPositionFromDb.setEndDate(setDate(newGeo.getDate()));
+            latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
             updatePosition(latestPositionFromDb);
             if (isLastGeoFarAway()) {
                 Timber.d("bylo przemieszczenie");
@@ -126,7 +127,7 @@ public class PositionManager implements PositionManagerCallback {
                 newPosition = new Position();
                 newPosition.setStatus("Postój");
                 newPosition.setStartLocation(locationAddress);
-                newPosition.setStartDate(setDate(newGeo.getDate()));
+                newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
                 newPosition.setLastLocationDate(newGeo.getDate() + NEW_POSITION_OFFSET);
                 sendPosition(newPosition);
             }
@@ -176,43 +177,11 @@ public class PositionManager implements PositionManagerCallback {
         return (System.currentTimeMillis() - newGeo.getDate()) > 3600000;
     }
 
-
-    public String setDate(long date) {
-        //dodanie godziny, bo czas ziomowy
-        Date data = new Date(date);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", new Locale("pl"));
-
-        TimeZone tz = TimeZone.getDefault();
-        Calendar cal = GregorianCalendar.getInstance(tz);
-        int offsetInMillis = tz.getOffset(cal.getTimeInMillis());
-
-        String offset = String.format("%02d:%02d", Math.abs(offsetInMillis / 3600000), Math.abs((offsetInMillis / 60000) % 60));
-        offset = (offsetInMillis >= 0 ? "+" : "-") + offset;
-        String parseString = sdf.format(data) + offset;
-
-        return parseString;
-    }
-
     private void sendGeo(Geo newGeo) {
         repository.postGeo(newGeo);
     }
 
-    @Override
-    public void setLatestPositionFromDb(Position position) {
 
-        latestPositionFromDb = position;
-        if (position != null) {
-            String positionStatus = position.getStatus();
-            if (positionStatus.equals("Ruch") || positionStatus.equals("Nieznany")) {
-                getLastGeoFromDb();
-            } else if (positionStatus.equals("Postój")) {
-                getOldestGeoForPositionFromDb();
-            }
-        } else {
-            getLastGeoFromDb();
-        }
-
-    }
 
     private void getOldestGeoForPositionFromDb() {
         repository.getOldestGeoForPosition(latestPositionFromDb.getId());
@@ -231,6 +200,23 @@ public class PositionManager implements PositionManagerCallback {
 
     private void getLastPositionFromDb() {
         repository.getLatestPosition();
+    }
+
+    @Override
+    public void setLatestPositionFromDb(Position position) {
+
+        latestPositionFromDb = position;
+        if (position != null) {
+            String positionStatus = position.getStatus();
+            if (positionStatus.equals("Ruch") || positionStatus.equals("Nieznany")) {
+                getLastGeoFromDb();
+            } else if (positionStatus.equals("Postój")) {
+                getOldestGeoForPositionFromDb();
+            }
+        } else {
+            getLastGeoFromDb();
+        }
+
     }
 
     public class AddressResultReceiver extends ResultReceiver {

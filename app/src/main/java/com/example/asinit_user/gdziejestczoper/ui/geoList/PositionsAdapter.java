@@ -1,4 +1,4 @@
-package com.example.asinit_user.gdziejestczoper.ui.mainView;
+package com.example.asinit_user.gdziejestczoper.ui.geoList;
 
 
 import android.databinding.DataBindingUtil;
