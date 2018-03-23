@@ -3,6 +3,7 @@ package com.example.asinit_user.gdziejestczoper.di;
 import android.app.Application;
 
 import com.example.asinit_user.gdziejestczoper.App;
+//import com.example.asinit_user.gdziejestczoper.services.GeoService;
 
 import javax.inject.Singleton;
 
@@ -22,8 +23,9 @@ public interface AppComponent {
     interface Builder {
         @BindsInstance
         Builder application(Application application);
+
         AppComponent build();
     }
-    void inject(App app);
 
+    void inject(App app);
 }

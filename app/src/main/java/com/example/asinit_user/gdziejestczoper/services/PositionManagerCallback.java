@@ -1,8 +1,8 @@
 package com.example.asinit_user.gdziejestczoper.services;
 
 
-import com.example.asinit_user.gdziejestczoper.db.entities.Geo;
-import com.example.asinit_user.gdziejestczoper.db.entities.Position;
+import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
+import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 
 public interface PositionManagerCallback {
 

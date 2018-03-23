@@ -7,7 +7,7 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
-import com.example.asinit_user.gdziejestczoper.db.entities.Geo;
+import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public interface GeoDao {
     @Query("SELECT * FROM geo ORDER BY date DESC LIMIT 1")
     Geo loadLatestGeo();
 
-    @Query("SELECT * FROM geo ORDER BY date LIMIT 1")
+    @Query("SELECT * FROM geo ORDER BY date DESC LIMIT 1")
     LiveData<Geo> loadLatestLiveDataGeo();
 
     @Query("SELECT * FROM geo")

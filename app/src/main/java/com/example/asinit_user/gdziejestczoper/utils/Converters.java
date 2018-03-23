@@ -13,7 +13,7 @@ public class Converters {
     public static String longToString(long date) {
         //dodanie godziny, bo czas ziomowy
         Date data = new Date(date);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss", new Locale("pl"));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss", new Locale("pl"));
 
 //        TimeZone tz = TimeZone.getDefault();
 //        Calendar cal = GregorianCalendar.getInstance(tz);

@@ -1,7 +1,14 @@
 package com.example.asinit_user.gdziejestczoper.ui.mainView;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -12,10 +19,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.example.asinit_user.gdziejestczoper.R;
-import com.example.asinit_user.gdziejestczoper.services.GeoService;
+import com.example.asinit_user.gdziejestczoper.services.AlarmReceiver;
+import com.example.asinit_user.gdziejestczoper.services.GeoJobIntentService;
 import com.example.asinit_user.gdziejestczoper.ui.geoList.PositionListFragment;
 import com.example.asinit_user.gdziejestczoper.ui.map.MapFragment;
 import com.example.asinit_user.gdziejestczoper.ui.search.SearchFragment;
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.Lifetime;
+import com.firebase.jobdispatcher.Trigger;
 
 import javax.inject.Inject;
 
@@ -30,10 +43,14 @@ import timber.log.Timber;
 @RuntimePermissions
 public class NavigationActivity extends AppCompatActivity implements HasSupportFragmentInjector {
 
+    public static final int INTENT_ID = 100;
 
     @Inject
     DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
+
+
     private FragmentManager fragmentManager;
+    private PendingIntent pendingIntent;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -66,13 +83,16 @@ public class NavigationActivity extends AppCompatActivity implements HasSupportF
         fragmentManager = getSupportFragmentManager();
         NavigationActivityPermissionsDispatcher.startGeoServiceWithPermissionCheck(this);
 
-        BottomNavigationView bottomNavigationView= findViewById(R.id.navigation);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         if (savedInstanceState == null) {
             bottomNavigationView.setSelectedItemId(R.id.map_view);
             changeFragment(1);
         }
+
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(this, INTENT_ID, intent, 0);
     }
 
     @Override
@@ -104,16 +124,13 @@ public class NavigationActivity extends AppCompatActivity implements HasSupportF
         Timber.d("Entering fragment number :" + position + " fragment name :" + selectedFragment.toString());
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.container, selectedFragment);
-        if (position == 3) {
-            transaction.addToBackStack(null);
-        }
         transaction.commit();
     }
 
-    @NeedsPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+    @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WAKE_LOCK})
     public void startGeoService() {
-        Intent intent = new Intent(getApplicationContext(), GeoService.class);
-        startService(intent);
+        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 5000,300000, pendingIntent);
     }
 
     @Override

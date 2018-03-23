@@ -52,7 +52,7 @@ public class AppExecutors {
     //tworzymy jeden wątek dla obsługi pamięci, 3 wątki sieciowe i referencję do wątku UI
     @Inject
     public AppExecutors() {
-        this(Executors.newFixedThreadPool(2), Executors.newFixedThreadPool(3),
+        this(Executors.newSingleThreadExecutor(), Executors.newFixedThreadPool(3),
                 new MainThreadExecutor());
     }
 

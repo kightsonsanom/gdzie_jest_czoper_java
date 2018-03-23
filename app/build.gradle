@@ -55,9 +55,16 @@ dependencies {
     annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:3.0.1"
     //    SupportDesign
     implementation 'com.android.support:design:26.1.0'
-    //    GoogleMaps
-    implementation 'com.google.android.gms:play-services-maps:10.2.6'
 
+    //    Googleservices
+    implementation "com.google.android.gms:play-services-location:11.0.1"
+    implementation 'com.google.android.gms:play-services-maps:11.0.1'
+
+//    JobDispatcher
+    implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
+    //    Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
 }
 
 

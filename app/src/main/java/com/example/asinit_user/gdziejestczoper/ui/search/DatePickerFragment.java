@@ -53,11 +53,12 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
         Calendar c = Calendar.getInstance();
+
         if (date.equals(Constants.START_DATE)) {
-            c.set(year, month, day, 0, 0, 0);
+            c.set(year, month, day,0,0,0);
             searchFragmentViewModelCallback.onStartDateSet(c.getTimeInMillis());
         } else if (date.equals(Constants.END_DATE)) {
-            c.set(year, month, day, 23, 59, 59);
+            c.set(year, month, day,23,59,59);
             searchFragmentViewModelCallback.onEndDateSet(c.getTimeInMillis());
         }
 

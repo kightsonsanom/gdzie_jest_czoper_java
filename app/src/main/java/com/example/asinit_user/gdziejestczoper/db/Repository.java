@@ -3,16 +3,22 @@ package com.example.asinit_user.gdziejestczoper.db;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.example.asinit_user.gdziejestczoper.AppExecutors;
+import com.example.asinit_user.gdziejestczoper.api.ApiResponse;
+import com.example.asinit_user.gdziejestczoper.api.CzoperApi;
+import com.example.asinit_user.gdziejestczoper.api.NetworkBoundResource;
 import com.example.asinit_user.gdziejestczoper.db.dao.PositionDao;
 import com.example.asinit_user.gdziejestczoper.db.dao.GeoDao;
 import com.example.asinit_user.gdziejestczoper.db.dao.PositionGeoJoinDao;
-import com.example.asinit_user.gdziejestczoper.db.entities.Position;
-import com.example.asinit_user.gdziejestczoper.db.entities.Geo;
-import com.example.asinit_user.gdziejestczoper.db.entities.PositionGeoJoin;
+import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
+import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
+import com.example.asinit_user.gdziejestczoper.viewobjects.PositionGeoJoin;
 import com.example.asinit_user.gdziejestczoper.services.PositionManagerCallback;
 import com.example.asinit_user.gdziejestczoper.ui.search.SearchFragmentViewModelCallback;
+import com.example.asinit_user.gdziejestczoper.viewobjects.Resource;
 
 import java.util.List;
 
@@ -34,20 +40,22 @@ public class Repository {
     private PositionDao positionDao;
     private GeoDao geoDao;
     private PositionGeoJoinDao positionGeoJoinDao;
-
+    private CzoperApi czoperApi;
     private AppExecutors appExecutors;
 
 
     private Geo latestGeoFromDb;
     private Position latestPositionFromDb;
     private List<Geo> allGeos;
+    private List<Position> allPositions;
 
     @Inject
-    public Repository(PositionDao positionDao, GeoDao geoDao, PositionGeoJoinDao positionGeoJoinDao, AppExecutors appExecutors) {
+    public Repository(PositionDao positionDao, GeoDao geoDao, PositionGeoJoinDao positionGeoJoinDao, AppExecutors appExecutors, CzoperApi czoperApi) {
         this.appExecutors = appExecutors;
         this.positionDao = positionDao;
         this.positionGeoJoinDao = positionGeoJoinDao;
         this.geoDao = geoDao;
+        this.czoperApi = czoperApi;
 
         observablePositions = new MediatorLiveData<>();
         observablePositions.addSource(positionDao.loadPositions(),
@@ -72,8 +80,35 @@ public class Repository {
         this.searchFragmentViewModelCallback = searchFragmentViewModelCallback;
     }
 
-    public LiveData<List<Position>> getPositions() {
-        return observablePositions;
+
+//    public LiveData<List<Position>> getPositions() {
+//        return observablePositions;
+//    }
+
+    public LiveData<Resource<List<Position>>> getPositions() {
+        return new NetworkBoundResource<List<Position>, List<Position>>(appExecutors) {
+            @Override
+            protected void saveCallResult(@NonNull List<Position> item) {
+                positionDao.insertAll(item);
+            }
+
+            @Override
+            protected boolean shouldFetch(@Nullable List<Position> data) {
+                return true;
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<List<Position>> loadFromDb() {
+                return positionDao.loadPositions();
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<ApiResponse<List<Position>>> createCall() {
+                return czoperApi.getAllPositions();
+            }
+        }.asLiveData();
     }
 
     public LiveData<List<Geo>> getGeos() {
@@ -92,18 +127,12 @@ public class Repository {
         });
     }
 
-    private void postPositions(List<Position> positionList) {
-        appExecutors.diskIO().execute(() -> positionDao.insertAll(positionList));
-    }
 
     public void postGeo(Geo geo) {
 
-        appExecutors.diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                Timber.d("inserting geo into DB ID: " + geo.getId() + " czas: " + geo.getDate());
-                geoDao.insertGeo(geo);
-            }
+        appExecutors.diskIO().execute(() -> {
+            Timber.d("inserting geo into DB ID: " + geo.getId() + " czas: " + geo.getDate());
+            geoDao.insertGeo(geo);
         });
     }
 
@@ -142,6 +171,7 @@ public class Repository {
             positionManagerCallback.setLatestGeoFromDb(latestGeoFromDb);
         });
     }
+
     public void assignGeoToPosition(PositionGeoJoin positionGeoJoin) {
         appExecutors.diskIO().execute(() -> positionGeoJoinDao.insert(positionGeoJoin));
     }
@@ -149,14 +179,41 @@ public class Repository {
     public void updatePosition(Position position) {
         Timber.d("updating position ID = " + position.getId() + " czas: " + position.getLastLocationDate() + " status = " + position.getStatus());
         appExecutors.diskIO().execute(() -> positionDao.updatePosition(position));
-
     }
 
-    public void getPositionForToday(String parseString) {
+    public void getLatestGeoForTests() {
         appExecutors.diskIO().execute(() -> {
-            List<Position> todayPositionList = positionDao.getPositionForToday(parseString);
+            Geo latestGeo = geoDao.loadLatestGeo();
 
-            searchFragmentViewModelCallback.setPositionForToday(todayPositionList);
+            searchFragmentViewModelCallback.setLatestGeo(latestGeo);
+
+        });
+    }
+
+    public List<Position> getAllPositions() {
+        appExecutors.diskIO().execute(() -> {
+            allPositions = positionDao.getAllPositions();
+        });
+        return allPositions;
+    }
+
+    public List<Geo> getAllGeos() {
+        appExecutors.diskIO().execute(() -> {
+            allGeos = geoDao.getAllGeos();
+        });
+        return allGeos;
+    }
+
+    public void getPositionsFromRange(String searchFromDay, String searchToDay) {
+        Timber.d("getPositionsFromRange method searchFromDay = " + searchFromDay + " searchToDay = " + searchToDay);
+        appExecutors.diskIO().execute(()-> {
+                List<Position> positions = positionDao.getPositionsFromRange(searchFromDay, searchToDay);
+                LiveData<List<Position>> livePositions = positionDao.getLivePositionsFromRange(searchFromDay, searchToDay);
+
+                Timber.d("positions = " + positions);
+                Timber.d("livePositions = " + livePositions.getValue());
+
+                searchFragmentViewModelCallback.setObservablePositions(livePositions);
 
         });
     }

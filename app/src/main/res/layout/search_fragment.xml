@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
@@ -37,8 +36,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint="OD"
-                android:text="@{model.startDate}"
-                android:inputType="date" />
+                android:inputType="date"
+                android:text="@{model.startDate}" />
 
         </LinearLayout>
 
@@ -61,34 +60,52 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint="DO"
-                android:text="@{model.endDate}"
-                android:inputType="date" />
+                android:inputType="date"
+                android:text="@{model.endDate}" />
 
         </LinearLayout>
 
-        <Button
-            android:id="@+id/search_button"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="SZUKAJ"/>
+            android:orientation="horizontal">
 
+
+            <Button
+                android:id="@+id/search_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="SZUKAJ" />
+
+            <Button
+                android:id="@+id/get_pos_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="get pos from today" />
+
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/position_from_today"
-            android:layout_marginTop="50dp"
-            android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{model.positionFromToday}"
-            />
+            android:layout_gravity="center"
+            android:text="@{model.latestGeo}" />
 
-        <Button
-            android:id="@+id/get_pos_btn"
-            android:layout_width="wrap_content"
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/position_recycler"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="get pos from today"/>
+            android:layout_marginBottom="20dp"
+            app:layoutManager="LinearLayoutManager" />
+
+
     </LinearLayout>
 
 

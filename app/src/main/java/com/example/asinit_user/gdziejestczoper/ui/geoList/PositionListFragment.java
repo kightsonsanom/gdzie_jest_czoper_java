@@ -1,6 +1,7 @@
 package com.example.asinit_user.gdziejestczoper.ui.geoList;
 
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -14,6 +15,10 @@ import android.view.ViewGroup;
 
 import com.example.asinit_user.gdziejestczoper.R;
 import com.example.asinit_user.gdziejestczoper.databinding.PositionListFragmentViewBinding;
+import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
+import com.example.asinit_user.gdziejestczoper.viewobjects.Resource;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -52,9 +57,10 @@ public class PositionListFragment extends Fragment {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(PositionListFragmentViewModel.class);
         binding.setModel(viewModel);
 
-        viewModel.getObservablePositions().observe(this, positions-> {
-            if (positions != null) {
-                positionsAdapter.setPositionsList(positions);
+        LiveData<Resource<List<Position>>> positions = viewModel.getObservablePositions();
+        positions.observe(this, resource-> {
+            if (resource != null && resource.data != null) {
+                positionsAdapter.setPositionsList(resource.data);
             }
         });
         binding.positionRecycler.setAdapter(positionsAdapter);

@@ -1,4 +1,4 @@
-package com.example.asinit_user.gdziejestczoper.db.entities;
+package com.example.asinit_user.gdziejestczoper.viewobjects;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;

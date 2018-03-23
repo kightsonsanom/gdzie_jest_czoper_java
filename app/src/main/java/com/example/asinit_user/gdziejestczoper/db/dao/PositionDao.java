@@ -7,7 +7,7 @@ import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
-import com.example.asinit_user.gdziejestczoper.db.entities.Position;
+import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 
 import java.util.List;
 
@@ -19,13 +19,13 @@ public interface PositionDao {
     @Query("SELECT * FROM position")
     LiveData<List<Position>> loadPositions();
 
-    @Query("SELECT * FROM position i WHERE i.id =:positionID")
+    @Query("SELECT * FROM position i WHERE i.id = :positionID")
     LiveData<Position> loadPosition(String positionID);
 
     @Query("SELECT * FROM position ORDER BY lastLocationDate DESC LIMIT 1")
     Position loadLatestPosition();
 
-    @Query("SELECT * FROM position WHERE position.startDate =:today")
+    @Query("SELECT * FROM position WHERE position.startDate < :today")
     List<Position> getPositionForToday(String today);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -36,4 +36,13 @@ public interface PositionDao {
 
     @Update(onConflict = REPLACE)
     void updatePosition(Position position);
+
+    @Query("SELECT * FROM position")
+    List<Position> getAllPositions();
+
+    @Query("SELECT * FROM position WHERE (position.startDate > :searchFromDay AND position.startDate < :searchToDay)")
+    LiveData<List<Position>> getLivePositionsFromRange(String searchFromDay, String searchToDay);
+
+    @Query("SELECT * FROM position WHERE (position.startDate > :searchFromDay AND position.startDate < :searchToDay)")
+    List<Position> getPositionsFromRange(String searchFromDay, String searchToDay);
 }

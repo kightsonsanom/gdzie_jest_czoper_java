@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="position"
+            type="com.example.asinit_user.gdziejestczoper.viewobjects.Position" />
+    </data>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="#57EE2D">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_margin="15dp"
+            app:srcCompat="@drawable/ic_directions_run_black_24dp"
+
+            />
+
+        <LinearLayout
+            android:id="@+id/time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/ruch_start_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{position.startDate}" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_arrow_forward_black_24dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp" />
+
+            <TextView
+                android:id="@+id/ruch_stop_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{position.endDate}" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ruch_lokalizacja"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_below="@id/time">
+
+            <TextView
+                android:id="@+id/ruch_gdzie_od"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{position.startLocation}" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                app:srcCompat="@drawable/ic_arrow_forward_black_24dp" />
+
+
+            <TextView
+                android:id="@+id/ruch_gdzie_do"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{position.endLocation}" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</layout>

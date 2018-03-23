@@ -5,8 +5,8 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
-import com.example.asinit_user.gdziejestczoper.db.entities.PositionGeoJoin;
-import com.example.asinit_user.gdziejestczoper.db.entities.Geo;
+import com.example.asinit_user.gdziejestczoper.viewobjects.PositionGeoJoin;
+import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
 
 import java.util.List;
 

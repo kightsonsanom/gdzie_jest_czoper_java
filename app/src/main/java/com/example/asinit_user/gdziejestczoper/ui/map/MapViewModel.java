@@ -7,7 +7,7 @@ import android.arch.lifecycle.ViewModel;
 import android.databinding.ObservableField;
 
 import com.example.asinit_user.gdziejestczoper.db.Repository;
-import com.example.asinit_user.gdziejestczoper.db.entities.Geo;
+import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
 import com.google.android.gms.maps.model.LatLng;
 
 import javax.inject.Inject;

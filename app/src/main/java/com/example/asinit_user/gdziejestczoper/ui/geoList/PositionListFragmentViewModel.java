@@ -2,64 +2,49 @@ package com.example.asinit_user.gdziejestczoper.ui.geoList;
 
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.databinding.ObservableField;
 
 import com.example.asinit_user.gdziejestczoper.db.Repository;
-import com.example.asinit_user.gdziejestczoper.db.entities.Geo;
-import com.example.asinit_user.gdziejestczoper.db.entities.Position;
+import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
+import com.example.asinit_user.gdziejestczoper.viewobjects.Resource;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
 public class PositionListFragmentViewModel extends ViewModel {
 
     //pozycje, które obserwujemy na bazie
-    private final MediatorLiveData<List<Position>> mObservablePositions;
-    private final MediatorLiveData<List<Geo>> mObservableGeos;
-
+    private final LiveData<Resource<List<Position>>> mObservablePositions;
 
     // pozycja obserwowana z widoku
-    public ObservableField<Geo> geo = new ObservableField<>();
-
+    public ObservableField<String> currentDay = new ObservableField<>();
     private Repository repository;
 
     @Inject
     public PositionListFragmentViewModel(Repository repository) {
         this.repository = repository;
-        mObservablePositions = new MediatorLiveData<>();
-        mObservableGeos = new MediatorLiveData<>();
-
-        mObservablePositions.setValue(null);
-        mObservableGeos.setValue(null);
-
-
+        currentDay.set(getCurrentDay());
 
         //obserwujemy repozytorium i jeśli ulegnie zmianie to robimy update
-        LiveData<List<Position>> observablePositions = repository.getPositions();
-        LiveData<List<Geo>> observableGeos = repository.getGeos();
-
-        mObservableGeos.addSource(observableGeos, mObservableGeos::setValue);
-        mObservablePositions.addSource(observablePositions, mObservablePositions::setValue);
+        mObservablePositions = repository.getPositions();
 
     }
 
-    public LiveData<List<Position>> getObservablePositions() {
+    public LiveData<Resource<List<Position>>> getObservablePositions() {
         return mObservablePositions;
     }
 
-    public LiveData<List<Geo>> getObservableGeos() {
-        return mObservableGeos;
-    }
-
-//    public LiveData<Geo> getObservableGeo() {
-//        return mObservableGeo;
-//    }
 
 
-    public void setGeo(Geo geo) {
-        this.geo.set(geo);
+
+    private String getCurrentDay() {
+        Date date = new Date(System.currentTimeMillis());
+        SimpleDateFormat format = new SimpleDateFormat("dd MMM", new Locale("pl"));
+        return format.format(date);
     }
 }

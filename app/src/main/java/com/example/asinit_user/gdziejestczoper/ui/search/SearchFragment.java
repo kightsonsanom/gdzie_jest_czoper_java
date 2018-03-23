@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import com.example.asinit_user.gdziejestczoper.R;
 import com.example.asinit_user.gdziejestczoper.databinding.SearchFragmentBinding;
+import com.example.asinit_user.gdziejestczoper.ui.geoList.PositionsAdapter;
 import com.example.asinit_user.gdziejestczoper.ui.searchResult.SearchResultList;
 import com.example.asinit_user.gdziejestczoper.utils.Constants;
 
@@ -27,6 +28,9 @@ public class SearchFragment extends Fragment{
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
+
+    @Inject
+    PositionsAdapter positionsAdapter;
 
     private DatePickerFragment datePickerFragment;
     private SearchFragmentViewModel viewModel;
@@ -66,9 +70,16 @@ public class SearchFragment extends Fragment{
 
         setOnClickListeners();
 
+
+        viewModel.getObservablePositions().observe(this, positions-> {
+            if (positions != null) {
+                positionsAdapter.setPositionsList(positions);
+            }
+        });
+
+        binding.positionRecycler.setAdapter(positionsAdapter);
+
         subscribeToModel(viewModel);
-
-
     }
 
     private void subscribeToModel(SearchFragmentViewModel viewModel) {
@@ -91,17 +102,16 @@ public class SearchFragment extends Fragment{
         });
 
         binding.searchButton.setOnClickListener((v) -> {
-           Intent intent = new Intent(getActivity(), SearchResultList.class);
-           intent.putExtra("startDate", viewModel.startDate);
-           intent.putExtra("endDate", viewModel.endDate);
-
-           startActivity(intent);
-           getActivity().finish();
-
+            if (!binding.startdateEt.getText().toString().equals("") && !binding.stopdateEt.getText().toString().equals("")) {
+                Timber.d("search button should work");
+                viewModel.getAllPositions();
+            }
         });
 
+
         binding.getPosBtn.setOnClickListener((v) -> {
-            viewModel.getPositionForToday();
+            viewModel.getLatestGeo();
+            viewModel.getAllInfoFromDB();
 
         });
     }

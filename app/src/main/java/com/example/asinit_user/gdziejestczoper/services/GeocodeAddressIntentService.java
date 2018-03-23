@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import timber.log.Timber;
+
 public class GeocodeAddressIntentService extends IntentService {
 
     protected ResultReceiver resultReceiver;
@@ -57,4 +59,9 @@ public class GeocodeAddressIntentService extends IntentService {
         resultReceiver.send(resultCode, bundle);
     }
 
+    @Override
+    public void onDestroy() {
+        Timber.d("destroy from geocoding service");
+        super.onDestroy();
+    }
 }

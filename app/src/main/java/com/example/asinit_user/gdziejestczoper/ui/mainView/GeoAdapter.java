@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 import com.example.asinit_user.gdziejestczoper.R;
 import com.example.asinit_user.gdziejestczoper.databinding.GeoItemBinding;
-import com.example.asinit_user.gdziejestczoper.db.entities.Geo;
+import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
 
 import java.util.List;
 import java.util.Objects;

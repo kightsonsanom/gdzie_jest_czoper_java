@@ -14,7 +14,8 @@ public abstract class FragmentBuildersModule {
     @ContributesAndroidInjector
     abstract MapFragment contributeMapFragment();
 
-    @ContributesAndroidInjector
+    @SearchFragmentScope
+    @ContributesAndroidInjector(modules = SearchFragmentModule.class)
     abstract SearchFragment contributeSearchFragment();
 
     @PositionListFragmentScope
