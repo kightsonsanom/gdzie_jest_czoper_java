@@ -3,6 +3,8 @@ package com.example.asinit_user.gdziejestczoper.services;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -16,6 +18,10 @@ import com.example.asinit_user.gdziejestczoper.viewobjects.PositionGeoJoin;
 import com.example.asinit_user.gdziejestczoper.utils.Constants;
 import com.example.asinit_user.gdziejestczoper.utils.Converters;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import javax.inject.Inject;
@@ -27,16 +33,11 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 
     static final int JOB_ID = 1000;
 
-    public static final int GEO_SERVICE_FREQUENCY = 3000;
-    public static boolean GPSserviceStarted;
     private Context context;
 
     private final static float ACCEPTABLE_DISTANCE_BETWEEN_GEO = 125f;
     // kiedy konczy sie ruch i zaczyna postoj to postoj musi byc bardziej aktualny od ruchu
     private static final long NEW_POSITION_OFFSET = 1;
-
-//    @Inject
-//    Repository repository;
 
     private AddressResultReceiver addressResultReceiver = new AddressResultReceiver(new Handler());
     private String locationAddress;
@@ -44,14 +45,16 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
     @Inject
     Repository repository;
 
-
     Geo newGeo;
     Geo latestGeoFromDb;
     Position newPosition;
     Position latestPositionFromDb;
+    private LocationListener locationListener;
+    private LocationManager locationManager;
+    private Thread lookForLocation;
+    private final Object lock = new Object();
     private FusedLocationProviderClient mFusedLocationClient;
-    private OnSuccessListener onSuccessListener;
-    private boolean completed = false;
+    private LocationCallback locationCallback;
 
     @Override
     public void onCreate() {
@@ -61,18 +64,68 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
         context = getApplicationContext();
         Timber.d("starting localization service");
 
-//        onSuccessListener = new OnSuccessListener<Location>() {
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                Timber.d("new location arrived");
+                getLocationAddress(locationResult.getLastLocation());
+            }
+        };
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
+        LocationRequest locationRequest = LocationRequest.create();
+        mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+
+//        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+//        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0, locationListener);
+
+        lookForLocation = new Thread(() -> {
+            Timber.d("lock = " + lock);
+            synchronized (lock) {
+
+                try {
+                    Timber.d("start waiting in onCreate");
+                    lock.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        lookForLocation.start();
+    }
+//        locationListener = new LocationListener() {
 //            @Override
-//            public void onSuccess(Location location) {
-//                Timber.d("new location arrived to listener = " + location.toString());
+//            public void onLocationChanged(Location location) {
+//                Timber.d("new location arrived");
 //                getLocationAddress(location);
+//            }
+//
+//            @Override
+//            public void onStatusChanged(String provider, int status, Bundle extras) {
+//
+//            }
+//
+//            @Override
+//            public void onProviderEnabled(String provider) {
+//
+//            }
+//
+//            @Override
+//            public void onProviderDisabled(String provider) {
 //
 //            }
 //        };
+//        synchronized (this) {
+//            OnSuccessListener onSuccessListener = (OnSuccessListener<Location>) location -> {
+//                Timber.d("new location arrived to listener = " + location.toString());
 //
-//        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-//        mFusedLocationClient.getLastLocation().addOnSuccessListener(onSuccessListener);
-    }
+//                intent.putExtra("location", location);
+//                GeoJobIntentService.enqueueWork(context, intent);
+//
+//            };
+
+
 
     public static void enqueueWork(Context context, Intent work) {
         enqueueWork(context, GeoJobIntentService.class, JOB_ID, work);
@@ -81,10 +134,14 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
-        synchronized (new Object()) {
-            Location location = intent.getParcelableExtra("location");
-            getLocationAddress(location);
+
+        try {
+            Timber.d("waiting for thread to finish in onHandleWork");
+            lookForLocation.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+        Timber.d("thread finished in onHandleWork");
     }
 
     @Override
@@ -94,123 +151,115 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
     }
 
     public void setLocationPosition() {
-        sendGeo(newGeo);
+        synchronized (lock) {
+            sendGeo(newGeo);
 
-        if (latestGeoFromDb == null) {
-            Timber.d("latestPositionFromDb is null lub geo za stare");
+            if (latestGeoFromDb == null) {
+                Timber.d("latestPositionFromDb is null lub geo za stare");
 
-            newPosition = new Position();
-            newPosition.setStartLocation(locationAddress);
-            newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
-            newPosition.setStatus("Nieznany");
-            newPosition.setLastLocationDate(newGeo.getDate());
+                newPosition = new Position();
+                newPosition.setStartLocation(locationAddress);
+                newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
+                newPosition.setStatus("Nieznany");
+                newPosition.setLastLocationDate(newGeo.getDate());
 
-            sendPosition(newPosition);
+                sendPosition(newPosition);
 
-        } else if (isLatestGeoFromDbTooOld()) {
-            Timber.d("Geo za stare");
-            newPosition = new Position();
-            newPosition.setStartDate(Converters.longToString(latestGeoFromDb.getDate()));
-            newPosition.setEndDate(Converters.longToString(newGeo.getDate()));
-            newPosition.setStatus("Przerwa");
+            } else if (isLatestGeoFromDbTooOld()) {
+                Timber.d("Geo za stare");
+                newPosition = new Position();
+                newPosition.setStartDate(Converters.longToString(latestGeoFromDb.getDate()));
+                newPosition.setEndDate(Converters.longToString(newGeo.getDate()));
+                newPosition.setStatus("Przerwa");
 
-            sendPosition(newPosition);
+                sendPosition(newPosition);
 
-            newPosition = new Position();
-            newPosition.setStartLocation(locationAddress);
-            newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
-            newPosition.setStatus("Nieznany");
-            newPosition.setLastLocationDate(newGeo.getDate());
+                newPosition = new Position();
+                newPosition.setStartLocation(locationAddress);
+                newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
+                newPosition.setStatus("Nieznany");
+                newPosition.setLastLocationDate(newGeo.getDate());
 
-            sendPosition(newPosition);
+                sendPosition(newPosition);
 
-        } else if (latestPositionFromDb.getStatus().
+            } else if (latestPositionFromDb.getStatus().
 
-                equals("Nieznany"))
+                    equals("Nieznany"))
 
-        {
-            Timber.d("status geo nieznany");
+            {
+                Timber.d("status geo nieznany");
 
-            if (isLastGeoFarAway()) {
-                Timber.d("bylo przemieszczenie");
-                latestPositionFromDb.setStatus("Ruch");
+                if (isLastGeoFarAway()) {
+                    Timber.d("bylo przemieszczenie");
+                    latestPositionFromDb.setStatus("Ruch");
+                    latestPositionFromDb.setLastLocationDate(newGeo.getDate());
+
+                } else {
+                    Timber.d("nie bylo przemieszczenia");
+                    latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
+                    latestPositionFromDb.setStatus("Postój");
+                }
+
                 latestPositionFromDb.setLastLocationDate(newGeo.getDate());
+                updatePosition(latestPositionFromDb);
 
-            } else {
-                Timber.d("nie bylo przemieszczenia");
+            } else if (latestPositionFromDb.getStatus().equals("Postój")) {
+                Timber.d("status geo postój");
+
                 latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
-                latestPositionFromDb.setStatus("Postój");
-            }
+                latestPositionFromDb.setLastLocationDate(newGeo.getDate());
+                updatePosition(latestPositionFromDb);
 
-            latestPositionFromDb.setLastLocationDate(newGeo.getDate());
-            updatePosition(latestPositionFromDb);
+                if (isLastGeoFarAway()) {
+                    Timber.d("bylo przemieszczenie");
+                    assignGeoToPosition(new PositionGeoJoin(latestPositionFromDb.getId(), newGeo.getId()));
 
-        } else if (latestPositionFromDb.getStatus().
+                    newPosition = new Position();
+                    newPosition.setStatus("Ruch");
+                    newPosition.setStartLocation(locationAddress);
+                    newPosition.setLastLocationDate(newGeo.getDate() + NEW_POSITION_OFFSET);
+                    newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
+                    sendPosition(newPosition);
+                }
 
-                equals("Postój"))
+            } else if (latestPositionFromDb.getStatus().equals("Ruch")) {
+                Timber.d("status geo ruch");
 
-        {
-            Timber.d("status geo postój");
+                latestPositionFromDb.setLastLocationDate(newGeo.getDate());
+                latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
+                latestPositionFromDb.setEndLocation(locationAddress);
+                updatePosition(latestPositionFromDb);
 
-            latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
-            latestPositionFromDb.setLastLocationDate(newGeo.getDate());
-            updatePosition(latestPositionFromDb);
+                if (isLastGeoFarAway()) {
+                    Timber.d("bylo przemieszczenie");
 
-            if (isLastGeoFarAway()) {
-                Timber.d("bylo przemieszczenie");
-                assignGeoToPosition(new PositionGeoJoin(latestPositionFromDb.getId(), newGeo.getId()));
+                } else {
+                    Timber.d("nie bylo przemieszczenia");
+                    assignGeoToPosition(new PositionGeoJoin(latestPositionFromDb.getId(), newGeo.getId()));
 
-                newPosition = new Position();
-                newPosition.setStatus("Ruch");
-                newPosition.setStartLocation(locationAddress);
-                newPosition.setLastLocationDate(newGeo.getDate() + NEW_POSITION_OFFSET);
-                newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
-                sendPosition(newPosition);
-            }
-
-        } else if (latestPositionFromDb.getStatus().
-
-                equals("Ruch"))
-
-        {
-            Timber.d("status geo ruch");
-
-            latestPositionFromDb.setLastLocationDate(newGeo.getDate());
-            latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
-            latestPositionFromDb.setEndLocation(locationAddress);
-            updatePosition(latestPositionFromDb);
-
-            if (isLastGeoFarAway()) {
-                Timber.d("bylo przemieszczenie");
+                    newPosition = new Position();
+                    newPosition.setStatus("Postój");
+                    newPosition.setStartLocation(locationAddress);
+                    newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
+                    newPosition.setLastLocationDate(newGeo.getDate() + NEW_POSITION_OFFSET);
+                    sendPosition(newPosition);
+                }
 
             } else {
-                Timber.d("nie bylo przemieszczenia");
-                assignGeoToPosition(new PositionGeoJoin(latestPositionFromDb.getId(), newGeo.getId()));
-
-                newPosition = new Position();
-                newPosition.setStatus("Postój");
-                newPosition.setStartLocation(locationAddress);
-                newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
-                newPosition.setLastLocationDate(newGeo.getDate() + NEW_POSITION_OFFSET);
-                sendPosition(newPosition);
+                Timber.d("Zaden status sie nie zgadzal");
+                throw new RuntimeException("Wrong position status");
             }
 
-        } else
+            if (newPosition != null) {
+                PositionGeoJoin positionGeoJoin = new PositionGeoJoin(newPosition.getId(), newGeo.getId());
+                Timber.d("assignGeoToPosition = " + positionGeoJoin.toString());
+                assignGeoToPosition(positionGeoJoin);
+            }
 
-        {
-            Timber.d("Zaden status sie nie zgadzal");
-            throw new RuntimeException("Wrong position status");
+            mFusedLocationClient.removeLocationUpdates(locationCallback);
+
+            lock.notify();
         }
-        if (newPosition != null)
-
-        {
-            PositionGeoJoin positionGeoJoin = new PositionGeoJoin(newPosition.getId(), newGeo.getId());
-            Timber.d("assignGeoToPosition = " + positionGeoJoin.toString());
-            assignGeoToPosition(positionGeoJoin);
-        }
-
-//        onDestroy();
-
     }
 
     private void updatePosition(Position position) {

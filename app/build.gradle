@@ -57,8 +57,8 @@ dependencies {
     implementation 'com.android.support:design:26.1.0'
 
     //    Googleservices
-    implementation "com.google.android.gms:play-services-location:11.0.1"
-    implementation 'com.google.android.gms:play-services-maps:11.0.1'
+    implementation "com.google.android.gms:play-services-location:11.6.0"
+    implementation 'com.google.android.gms:play-services-maps:11.6.0'
 
 //    JobDispatcher
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'

@@ -29,7 +29,7 @@ public class AppModule {
     @Singleton
     CzoperApi provideCzoperApi() {
         return new Retrofit.Builder()
-                .baseUrl("https://api.github.com/")
+                .baseUrl("http://localhost:8080/tutorial/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(new LiveDataCallAdapterFactory())
                 .build()
