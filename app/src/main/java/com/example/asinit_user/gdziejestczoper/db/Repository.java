@@ -3,6 +3,7 @@ package com.example.asinit_user.gdziejestczoper.db;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
+import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -25,6 +26,9 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import timber.log.Timber;
 
 @Singleton
@@ -120,10 +124,26 @@ public class Repository {
         return observableGeo;
     }
 
+
     public void postPosition(Position position) {
         appExecutors.diskIO().execute(() -> {
-            Timber.d("inserting position into DB ID: " + position.getId() + " czas: " + position.getLastLocationDate());
+            Timber.d("inserting position into DB ID: " + position.getPosition_id() + " czas: " + position.getLastLocationDate());
             positionDao.insertPosition(position);
+        });
+
+        Call<Position> call = czoperApi.sendPosition(position);
+
+        call.enqueue(new Callback<Position>() {
+            @Override
+            public void onResponse(Call<Position> call, Response<Position> response) {
+                Timber.d("postPosition send position onResponse");
+            }
+
+            @Override
+            public void onFailure(Call<Position> call, Throwable t) {
+                Timber.d("postPosition send position onFailure call:  " + call + "throw: " + t);
+            }
+
         });
     }
 
@@ -131,8 +151,43 @@ public class Repository {
     public void postGeo(Geo geo) {
 
         appExecutors.diskIO().execute(() -> {
-            Timber.d("inserting geo into DB ID: " + geo.getId() + " czas: " + geo.getDate());
+            Timber.d("inserting geo into DB ID: " + geo.getGeo_id() + " czas: " + geo.getDate());
             geoDao.insertGeo(geo);
+        });
+
+        Call<Geo> call = czoperApi.sendGeo(geo);
+
+        call.enqueue(new Callback<Geo>() {
+            @Override
+            public void onResponse(Call<Geo> call, Response<Geo> response) {
+                Timber.d("postGeo send geo onResponse");
+            }
+
+            @Override
+            public void onFailure(Call<Geo> call, Throwable t) {
+                Timber.d("postGeo send geo onFailure call:  " + call + "throw: " + t);
+            }
+        });
+    }
+
+    public void updatePosition(Position position) {
+        Timber.d("updating position ID = " + position.getPosition_id() + " czas: " + position.getLastLocationDate() + " status = " + position.getStatus());
+        appExecutors.diskIO().execute(() -> positionDao.updatePosition(position));
+
+
+        Call<Geo> call = czoperApi.updatePosition(position);
+
+        call.enqueue(new Callback<Geo>() {
+            @Override
+            public void onResponse(Call<Geo> call, Response<Geo> response) {
+                Timber.d("updatePosition send position onResponse");
+            }
+
+            @Override
+            public void onFailure(Call<Geo> call, Throwable t) {
+                Timber.d("updatePosition send position onFailure  call:  " + call + "throw: " + t);
+
+            }
         });
     }
 
@@ -140,7 +195,7 @@ public class Repository {
         appExecutors.diskIO().execute(() -> {
             latestGeoFromDb = geoDao.loadLatestGeo();
             if (latestGeoFromDb != null) {
-                Timber.d("latestGeoFromDb ID = " + latestGeoFromDb.getId() + " czas: " + latestGeoFromDb.getDate());
+                Timber.d("latestGeoFromDb ID = " + latestGeoFromDb.getGeo_id() + " czas: " + latestGeoFromDb.getDate());
             } else {
                 Timber.d("latestGeoFromDb is null");
             }
@@ -149,22 +204,22 @@ public class Repository {
     }
 
     public void getLatestPosition() {
-            appExecutors.diskIO().execute(() -> {
-                latestPositionFromDb = positionDao.loadLatestPosition();
-                if (latestPositionFromDb != null) {
-                    Timber.d("latestPositionFromDb ID = " + latestPositionFromDb.getId() + " czas: " + latestPositionFromDb.getLastLocationDate());
-                } else {
-                    Timber.d("latestPositionFromDb is null");
-                }
-                positionManagerCallback.setLatestPositionFromDb(latestPositionFromDb);
-            });
+        appExecutors.diskIO().execute(() -> {
+            latestPositionFromDb = positionDao.loadLatestPosition();
+            if (latestPositionFromDb != null) {
+                Timber.d("latestPositionFromDb ID = " + latestPositionFromDb.getPosition_id() + " czas: " + latestPositionFromDb.getLastLocationDate());
+            } else {
+                Timber.d("latestPositionFromDb is null");
+            }
+            positionManagerCallback.setLatestPositionFromDb(latestPositionFromDb);
+        });
     }
 
-    public void getOldestGeoForPosition(String positionID) {
+    public void getOldestGeoForPosition(long positionID) {
         appExecutors.diskIO().execute(() -> {
             latestGeoFromDb = positionGeoJoinDao.getOldestGeoForPosition(positionID);
             if (latestGeoFromDb != null) {
-                Timber.d("latestGeoFromDb ID = " + latestGeoFromDb.getId() + " czas: " + latestGeoFromDb.getDate());
+                Timber.d("latestGeoFromDb ID = " + latestGeoFromDb.getGeo_id() + " czas: " + latestGeoFromDb.getDate());
             } else {
                 Timber.d("latestGeoFromDb is null");
             }
@@ -174,12 +229,24 @@ public class Repository {
 
     public void assignGeoToPosition(PositionGeoJoin positionGeoJoin) {
         appExecutors.diskIO().execute(() -> positionGeoJoinDao.insert(positionGeoJoin));
+
+//        Call<PositionGeoJoin> call = czoperApi.assignGeoToPosition(positionGeoJoin);
+//
+//        call.enqueue(new Callback<PositionGeoJoin>() {
+//            @Override
+//            public void onResponse(Call<PositionGeoJoin> call, Response<PositionGeoJoin> response) {
+//                Timber.d("assignGeoToPosition send position onResponse");
+//        }
+//
+//            @Override
+//            public void onFailure(Call<PositionGeoJoin> call, Throwable t) {
+//                Timber.d("assignGeoToPosition send position onFailure");
+//
+//            }
+//        });
+
     }
 
-    public void updatePosition(Position position) {
-        Timber.d("updating position ID = " + position.getId() + " czas: " + position.getLastLocationDate() + " status = " + position.getStatus());
-        appExecutors.diskIO().execute(() -> positionDao.updatePosition(position));
-    }
 
     public void getLatestGeoForTests() {
         appExecutors.diskIO().execute(() -> {
@@ -206,14 +273,14 @@ public class Repository {
 
     public void getPositionsFromRange(String searchFromDay, String searchToDay) {
         Timber.d("getPositionsFromRange method searchFromDay = " + searchFromDay + " searchToDay = " + searchToDay);
-        appExecutors.diskIO().execute(()-> {
-                List<Position> positions = positionDao.getPositionsFromRange(searchFromDay, searchToDay);
-                LiveData<List<Position>> livePositions = positionDao.getLivePositionsFromRange(searchFromDay, searchToDay);
+        appExecutors.diskIO().execute(() -> {
+            List<Position> positions = positionDao.getPositionsFromRange(searchFromDay, searchToDay);
+            LiveData<List<Position>> livePositions = positionDao.getLivePositionsFromRange(searchFromDay, searchToDay);
 
-                Timber.d("positions = " + positions);
-                Timber.d("livePositions = " + livePositions.getValue());
+            Timber.d("positions = " + positions);
+            Timber.d("livePositions = " + livePositions.getValue());
 
-                searchFragmentViewModelCallback.setObservablePositions(livePositions);
+            searchFragmentViewModelCallback.setObservablePositions(livePositions);
 
         });
     }

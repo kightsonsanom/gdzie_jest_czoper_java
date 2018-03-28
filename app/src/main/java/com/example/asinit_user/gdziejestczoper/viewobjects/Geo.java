@@ -7,25 +7,27 @@ import android.support.annotation.NonNull;
 
 import java.util.UUID;
 
-@Entity(tableName = "geo")
+@Entity(tableName = Geo.TABLE_NAME)
 public class Geo {
+
+    public static final String TABLE_NAME = "geo";
 
     @PrimaryKey
     @NonNull
-    private String id;
+    private long geo_id;
     private Location location;
     private long date;
     private String displayText;
 
     public Geo() {
-        id = String.valueOf(UUID.randomUUID());
+        geo_id = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
     }
 
     public Geo(Location location, long date) {
-        id = String.valueOf(UUID.randomUUID());
+        geo_id = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
         this.location = location;
         this.date = date;
-        displayText = "\nID = " + id + "\nLatitude = " + location.getLatitude() + "\nLongitude = " + location.getLongitude() + "\nDate = " + date;
+        displayText = "\nID = " + geo_id + "\nLatitude = " + location.getLatitude() + "\nLongitude = " + location.getLongitude() + "\nDate = " + date;
     }
 
     public String getDisplayText() {
@@ -37,12 +39,12 @@ public class Geo {
     }
 
     @NonNull
-    public String getId() {
-        return id;
+    public long getGeo_id() {
+        return geo_id;
     }
 
-    public void setId(@NonNull String id) {
-        this.id = id;
+    public void setGeo_id(@NonNull long geo_id) {
+        this.geo_id = geo_id;
     }
 
     public Location getLocation() {
@@ -64,7 +66,7 @@ public class Geo {
     @Override
     public String toString() {
         return "Geo{" +
-                "ID=" + id +
+                "ID=" + geo_id +
                 ", location=" + location +
                 ", date=" + date +
                 ", displayText='" + displayText + '\'' +

@@ -8,20 +8,20 @@ import android.support.annotation.NonNull;
         primaryKeys = {"positionId", "geoId"},
         foreignKeys = {
                 @ForeignKey(entity = Position.class,
-                        parentColumns = "id",
+                        parentColumns = "position_id",
                         childColumns = "positionId"),
                 @ForeignKey(entity = Geo.class,
-                        parentColumns = "id",
+                        parentColumns = "geo_id",
                         childColumns = "geoId")
         })
 public class PositionGeoJoin {
 
     @NonNull
-    public final String positionId;
+    public final long positionId;
     @NonNull
-    public final String geoId;
+    public final long geoId;
 
-    public PositionGeoJoin(@NonNull String positionId, @NonNull String geoId) {
+    public PositionGeoJoin(@NonNull long positionId, @NonNull long geoId) {
         this.positionId = positionId;
         this.geoId = geoId;
     }

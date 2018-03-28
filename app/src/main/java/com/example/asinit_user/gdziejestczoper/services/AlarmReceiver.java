@@ -21,12 +21,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
-//        Timber.d("new location arrived to listener = " + location.toString());
-
-//        intent.putExtra("location", location);
         GeoJobIntentService.enqueueWork(context, intent);
-
     }
 }
 

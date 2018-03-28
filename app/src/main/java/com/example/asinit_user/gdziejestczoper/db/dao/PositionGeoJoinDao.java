@@ -18,15 +18,15 @@ public interface PositionGeoJoinDao {
 
 
     @Query("SELECT * FROM geo " +
-            "INNER JOIN position_geo_join ON geo.id = position_geo_join.geoID " +
+            "INNER JOIN position_geo_join ON geo.geo_id = position_geo_join.geoID " +
             "WHERE position_geo_join.positionID=:positionID")
-    LiveData<List<Geo>> getGeoForPosition(final String positionID);
+    LiveData<List<Geo>> getGeoForPosition(final long positionID);
 
     @Query("SELECT * FROM (SELECT * FROM geo " +
-            "INNER JOIN position_geo_join ON geo.id = position_geo_join.geoID " +
+            "INNER JOIN position_geo_join ON geo.geo_id = position_geo_join.geoID " +
             "WHERE position_geo_join.positionID=:positionID)" +
             "ORDER BY date LIMIT 1")
-    Geo getOldestGeoForPosition(final String positionID);
+    Geo getOldestGeoForPosition(final long positionID);
 
 
 }

@@ -11,12 +11,20 @@ import com.example.asinit_user.gdziejestczoper.db.Repository;
 import com.example.asinit_user.gdziejestczoper.db.dao.PositionDao;
 import com.example.asinit_user.gdziejestczoper.db.dao.GeoDao;
 import com.example.asinit_user.gdziejestczoper.db.dao.PositionGeoJoinDao;
+import com.example.asinit_user.gdziejestczoper.utils.GeoAdapter;
 import com.example.asinit_user.gdziejestczoper.utils.LiveDataCallAdapterFactory;
+import com.example.asinit_user.gdziejestczoper.utils.PositionAdapter;
+import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
+import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -25,33 +33,55 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class AppModule {
 
 
+
     @Provides
     @Singleton
-    CzoperApi provideCzoperApi() {
-        return new Retrofit.Builder()
-                .baseUrl("http://localhost:8080/tutorial/")
-                .addConverterFactory(GsonConverterFactory.create())
+    Gson provideGson(){
+
+        return new GsonBuilder()
+                .registerTypeAdapter(Geo.class, new GeoAdapter())
+                .registerTypeAdapter(Position.class, new PositionAdapter())
+                .serializeNulls()
+                .setLenient()
+                .create();
+    }
+
+    @Provides
+    @Singleton
+    CzoperApi provideCzoperApi(Gson gson) {
+
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://192.168.1.26:8080/tutorial/webapi/")
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(new LiveDataCallAdapterFactory())
-                .build()
-                .create(CzoperApi.class);
+                .build();
+
+
+        return retrofit.create(CzoperApi.class);
     }
 
 
     @Provides
     @Singleton
-    PositionDao providePositionDao(AppDatabase database){
+    PositionDao providePositionDao(AppDatabase database) {
         return database.positionDao();
     }
 
     @Provides
     @Singleton
-    GeoDao provideGeoDao(AppDatabase database){
+    GeoDao provideGeoDao(AppDatabase database) {
         return database.geoDao();
     }
 
     @Provides
     @Singleton
-    PositionGeoJoinDao providePositionGeoJoinDao(AppDatabase database){
+    PositionGeoJoinDao providePositionGeoJoinDao(AppDatabase database) {
         return database.positionGeoJoinDao();
     }
 
@@ -63,7 +93,7 @@ public class AppModule {
 
     @Provides
     @Singleton
-    AppDatabase provideDatabase(Application application){
+    AppDatabase provideDatabase(Application application) {
         return Room.databaseBuilder(
                 application,
                 AppDatabase.class,
