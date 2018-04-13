@@ -47,6 +47,9 @@ public interface PositionDao {
     @Query("SELECT * FROM " + Position.TABLE_NAME  + " WHERE (position.startDate > :searchFromDay AND position.startDate < :searchToDay)")
     List<Position> getPositionsFromRange(String searchFromDay, String searchToDay);
 
+    @Query("SELECT * FROM " + Position.TABLE_NAME + " WHERE position.lastLocationDate >= (SELECT position.lastLocationDate FROM position WHERE position.position_id = :positionIDFromPreferences)")
+    List<Position> getPositionsSinceFailure(long positionIDFromPreferences);
+
 
     /** Methods for communication with content provider*/
 
@@ -67,4 +70,5 @@ public interface PositionDao {
 
     @Update
     int update(Position position);
+
 }

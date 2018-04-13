@@ -20,10 +20,30 @@ public class PositionGeoJoin {
     public final long positionId;
     @NonNull
     public final long geoId;
+    private long assignTime;
 
-    public PositionGeoJoin(@NonNull long positionId, @NonNull long geoId) {
+    public PositionGeoJoin(@NonNull long positionId, @NonNull long geoId, long assignTime) {
         this.positionId = positionId;
         this.geoId = geoId;
+        this.assignTime = assignTime;
+    }
+
+    @NonNull
+    public long getPositionId() {
+        return positionId;
+    }
+
+    @NonNull
+    public long getGeoId() {
+        return geoId;
+    }
+
+    public long getAssignTime() {
+        return assignTime;
+    }
+
+    public void setAssignTime(long assignTime) {
+        this.assignTime = assignTime;
     }
 
     @Override

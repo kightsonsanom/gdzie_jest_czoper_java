@@ -3,11 +3,13 @@ package com.example.asinit_user.gdziejestczoper.di;
 
 import android.app.Application;
 import android.arch.persistence.room.Room;
+import android.content.Context;
 
 import com.example.asinit_user.gdziejestczoper.AppExecutors;
 import com.example.asinit_user.gdziejestczoper.api.CzoperApi;
 import com.example.asinit_user.gdziejestczoper.db.AppDatabase;
 import com.example.asinit_user.gdziejestczoper.db.Repository;
+import com.example.asinit_user.gdziejestczoper.db.SharedPreferencesRepo;
 import com.example.asinit_user.gdziejestczoper.db.dao.PositionDao;
 import com.example.asinit_user.gdziejestczoper.db.dao.GeoDao;
 import com.example.asinit_user.gdziejestczoper.db.dao.PositionGeoJoinDao;
@@ -33,6 +35,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class AppModule {
 
 
+    @Provides
+    @Singleton
+    SharedPreferencesRepo provideSharedPreferences(Application application){
+        return new SharedPreferencesRepo(application.getApplicationContext());
+    }
 
     @Provides
     @Singleton

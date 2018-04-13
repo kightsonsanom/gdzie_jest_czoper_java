@@ -113,33 +113,4 @@ public class Position {
                 ", status='" + status + '\'' +
                 '}';
     }
-
-    public static Position fromContentValues(ContentValues values) {
-        final Position position = new Position();
-
-        if (values.containsKey(COLUMN_ID)) {
-            position.position_id = values.getAsLong(COLUMN_ID);
-        }
-        if (values.containsKey(COLUMN_END_DATE)) {
-            position.startDate = values.getAsString(COLUMN_END_DATE);
-        }
-        if (values.containsKey(COLUMN_START_DATE)) {
-            position.endDate = values.getAsString(COLUMN_START_DATE);
-        }
-        if (values.containsKey(COLUMN_LAST_LOCATION_DATE)) {
-            position.lastLocationDate = values.getAsLong(COLUMN_LAST_LOCATION_DATE);
-        }
-        if (values.containsKey(COLUMN_START_LOCATION)) {
-            position.startLocation = values.getAsString(COLUMN_START_LOCATION);
-        }
-        if (values.containsKey(COLUMN_END_LOCATION)) {
-            position.endLocation = values.getAsString(COLUMN_END_LOCATION);
-        }
-        if (values.containsKey(COLUMN_STATUS)) {
-            position.status = values.getAsString(COLUMN_STATUS);
-        }
-        return position;
-    }
-
-
 }

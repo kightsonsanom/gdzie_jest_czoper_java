@@ -31,6 +31,9 @@ public interface GeoDao {
     @Query("SELECT * FROM geo")
     List<Geo> getAllGeos();
 
+    @Query("SELECT * FROM " + Geo.TABLE_NAME + " WHERE geo.date >= (SELECT geo.date FROM geo WHERE geo.geo_id = :geoIDFromPreferences)")
+    List<Geo> getGeosSinceFailure(long geoIDFromPreferences);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<Geo> geos);
 

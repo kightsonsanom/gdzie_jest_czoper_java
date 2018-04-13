@@ -145,9 +145,8 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 
                 sendPosition(newPosition);
 
-            } else if (latestPositionFromDb.getStatus().equals("Nieznany"))
+            } else if (latestPositionFromDb.getStatus().equals("Nieznany")) {
 
-            {
                 Timber.d("status geo nieznany");
 
                 if (isLastGeoFarAway()) {
@@ -164,6 +163,7 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
                 latestPositionFromDb.setLastLocationDate(newGeo.getDate());
                 updatePosition(latestPositionFromDb);
 
+
             } else if (latestPositionFromDb.getStatus().equals("Postój")) {
                 Timber.d("status geo postój");
 
@@ -173,7 +173,6 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 
                 if (isLastGeoFarAway()) {
                     Timber.d("bylo przemieszczenie");
-                    assignGeoToPosition(new PositionGeoJoin(latestPositionFromDb.getPosition_id(), newGeo.getGeo_id()));
 
                     newPosition = new Position();
                     newPosition.setStatus("Ruch");
@@ -196,7 +195,7 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 
                 } else {
                     Timber.d("nie bylo przemieszczenia");
-                    assignGeoToPosition(new PositionGeoJoin(latestPositionFromDb.getPosition_id(), newGeo.getGeo_id()));
+
 
                     newPosition = new Position();
                     newPosition.setStatus("Postój");
@@ -212,10 +211,13 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
             }
 
             if (newPosition != null) {
-                PositionGeoJoin positionGeoJoin = new PositionGeoJoin(newPosition.getPosition_id(), newGeo.getGeo_id());
+                PositionGeoJoin positionGeoJoin = new PositionGeoJoin(newPosition.getPosition_id(), newGeo.getGeo_id(),newGeo.getDate());
                 Timber.d("assignGeoToPosition = " + positionGeoJoin.toString());
                 assignGeoToPosition(positionGeoJoin);
+            } else {
+                assignGeoToPosition(new PositionGeoJoin(latestPositionFromDb.getPosition_id(), newGeo.getGeo_id(), newGeo.getDate()));
             }
+
 
             mFusedLocationClient.removeLocationUpdates(locationCallback);
 
