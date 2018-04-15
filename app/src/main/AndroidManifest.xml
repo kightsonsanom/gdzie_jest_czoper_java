@@ -36,24 +36,24 @@
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service android:name=".services.GeocodeAddressIntentService" />
-        <service android:name=".sync.AuthenticatorService">
-            <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator" />
-            </intent-filter>
+        <!--<service android:name=".sync.AuthenticatorService">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.accounts.AccountAuthenticator" />-->
+            <!--</intent-filter>-->
 
-            <meta-data
-                android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/authenticator" />
-        </service>
+            <!--<meta-data-->
+                <!--android:name="android.accounts.AccountAuthenticator"-->
+                <!--android:resource="@xml/authenticator" />-->
+        <!--</service>-->
 
         <receiver android:name=".services.AlarmReceiver" />
 
-        <provider
-            android:name=".sync.CzoperContentProvider"
-            android:authorities="com.example.asinit_user.gdziejestczoper.sync"
-            android:exported="true"
-            android:permission="com.example.asinit_user.gdziejestczoper.provider.READ_WRITE"
-            android:syncable="true" />
+        <!--<provider-->
+            <!--android:name=".sync.CzoperContentProvider"-->
+            <!--android:authorities="com.example.asinit_user.gdziejestczoper.sync"-->
+            <!--android:exported="true"-->
+            <!--android:permission="com.example.asinit_user.gdziejestczoper.provider.READ_WRITE"-->
+            <!--android:syncable="true" />-->
 
         <activity android:name=".ui.mainView.NavigationActivity">
 

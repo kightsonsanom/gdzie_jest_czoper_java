@@ -13,6 +13,7 @@ import com.example.asinit_user.gdziejestczoper.db.SharedPreferencesRepo;
 import com.example.asinit_user.gdziejestczoper.db.dao.PositionDao;
 import com.example.asinit_user.gdziejestczoper.db.dao.GeoDao;
 import com.example.asinit_user.gdziejestczoper.db.dao.PositionGeoJoinDao;
+import com.example.asinit_user.gdziejestczoper.db.dao.UserDao;
 import com.example.asinit_user.gdziejestczoper.utils.GeoAdapter;
 import com.example.asinit_user.gdziejestczoper.utils.LiveDataCallAdapterFactory;
 import com.example.asinit_user.gdziejestczoper.utils.PositionAdapter;
@@ -90,6 +91,12 @@ public class AppModule {
     @Singleton
     PositionGeoJoinDao providePositionGeoJoinDao(AppDatabase database) {
         return database.positionGeoJoinDao();
+    }
+
+    @Provides
+    @Singleton
+    UserDao provideUserDao(AppDatabase database) {
+        return database.userDao();
     }
 
 //    @Provides

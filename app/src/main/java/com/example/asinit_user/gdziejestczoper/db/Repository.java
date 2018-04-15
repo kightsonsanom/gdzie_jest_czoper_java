@@ -14,6 +14,8 @@ import com.example.asinit_user.gdziejestczoper.api.NetworkBoundResource;
 import com.example.asinit_user.gdziejestczoper.db.dao.PositionDao;
 import com.example.asinit_user.gdziejestczoper.db.dao.GeoDao;
 import com.example.asinit_user.gdziejestczoper.db.dao.PositionGeoJoinDao;
+import com.example.asinit_user.gdziejestczoper.db.dao.UserDao;
+import com.example.asinit_user.gdziejestczoper.ui.login.LoginManagerCallback;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.PositionGeoJoin;
@@ -21,6 +23,7 @@ import com.example.asinit_user.gdziejestczoper.services.PositionManagerCallback;
 import com.example.asinit_user.gdziejestczoper.ui.search.SearchFragmentViewModelCallback;
 import com.example.asinit_user.gdziejestczoper.viewobjects.RemotePositionGeoJoin;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Resource;
+import com.example.asinit_user.gdziejestczoper.viewobjects.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,11 +41,13 @@ public class Repository {
 
     private PositionManagerCallback positionManagerCallback;
     private SearchFragmentViewModelCallback searchFragmentViewModelCallback;
+    private LoginManagerCallback loginManagerCallback;
 
     private MediatorLiveData<List<Position>> observablePositions;
     private MediatorLiveData<List<Geo>> observableGeos;
     private MediatorLiveData<Geo> observableGeo;
 
+    private UserDao userDao;
     private PositionDao positionDao;
     private GeoDao geoDao;
     private PositionGeoJoinDao positionGeoJoinDao;
@@ -56,11 +61,12 @@ public class Repository {
     private List<Position> allPositions;
 
     @Inject
-    public Repository(PositionDao positionDao, GeoDao geoDao, PositionGeoJoinDao positionGeoJoinDao, AppExecutors appExecutors, CzoperApi czoperApi, SharedPreferencesRepo sharedPreferencesRepo) {
+    public Repository(PositionDao positionDao, GeoDao geoDao, PositionGeoJoinDao positionGeoJoinDao, UserDao userDao, AppExecutors appExecutors, CzoperApi czoperApi, SharedPreferencesRepo sharedPreferencesRepo) {
         this.appExecutors = appExecutors;
         this.positionDao = positionDao;
         this.positionGeoJoinDao = positionGeoJoinDao;
         this.geoDao = geoDao;
+        this.userDao = userDao;
         this.czoperApi = czoperApi;
         this.sharedPreferencesRepo = sharedPreferencesRepo;
 
@@ -85,6 +91,10 @@ public class Repository {
 
     public void setSearchFragmentViewModelCallback(SearchFragmentViewModelCallback searchFragmentViewModelCallback) {
         this.searchFragmentViewModelCallback = searchFragmentViewModelCallback;
+    }
+
+    public void setLoginManagerCallback(LoginManagerCallback loginManagerCallback) {
+        this.loginManagerCallback = loginManagerCallback;
     }
 
     public LiveData<Resource<List<Position>>> getPositions() {
@@ -113,9 +123,6 @@ public class Repository {
         }.asLiveData();
     }
 
-    public LiveData<List<Geo>> getGeos() {
-        return observableGeos;
-    }
 
     public LiveData<Geo> getGeo() {
         Timber.d("getting latest geo");
@@ -444,4 +451,43 @@ public class Repository {
 
         });
     }
+
+    public void getUsers(String login, String password) {
+        Call<List<User>> call = czoperApi.getUsers(login, password);
+
+        call.enqueue(new Callback<List<User>>() {
+            @Override
+            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
+                if (response.body() != null && response.body().size() > 0){
+                    saveUsersToDB(response.body());
+                    loginManagerCallback.onLoginSuccess();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<User>> call, Throwable t) {
+                loginManagerCallback.onLoginFailure();
+            }
+        });
+
+    }
+
+    private void saveUsersToDB(List<User> userList) {
+        appExecutors.diskIO().execute(() -> {
+            userDao.insertAll(userList);
+        });
+    }
+
+    public void isUserLoggedIn(){
+        appExecutors.diskIO().execute(() -> {
+            List<User> userList = userDao.getAllUsers();
+            if (userList != null){
+                Timber.d("są userzy w bazie, a pierwszy to = " + userList.get(0).toString());
+                loginManagerCallback.onLoginSuccess();
+            }
+
+        });
+
+    }
+
 }

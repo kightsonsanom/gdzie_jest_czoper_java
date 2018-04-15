@@ -2,6 +2,7 @@ package com.example.asinit_user.gdziejestczoper.ui.login;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -21,6 +22,10 @@ import com.example.asinit_user.gdziejestczoper.R;
 import com.example.asinit_user.gdziejestczoper.databinding.ActivityLoginBinding;
 import com.example.asinit_user.gdziejestczoper.ui.geoList.PositionListFragmentViewModel;
 import com.example.asinit_user.gdziejestczoper.ui.mainView.NavigationActivity;
+import com.example.asinit_user.gdziejestczoper.viewobjects.Resource;
+import com.example.asinit_user.gdziejestczoper.viewobjects.User;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -31,18 +36,12 @@ import timber.log.Timber;
  * A login screen that offers login via email/password.
  */
 
-public class LoginActivity extends AppCompatActivity {
-
-    SharedPreferences preferences;
-    String loggedIn = null;
+public class LoginActivity extends AppCompatActivity implements LoginCallback {
 
     @Inject
-    ViewModelProvider.Factory viewModelFactory;
+    LoginManager loginManager;
 
     private ActivityLoginBinding binding;
-
-    private LoginActivityViewModel viewModel;
-
 
 
     @Override
@@ -51,17 +50,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Timber.d("Main activity onCreate");
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(LoginActivityViewModel.class);
-
-        loggedIn = preferences.getString("userName", null);
-
-        if (loggedIn!=null){
-            Intent intent = new Intent(this, NavigationActivity.class);
-            startActivity(intent);
-            finish();
-        }
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
+        loginManager.isUserLoggedIn();
 
         binding.usernameSignInButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -69,6 +59,13 @@ public class LoginActivity extends AppCompatActivity {
                 attemptLogin();
             }
         });
+
+    }
+
+    private void enterApplication() {
+        Intent intent = new Intent(this, NavigationActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private boolean isEmailValid(String tempEmail) {
@@ -123,8 +120,7 @@ public class LoginActivity extends AppCompatActivity {
             // perform the user login attempt.
             showProgress(true);
 //            viewModel.setLoginCallback(this);
-            viewModel.getUsers(username, userPassword);
-
+            loginManager.getUsers(username, userPassword);
         }
     }
 
@@ -155,23 +151,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    //Po udanym zalogowaniu wrzucamy nazwę i ID użytkownika do sharedPreferences i odpalamy MainActivity
-//    public void showSuccess(List<Czoper> czoperList) {
-//        SharedPreferences.Editor editor = preferences.edit();
-//        czoperManager.setAdmin(true);
-//        editor.putString("userName", userLogin);
-//        Timber.d("CzoperID w przy wsadzaniu do preferences= " + czoperList.get(0).getCzoperID());
-//        editor.putInt("czoperID",czoperList.get(0).getCzoperID());
-//        editor.apply();
-//        Intent intent = new Intent(this, MainActivity.class);
-//        startActivity(intent);
-//        finish();
-//    }
-//
-//    @Override
-//    public void showError() {
-//        showProgress(false);
-//        Toast.makeText(this, "Niepoprawne dane", Toast.LENGTH_SHORT).show();
-//    }
+    @Override
+    public void showSuccess() {
+        enterApplication();
+    }
+
+    @Override
+    public void showError() {
+        showProgress(false);
+        Toast.makeText(this, "Niepoprawne dane", Toast.LENGTH_SHORT).show();
+    }
 }
 

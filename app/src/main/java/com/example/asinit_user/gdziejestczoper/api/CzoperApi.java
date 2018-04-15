@@ -7,6 +7,7 @@ import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 import com.example.asinit_user.gdziejestczoper.viewobjects.PositionGeoJoin;
 import com.example.asinit_user.gdziejestczoper.viewobjects.RemotePositionGeoJoin;
+import com.example.asinit_user.gdziejestczoper.viewobjects.User;
 
 import java.util.List;
 
@@ -58,6 +59,9 @@ public interface CzoperApi {
     @POST("assignGeoToPosition/list")
     Call<List<RemotePositionGeoJoin>> assignGeoToPositionList(@Body List<RemotePositionGeoJoin> remotePositionGeoJoins);
 
+
+    @GET("user")
+    Call<List<User>> getUsers(@Query("login") String login, @Query("password") String password);
 //
 //    @POST
 //    Call<PositionGeoJoin> assignGeoToPosition(@Body PositionGeoJoin positionGeoJoin);

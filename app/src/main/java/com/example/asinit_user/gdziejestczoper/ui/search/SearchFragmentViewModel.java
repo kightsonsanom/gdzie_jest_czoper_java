@@ -85,13 +85,11 @@ public class SearchFragmentViewModel extends ViewModel implements SearchFragment
             }
         }
 
-
         if (geos != null) {
             for (Geo g : geos) {
                 Timber.d("Geo: " + g);
             }
         }
-
     }
 
     public void getAllPositions() {
