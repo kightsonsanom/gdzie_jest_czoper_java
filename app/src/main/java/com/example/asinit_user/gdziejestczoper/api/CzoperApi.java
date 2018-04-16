@@ -60,7 +60,7 @@ public interface CzoperApi {
     Call<List<RemotePositionGeoJoin>> assignGeoToPositionList(@Body List<RemotePositionGeoJoin> remotePositionGeoJoins);
 
 
-    @GET("user")
+    @GET("user/")
     Call<List<User>> getUsers(@Query("login") String login, @Query("password") String password);
 //
 //    @POST

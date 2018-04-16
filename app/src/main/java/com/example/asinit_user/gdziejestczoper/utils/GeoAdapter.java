@@ -23,6 +23,7 @@ public class GeoAdapter implements JsonSerializer<Geo> {
         obj.addProperty("date",src.getDate());
         obj.addProperty("displayText",src.getDisplayText());
         obj.addProperty("location", locationString);
+        obj.addProperty("user_id", src.getUser_id());
 
         return obj;
     }

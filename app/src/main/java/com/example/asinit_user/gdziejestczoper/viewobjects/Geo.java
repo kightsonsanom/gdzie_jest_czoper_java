@@ -18,15 +18,17 @@ public class Geo {
     private Location location;
     private long date;
     private String displayText;
+    private int user_id;
 
     public Geo() {
         geo_id = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
     }
 
-    public Geo(Location location, long date) {
+    public Geo(Location location, long date, int user_id) {
         geo_id = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
         this.location = location;
         this.date = date;
+        this.user_id = user_id;
         displayText = "\nID = " + geo_id + "\nLatitude = " + location.getLatitude() + "\nLongitude = " + location.getLongitude() + "\nDate = " + date;
     }
 
@@ -63,13 +65,22 @@ public class Geo {
         this.date = date;
     }
 
+    public int getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
+    }
+
     @Override
     public String toString() {
         return "Geo{" +
-                "ID=" + geo_id +
+                "geo_id=" + geo_id +
                 ", location=" + location +
                 ", date=" + date +
                 ", displayText='" + displayText + '\'' +
+                ", user_id=" + user_id +
                 '}';
     }
 }

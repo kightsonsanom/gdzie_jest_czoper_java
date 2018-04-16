@@ -16,6 +16,7 @@ public class LoginManager implements LoginManagerCallback{
     @Inject
     public LoginManager (Repository repository){
         this.repository = repository;
+        repository.setLoginManagerCallback(this);
     }
 
     public void setLoginCallback(LoginCallback loginCallback) {

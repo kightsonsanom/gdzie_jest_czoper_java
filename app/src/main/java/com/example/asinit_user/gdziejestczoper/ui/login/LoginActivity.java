@@ -50,6 +50,7 @@ public class LoginActivity extends AppCompatActivity implements LoginCallback {
         super.onCreate(savedInstanceState);
         Timber.d("Main activity onCreate");
 
+        loginManager.setLoginCallback(this);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         loginManager.isUserLoggedIn();
 
@@ -59,6 +60,9 @@ public class LoginActivity extends AppCompatActivity implements LoginCallback {
                 attemptLogin();
             }
         });
+
+        binding.username.setText("tomek");
+        binding.password.setText("tomek");
 
     }
 
@@ -158,6 +162,7 @@ public class LoginActivity extends AppCompatActivity implements LoginCallback {
 
     @Override
     public void showError() {
+        Timber.d("showError from LoginActivity");
         showProgress(false);
         Toast.makeText(this, "Niepoprawne dane", Toast.LENGTH_SHORT).show();
     }

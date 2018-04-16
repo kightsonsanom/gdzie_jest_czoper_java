@@ -15,13 +15,8 @@ import android.view.ViewGroup;
 
 import com.example.asinit_user.gdziejestczoper.R;
 import com.example.asinit_user.gdziejestczoper.databinding.MapFragmentViewBinding;
-import com.example.asinit_user.gdziejestczoper.databinding.PositionListFragmentViewBinding;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import javax.inject.Inject;
 

@@ -1,4 +1,4 @@
-package com.example.asinit_user.gdziejestczoper.utils;
+package com.example.asinit_user.gdziejestczoper.ui.map;
 
 
 import android.databinding.BindingAdapter;
@@ -13,7 +13,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import timber.log.Timber;
 
-public class CustomBindings {
+public class MapBinding {
 
     @BindingAdapter("initMap")
     public static void initMap(final MapView mapView, final LatLng latLng) {

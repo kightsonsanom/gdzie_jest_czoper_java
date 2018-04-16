@@ -68,4 +68,14 @@ public class SharedPreferencesRepo {
         editor.commit();
 
     }
+
+    public void setUserID(int userID) {
+        editor.putInt("userID", userID);
+        editor.commit();
+    }
+
+    public int getUserID(){
+        return sharedPreferences.getInt("userID",0);
+    }
+
 }

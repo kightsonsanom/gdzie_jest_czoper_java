@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.JobIntentService;
 
 import com.example.asinit_user.gdziejestczoper.db.Repository;
+import com.example.asinit_user.gdziejestczoper.db.SharedPreferencesRepo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 import com.example.asinit_user.gdziejestczoper.viewobjects.PositionGeoJoin;
@@ -45,10 +46,14 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
     @Inject
     Repository repository;
 
+    @Inject
+    SharedPreferencesRepo sharedPreferencesRepo;
+
     Geo newGeo;
     Geo latestGeoFromDb;
     Position newPosition;
     Position latestPositionFromDb;
+    private int userID;
     private Thread lookForLocation;
     private final Object lock = new Object();
     private FusedLocationProviderClient mFusedLocationClient;
@@ -61,7 +66,7 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
         repository.setPositionManagerCallback(this);
         context = getApplicationContext();
         Timber.d("starting localization service");
-
+        userID = sharedPreferencesRepo.getUserID();
 
         locationCallback = new LocationCallback() {
             @Override
@@ -240,7 +245,7 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
     }
 
     public void getLocationAddress(Location location) {
-        newGeo = new Geo(location, location.getTime());
+        newGeo = new Geo(location, location.getTime(), userID);
 
         Timber.d("getLocationAddress");
         Intent intent = new Intent(context, GeocodeAddressIntentService.class);

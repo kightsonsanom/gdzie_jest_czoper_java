@@ -458,18 +458,31 @@ public class Repository {
         call.enqueue(new Callback<List<User>>() {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                if (response.body() != null && response.body().size() > 0){
+                Timber.d("getUsers onResponse");
+                if (response.body() != null && response.body().size() > 0) {
                     saveUsersToDB(response.body());
+                    saveUserIDToPreferences(login, response.body());
                     loginManagerCallback.onLoginSuccess();
+                } else {
+                    loginManagerCallback.onLoginFailure();
                 }
             }
 
             @Override
             public void onFailure(Call<List<User>> call, Throwable t) {
+                Timber.d("getUsers onFailure");
                 loginManagerCallback.onLoginFailure();
             }
         });
 
+    }
+
+    private void saveUserIDToPreferences(String login, List<User> userList) {
+        for (User user : userList) {
+            if (user.getLogin().equals(login)) {
+                sharedPreferencesRepo.setUserID(user.getUser_id());
+            }
+        }
     }
 
     private void saveUsersToDB(List<User> userList) {
@@ -478,10 +491,10 @@ public class Repository {
         });
     }
 
-    public void isUserLoggedIn(){
+    public void isUserLoggedIn() {
         appExecutors.diskIO().execute(() -> {
             List<User> userList = userDao.getAllUsers();
-            if (userList != null){
+            if (userList != null && userList.size() > 0) {
                 Timber.d("są userzy w bazie, a pierwszy to = " + userList.get(0).toString());
                 loginManagerCallback.onLoginSuccess();
             }
