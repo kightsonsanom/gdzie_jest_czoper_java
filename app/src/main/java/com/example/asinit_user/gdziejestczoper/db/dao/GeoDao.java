@@ -8,6 +8,7 @@ import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
 import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
+import com.example.asinit_user.gdziejestczoper.viewobjects.MapGeo;
 
 import java.util.List;
 
@@ -40,5 +41,6 @@ public interface GeoDao {
     @Insert(onConflict = REPLACE)
     void insertGeo(Geo geo);
 
-
+    @Query("SELECT * FROM geo g WHERE g.user_id=:user_id ORDER BY g.date DESC LIMIT 1 ")
+    LiveData<Geo> loadLatestGeoForUser(int user_id);
 }

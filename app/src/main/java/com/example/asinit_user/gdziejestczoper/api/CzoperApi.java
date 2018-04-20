@@ -4,6 +4,7 @@ package com.example.asinit_user.gdziejestczoper.api;
 import android.arch.lifecycle.LiveData;
 
 import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
+import com.example.asinit_user.gdziejestczoper.viewobjects.MapGeo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 import com.example.asinit_user.gdziejestczoper.viewobjects.PositionGeoJoin;
 import com.example.asinit_user.gdziejestczoper.viewobjects.RemotePositionGeoJoin;
@@ -33,6 +34,9 @@ public interface CzoperApi {
     @GET("position")
     LiveData<ApiResponse<List<Position>>> getAllPositions();
 
+    @GET("mapGeo")
+    LiveData<ApiResponse<List<MapGeo>>> getMapGeos();
+
     @PUT("position")
     Call<Position> sendPosition(@Body Position position);
 
@@ -59,9 +63,12 @@ public interface CzoperApi {
     @POST("assignGeoToPosition/list")
     Call<List<RemotePositionGeoJoin>> assignGeoToPositionList(@Body List<RemotePositionGeoJoin> remotePositionGeoJoins);
 
-
-    @GET("user/")
+    @GET("user")
     Call<List<User>> getUsers(@Query("login") String login, @Query("password") String password);
+
+
+
+
 //
 //    @POST
 //    Call<PositionGeoJoin> assignGeoToPosition(@Body PositionGeoJoin positionGeoJoin);

@@ -3,7 +3,6 @@ package com.example.asinit_user.gdziejestczoper.di;
 import android.app.Application;
 
 import com.example.asinit_user.gdziejestczoper.App;
-//import com.example.asinit_user.gdziejestczoper.services.GeoService;
 
 import javax.inject.Singleton;
 

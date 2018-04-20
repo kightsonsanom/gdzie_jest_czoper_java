@@ -56,10 +56,9 @@ public class MapFragment extends Fragment {
     }
 
     private void subscribeToModel(MapViewModel viewModel) {
-        viewModel.getObservableGeo().observe(this, geo -> {
-            if (geo != null) {
-                LatLng latLng = new LatLng(geo.getLocation().getLatitude(), geo.getLocation().getLongitude());
-                viewModel.setLatLng(latLng);
+        viewModel.getObservableGeo().observe(this, mapGeo-> {
+            if (mapGeo!=null && mapGeo.data != null) {
+                viewModel.setMapGeos(mapGeo.data);
             }
         });
     }

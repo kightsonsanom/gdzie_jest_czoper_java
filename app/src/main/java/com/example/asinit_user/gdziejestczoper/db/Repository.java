@@ -1,9 +1,13 @@
 package com.example.asinit_user.gdziejestczoper.db;
 
 
+import android.arch.core.util.Function;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
+import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Transformations;
 import android.location.Location;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -16,6 +20,7 @@ import com.example.asinit_user.gdziejestczoper.db.dao.GeoDao;
 import com.example.asinit_user.gdziejestczoper.db.dao.PositionGeoJoinDao;
 import com.example.asinit_user.gdziejestczoper.db.dao.UserDao;
 import com.example.asinit_user.gdziejestczoper.ui.login.LoginManagerCallback;
+import com.example.asinit_user.gdziejestczoper.viewobjects.MapGeo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.PositionGeoJoin;
@@ -27,6 +32,7 @@ import com.example.asinit_user.gdziejestczoper.viewobjects.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -59,6 +65,13 @@ public class Repository {
     private Position latestPositionFromDb;
     private List<Geo> allGeos;
     private List<Position> allPositions;
+    private List<User> allUsers;
+    private LiveData<Geo> latestGeoForUser;
+
+    private final Object lock = new Object();
+
+    private Thread getLatestMapGeo;
+    private LiveData<List<MapGeo>> mapGeos;
 
     @Inject
     public Repository(PositionDao positionDao, GeoDao geoDao, PositionGeoJoinDao positionGeoJoinDao, UserDao userDao, AppExecutors appExecutors, CzoperApi czoperApi, SharedPreferencesRepo sharedPreferencesRepo) {
@@ -123,10 +136,65 @@ public class Repository {
         }.asLiveData();
     }
 
+    public LiveData<Resource<List<MapGeo>>> getMapGeos() {
+        return new NetworkBoundResource<List<MapGeo>, List<MapGeo>>(appExecutors) {
+            @Override
+            protected void saveCallResult(@NonNull List<MapGeo> item) {
+                for (MapGeo mapGeo : item) {
+                    geoDao.insertGeo(mapGeo.getGeo());
+                }
+            }
 
-    public LiveData<Geo> getGeo() {
-        Timber.d("getting latest geo");
-        return observableGeo;
+            @Override
+            protected boolean shouldFetch(@Nullable List<MapGeo> data) {
+                return true;
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<List<MapGeo>> loadFromDb() {
+                getLatestMapGeo = new Thread(() ->{
+                    Timber.d("started getLatestMapGeo thread");
+                    List<User> userList = userDao.getAllUsers();
+                    List<MapGeo> mapGeoList = new ArrayList<>();
+
+                    for (User u : userList) {
+                        synchronized(lock) {
+                            Timber.d("get geo for user = " + u);
+                            mapGeos = Transformations.map(geoDao.loadLatestGeoForUser(u.getUser_id()), geo -> {
+                                MapGeo mapGeo = new MapGeo(u, geo);
+                                mapGeoList.add(mapGeo);
+                                Timber.d("mapGeo = " + mapGeo.toString());
+                                return mapGeoList;
+                            });
+                        }
+                    }
+
+                    Timber.d("mapGeo: " + mapGeoList.size());
+                    Timber.d("mapGeos: " + mapGeos.getValue());
+                    for (MapGeo mapGeo : mapGeoList) {
+                        Timber.d("mapGeo: " + mapGeo.toString());
+                    }
+                });
+                getLatestMapGeo.start();
+
+                try {
+                    getLatestMapGeo.join();
+                    Timber.d("finished getLatestMapGeoThread");
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                return mapGeos;
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<ApiResponse<List<MapGeo>>> createCall() {
+                return czoperApi.getMapGeos();
+            }
+        }.asLiveData();
     }
 
     public void postPosition(Position position) {
@@ -503,4 +571,17 @@ public class Repository {
 
     }
 
+    public List<User> getAllUsers() {
+        appExecutors.diskIO().execute(() -> {
+            allUsers = userDao.getAllUsers();
+        });
+        return allUsers;
+    }
+
+    public LiveData<Geo> getLatestGeoForUser(int user_id) {
+        appExecutors.diskIO().execute(() -> {
+            latestGeoForUser = geoDao.loadLatestGeoForUser(user_id);
+        });
+        return latestGeoForUser;
+    }
 }
