@@ -13,6 +13,7 @@ import com.example.asinit_user.gdziejestczoper.utils.Converters;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -25,13 +26,14 @@ public class SearchFragmentViewModel extends ViewModel implements SearchFragment
     public ObservableField<String> startDate = new ObservableField<>();
     public ObservableField<String> endDate = new ObservableField<>();
     public ObservableField<String> latestGeo = new ObservableField<>();
-    private LiveData<List<Position>> observablePositions;
 
-    private final MediatorLiveData<List<Position>> mObservablePositions;
+    private  MediatorLiveData<HashMap<String,List<Position>>> mObservablePositions;
 
     private Repository repository;
-    private String searchToDay;
-    private String searchFromDay;
+    //    private String searchToDay;
+//    private String searchToDay;
+    private long searchFromDay;
+    private long searchToDay;
 
 
     @Inject
@@ -43,19 +45,21 @@ public class SearchFragmentViewModel extends ViewModel implements SearchFragment
         mObservablePositions.setValue(null);
     }
 
-    public LiveData<List<Position>> getObservablePositions() {
+    public LiveData<HashMap<String,List<Position>>> getObservablePositions() {
         return mObservablePositions;
     }
 
     @Override
     public void onStartDateSet(long dayToMillis) {
-        searchFromDay = Converters.longToString(dayToMillis);
+//        searchFromDay = Converters.longToString(dayToMillis);
+        searchFromDay = dayToMillis;
         startDate.set(dateFormat(dayToMillis));
     }
 
     @Override
     public void onEndDateSet(long dayToMillis) {
-        searchToDay = Converters.longToString(dayToMillis);
+//        searchToDay = Converters.longToString(dayToMillis);
+        searchToDay = dayToMillis;
         endDate.set(dateFormat(dayToMillis));
     }
 
@@ -93,14 +97,12 @@ public class SearchFragmentViewModel extends ViewModel implements SearchFragment
     }
 
     public void getAllPositions() {
-
-        repository.getPositionsFromRange(searchFromDay, searchToDay);
+        mObservablePositions.addSource(repository.getPositionsFromRange(searchFromDay, searchToDay), (result) -> mObservablePositions.setValue(result.data));;
     }
 
     @Override
-    public void setObservablePositions(LiveData<List<Position>> observablePositions) {
-        this.observablePositions = observablePositions;
-        mObservablePositions.addSource(observablePositions, mObservablePositions::setValue);
+    public void setObservablePositions(LiveData<HashMap<String, List<Position>>> observablePositions) {
+//        mObservablePositions.addSource(observablePositions, mObservablePositions::setValue);
     }
 
     public void getLatestGeo() {

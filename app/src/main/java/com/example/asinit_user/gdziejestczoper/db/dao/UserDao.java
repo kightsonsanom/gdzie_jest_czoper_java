@@ -19,7 +19,12 @@ public interface UserDao {
     @Query("SELECT * FROM user")
     List<User> getAllUsers();
 
+    @Query("SELECT * FROM user")
+    LiveData<List<User>> getAllLiveUsers();
+
     @Insert
     void insertAll(List<User> userList);
 
+    @Query("SELECT nazwa FROM user")
+    LiveData<List<String>> getAllUserNames();
 }

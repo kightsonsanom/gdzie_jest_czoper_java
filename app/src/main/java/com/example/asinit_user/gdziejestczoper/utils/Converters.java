@@ -14,7 +14,7 @@ public class Converters {
 
     public static String longToString(long date) {
         Date data = new Date(date);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss", new Locale("pl"));
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", new Locale("pl"));
 
         return sdf.format(data);
     }
@@ -39,4 +39,15 @@ public class Converters {
 
     }
 
+    public static String getCurrentDay() {
+        Date date = new Date(System.currentTimeMillis());
+        SimpleDateFormat format = new SimpleDateFormat("dd MMM", new Locale("pl"));
+        return format.format(date);
+    }
+
+    public static String getDayFromMilis(long i) {
+        Date date = new Date(i);
+        SimpleDateFormat format = new SimpleDateFormat("dd MMM", new Locale("pl"));
+        return format.format(date);
+    }
 }

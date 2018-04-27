@@ -2,10 +2,12 @@ package com.example.asinit_user.gdziejestczoper.db.dao;
 
 
 import android.arch.lifecycle.LiveData;
+import android.arch.persistence.db.SupportSQLiteQuery;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.RawQuery;
 
 import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.MapGeo;
@@ -43,4 +45,7 @@ public interface GeoDao {
 
     @Query("SELECT * FROM geo g WHERE g.user_id=:user_id ORDER BY g.date DESC LIMIT 1 ")
     LiveData<Geo> loadLatestGeoForUser(int user_id);
+
+    @RawQuery(observedEntities = Geo.class)
+    LiveData<List<Geo>> getLatestGeoForDistinctUsers(SupportSQLiteQuery query);
 }

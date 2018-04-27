@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.example.asinit_user.gdziejestczoper.R;
+import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.MapGeo;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.MapView;
@@ -21,7 +22,7 @@ import timber.log.Timber;
 public class MapBinding {
 
     @BindingAdapter("initMap")
-    public static void initMap(final MapView mapView, final List<MapGeo> mapGeoList) {
+    public static void initMap(final MapView mapView, final List<Geo> geoList) {
         if (mapView != null) {
             mapView.getMapAsync(googleMap -> {
 
@@ -31,16 +32,15 @@ public class MapBinding {
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition, cameraZoom));
 
                 // Add a marker
-                if (mapGeoList != null) {
-                    for (MapGeo mapGeo : mapGeoList) {
-                        if (mapGeo.getGeo()!= null) {
-                            LatLng latLng = new LatLng(mapGeo.getGeo().getLocation().getLatitude(), mapGeo.getGeo().getLocation().getLongitude());
-
+                if (geoList != null) {
+                    Timber.d("geoList.size() = " + geoList.size());
+                    for (Geo geo : geoList) {
+                            LatLng latLng = new LatLng(geo.getLocation().getLatitude(), geo.getLocation().getLongitude());
+                            Timber.d("creating marker for user: " + geo.getUser_id());
                             googleMap.addMarker(new MarkerOptions()
                                     .position(latLng)
-                                    .title(mapGeo.getUser().getNazwa())
-                                    .icon(getBitmapDescriptor(mapGeo.getUser().getUser_id())));
-                        }
+                                    .title(String.valueOf(geo.getUser_id()))
+                                    .icon(getBitmapDescriptor(geo.getUser_id())));
                     }
                 }
             });

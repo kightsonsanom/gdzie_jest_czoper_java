@@ -23,7 +23,7 @@ import javax.inject.Inject;
 import dagger.android.support.AndroidSupportInjection;
 import timber.log.Timber;
 
-public class SearchFragment extends Fragment{
+public class SearchFragment extends Fragment {
 
 
     @Inject
@@ -71,13 +71,13 @@ public class SearchFragment extends Fragment{
         setOnClickListeners();
 
 
-        viewModel.getObservablePositions().observe(this, positions-> {
-            if (positions != null) {
-                positionsAdapter.setPositionsList(positions);
-            }
-        });
+//        viewModel.getObservablePositions().observe(this, positions-> {
+//            if (positions != null) {
+//                positionsAdapter.setPositionsList(positions);
+//            }
+//        });
 
-        binding.positionRecycler.setAdapter(positionsAdapter);
+//        binding.positionRecycler.setAdapter(positionsAdapter);
 
         subscribeToModel(viewModel);
     }
@@ -103,17 +103,24 @@ public class SearchFragment extends Fragment{
 
         binding.searchButton.setOnClickListener((v) -> {
             if (!binding.startdateEt.getText().toString().equals("") && !binding.stopdateEt.getText().toString().equals("")) {
+                viewModel.getObservablePositions().observe(this, positions -> {
+                    if (positions != null) {
+                        ExpandableListAdapter expandableAdapter = new ExpandableListAdapter(getActivity());
+                        expandableAdapter.setPositions(positions);
+                        binding.positionsExpandable.setAdapter(expandableAdapter);
+                    }
+                });
                 Timber.d("search button should work");
                 viewModel.getAllPositions();
             }
         });
 
 
-        binding.getPosBtn.setOnClickListener((v) -> {
-            viewModel.getLatestGeo();
-            viewModel.getAllInfoFromDB();
-
-        });
+//        binding.getPosBtn.setOnClickListener((v) -> {
+//            viewModel.getLatestGeo();
+//            viewModel.getAllInfoFromDB();
+//
+//        });
     }
 }
 

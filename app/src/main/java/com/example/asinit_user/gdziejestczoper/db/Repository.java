@@ -4,8 +4,9 @@ package com.example.asinit_user.gdziejestczoper.db;
 import android.arch.core.util.Function;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.Transformations;
+import android.arch.persistence.db.SimpleSQLiteQuery;
 import android.location.Location;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -20,6 +21,8 @@ import com.example.asinit_user.gdziejestczoper.db.dao.GeoDao;
 import com.example.asinit_user.gdziejestczoper.db.dao.PositionGeoJoinDao;
 import com.example.asinit_user.gdziejestczoper.db.dao.UserDao;
 import com.example.asinit_user.gdziejestczoper.ui.login.LoginManagerCallback;
+import com.example.asinit_user.gdziejestczoper.utils.Converters;
+import com.example.asinit_user.gdziejestczoper.viewobjects.AbsentLiveData;
 import com.example.asinit_user.gdziejestczoper.viewobjects.MapGeo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
@@ -29,8 +32,11 @@ import com.example.asinit_user.gdziejestczoper.ui.search.SearchFragmentViewModel
 import com.example.asinit_user.gdziejestczoper.viewobjects.RemotePositionGeoJoin;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Resource;
 import com.example.asinit_user.gdziejestczoper.viewobjects.User;
+import com.google.android.gms.common.api.Api;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 
@@ -48,6 +54,7 @@ public class Repository {
     private PositionManagerCallback positionManagerCallback;
     private SearchFragmentViewModelCallback searchFragmentViewModelCallback;
     private LoginManagerCallback loginManagerCallback;
+
 
     private MediatorLiveData<List<Position>> observablePositions;
     private MediatorLiveData<List<Geo>> observableGeos;
@@ -136,63 +143,38 @@ public class Repository {
         }.asLiveData();
     }
 
-    public LiveData<Resource<List<MapGeo>>> getMapGeos() {
-        return new NetworkBoundResource<List<MapGeo>, List<MapGeo>>(appExecutors) {
+    public LiveData<Resource<List<Geo>>> getLatestGeoForUsers() {
+        return new NetworkBoundResource<List<Geo>, List<Geo>>(appExecutors) {
             @Override
-            protected void saveCallResult(@NonNull List<MapGeo> item) {
-                for (MapGeo mapGeo : item) {
-                    geoDao.insertGeo(mapGeo.getGeo());
-                }
+            protected void saveCallResult(@NonNull List<Geo> item) {
+                Timber.d("saving latestGeoForUsers call result");
+                geoDao.insertAll(item);
             }
 
             @Override
-            protected boolean shouldFetch(@Nullable List<MapGeo> data) {
+            protected boolean shouldFetch(@Nullable List<Geo> data) {
                 return true;
             }
 
             @NonNull
             @Override
-            protected LiveData<List<MapGeo>> loadFromDb() {
-                getLatestMapGeo = new Thread(() ->{
-                    Timber.d("started getLatestMapGeo thread");
-                    List<User> userList = userDao.getAllUsers();
-                    List<MapGeo> mapGeoList = new ArrayList<>();
-
-                    for (User u : userList) {
-                        synchronized(lock) {
-                            Timber.d("get geo for user = " + u);
-                            mapGeos = Transformations.map(geoDao.loadLatestGeoForUser(u.getUser_id()), geo -> {
-                                MapGeo mapGeo = new MapGeo(u, geo);
-                                mapGeoList.add(mapGeo);
-                                Timber.d("mapGeo = " + mapGeo.toString());
-                                return mapGeoList;
-                            });
+            protected LiveData<List<Geo>> loadFromDb() {
+                Timber.d("Loading data from db");
+                return Transformations.map(geoDao.getLatestGeoForDistinctUsers(new SimpleSQLiteQuery("SELECT geo_id,location, min(date), displayText, user_id FROM geo GROUP BY user_id")), new Function<List<Geo>, List<Geo>>() {
+                    @Override
+                    public List<Geo> apply(List<Geo> input) {
+                        for (Geo geo : input) {
+                            Timber.d("geo from db = " + geo);
                         }
-                    }
-
-                    Timber.d("mapGeo: " + mapGeoList.size());
-                    Timber.d("mapGeos: " + mapGeos.getValue());
-                    for (MapGeo mapGeo : mapGeoList) {
-                        Timber.d("mapGeo: " + mapGeo.toString());
+                        return input;
                     }
                 });
-                getLatestMapGeo.start();
-
-                try {
-                    getLatestMapGeo.join();
-                    Timber.d("finished getLatestMapGeoThread");
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                return mapGeos;
             }
 
             @NonNull
             @Override
-            protected LiveData<ApiResponse<List<MapGeo>>> createCall() {
-                return czoperApi.getMapGeos();
+            protected LiveData<ApiResponse<List<Geo>>> createCall() {
+                return czoperApi.getLatestGeoForDistinctUsers();
             }
         }.asLiveData();
     }
@@ -384,7 +366,7 @@ public class Repository {
 
 
     private void sendSingleAssignToServer(RemotePositionGeoJoin remotePositionGeoJoin) {
-        Timber.d("sendSingleAssignToServer method");
+        Timber.d("remotePositionGeo from sendSingleAssignToServer = " + remotePositionGeoJoin.toString());
         Call<RemotePositionGeoJoin> call = czoperApi.assignGeoToPosition(remotePositionGeoJoin);
 
         call.enqueue(new Callback<RemotePositionGeoJoin>() {
@@ -500,25 +482,84 @@ public class Repository {
     }
 
     public List<Geo> getAllGeos() {
-        appExecutors.diskIO().execute(() -> {
-            allGeos = geoDao.getAllGeos();
+        appExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                allGeos = geoDao.getAllGeos();
+            }
         });
         return allGeos;
     }
 
-    public void getPositionsFromRange(String searchFromDay, String searchToDay) {
+//    public void getPositionsFromRange(String searchFromDay, String searchToDay) {
+//        Timber.d("getPositionsFromRange method searchFromDay = " + searchFromDay + " searchToDay = " + searchToDay);
+//        appExecutors.diskIO().execute(() -> {
+//            List<Position> positions = positionDao.getPositionsFromRange(searchFromDay, searchToDay);
+//            LiveData<List<Position>> livePositions = positionDao.getLivePositionsFromRange(searchFromDay, searchToDay);
+//
+//            Timber.d("positions = " + positions);
+//            Timber.d("livePositions = " + livePositions.getValue());
+//
+//            searchFragmentViewModelCallback.setObservablePositions(livePositions);
+//
+//        });
+//    }
+
+    public LiveData<Resource<HashMap<String,List<Position>>>> getPositionsFromRange(long searchFromDay, long searchToDay) {
         Timber.d("getPositionsFromRange method searchFromDay = " + searchFromDay + " searchToDay = " + searchToDay);
-        appExecutors.diskIO().execute(() -> {
-            List<Position> positions = positionDao.getPositionsFromRange(searchFromDay, searchToDay);
-            LiveData<List<Position>> livePositions = positionDao.getLivePositionsFromRange(searchFromDay, searchToDay);
+        return new NetworkBoundResource<HashMap<String, List<Position>>, HashMap<String, List<Position>>>(appExecutors) {
+            @Override
+            protected void saveCallResult(@NonNull HashMap<String, List<Position>> item) {
 
-            Timber.d("positions = " + positions);
-            Timber.d("livePositions = " + livePositions.getValue());
+            }
 
-            searchFragmentViewModelCallback.setObservablePositions(livePositions);
+            @Override
+            protected boolean shouldFetch(@Nullable HashMap<String, List<Position>> data) {
+                return false;
+            }
 
-        });
+            @NonNull
+            @Override
+            protected LiveData<HashMap<String, List<Position>>> loadFromDb() {
+                List<Long> days = new ArrayList<>();
+                for (long i = searchFromDay;i<searchToDay;i +=86399230){
+                    days.add(i);
+                }
+                Collections.sort(days);
+
+
+                return Transformations.map(positionDao.getLivePositionsFromRange(searchFromDay, searchToDay), new Function<List<Position>, HashMap<String, List<Position>>>() {
+                    @Override
+                    public HashMap<String, List<Position>> apply(List<Position> input) {
+                        HashMap<String, List<Position>> positionMap = new HashMap<>();
+
+                        for (int i = 0; i < days.size(); i++) {
+                            Timber.d("making transformation for day: " + days.get(i));
+                            List<Position> positionsForDay = new ArrayList<>();
+                            for (Position p : input) {
+
+                                if (p.getFirstLocationDate() > days.get(i) && p.getFirstLocationDate() < days.get(i)+ 86399230) {
+                                    Timber.d("position from transformation = " + p.toString());
+                                    positionsForDay.add(p);
+                                }
+                            }
+
+                            positionMap.put(Converters.getDayFromMilis(days.get(i)), positionsForDay);
+                        }
+                        return positionMap;
+                    }
+                });
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<ApiResponse<HashMap<String, List<Position>>>> createCall() {
+                return AbsentLiveData.create();
+            }
+
+        }.asLiveData();
     }
+
 
     public void getUsers(String login, String password) {
         Call<List<User>> call = czoperApi.getUsers(login, password);
@@ -571,11 +612,31 @@ public class Repository {
 
     }
 
-    public List<User> getAllUsers() {
-        appExecutors.diskIO().execute(() -> {
-            allUsers = userDao.getAllUsers();
-        });
-        return allUsers;
+    public LiveData<Resource<List<String>>> getAllUsersNames() {
+        return new NetworkBoundResource<List<String>, List<String>>(appExecutors) {
+
+            @Override
+            protected void saveCallResult(@NonNull List<String> item) {
+
+            }
+
+            @Override
+            protected boolean shouldFetch(@Nullable List<String> data) {
+                return false;
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<List<String>> loadFromDb() {
+                return userDao.getAllUserNames();
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<ApiResponse<List<String>>> createCall() {
+                return AbsentLiveData.create();
+            }
+        }.asLiveData();
     }
 
     public LiveData<Geo> getLatestGeoForUser(int user_id) {
@@ -583,5 +644,60 @@ public class Repository {
             latestGeoForUser = geoDao.loadLatestGeoForUser(user_id);
         });
         return latestGeoForUser;
+    }
+
+    public LiveData<Resource<List<User>>> getAllUsers() {
+        return new NetworkBoundResource<List<User>, List<User>>(appExecutors) {
+
+            @Override
+            protected void saveCallResult(@NonNull List<User> item) {
+
+            }
+
+            @Override
+            protected boolean shouldFetch(@Nullable List<User> data) {
+                return false;
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<List<User>> loadFromDb() {
+                return userDao.getAllLiveUsers();
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<ApiResponse<List<User>>> createCall() {
+                return AbsentLiveData.create();
+            }
+        }.asLiveData();
+    }
+
+    public LiveData<Resource<List<Position>>> getPostionsForUserAndDay(String name, long rangeFrom, long rangeTo) {
+        return new NetworkBoundResource<List<Position>, List<Position>>(appExecutors) {
+
+
+            @Override
+            protected void saveCallResult(@NonNull List<Position> item) {
+
+            }
+
+            @Override
+            protected boolean shouldFetch(@Nullable List<Position> data) {
+                return true;
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<List<Position>> loadFromDb() {
+                return positionDao.loadPositionsForDayAndUser(name, rangeFrom, rangeTo);
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<ApiResponse<List<Position>>> createCall() {
+                return czoperApi.getPositionsForDayAndUser(name, rangeFrom, rangeTo);
+            }
+        }.asLiveData();
     }
 }

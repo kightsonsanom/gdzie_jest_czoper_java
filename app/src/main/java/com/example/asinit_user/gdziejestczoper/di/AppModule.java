@@ -3,24 +3,23 @@ package com.example.asinit_user.gdziejestczoper.di;
 
 import android.app.Application;
 import android.arch.persistence.room.Room;
-import android.content.Context;
 
-import com.example.asinit_user.gdziejestczoper.AppExecutors;
 import com.example.asinit_user.gdziejestczoper.api.CzoperApi;
 import com.example.asinit_user.gdziejestczoper.db.AppDatabase;
-import com.example.asinit_user.gdziejestczoper.db.Repository;
 import com.example.asinit_user.gdziejestczoper.db.SharedPreferencesRepo;
 import com.example.asinit_user.gdziejestczoper.db.dao.PositionDao;
 import com.example.asinit_user.gdziejestczoper.db.dao.GeoDao;
 import com.example.asinit_user.gdziejestczoper.db.dao.PositionGeoJoinDao;
 import com.example.asinit_user.gdziejestczoper.db.dao.UserDao;
-import com.example.asinit_user.gdziejestczoper.utils.GeoAdapter;
+import com.example.asinit_user.gdziejestczoper.utils.GeoDeserializingAdapter;
+import com.example.asinit_user.gdziejestczoper.utils.GeoSerializingAdapter;
 import com.example.asinit_user.gdziejestczoper.utils.LiveDataCallAdapterFactory;
-import com.example.asinit_user.gdziejestczoper.utils.PositionAdapter;
+//import com.example.asinit_user.gdziejestczoper.utils.PositionAdapter;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 
 import javax.inject.Singleton;
 
@@ -46,9 +45,12 @@ public class AppModule {
     @Singleton
     Gson provideGson(){
 
+        JsonDeserializer<Geo> deserializer = new GeoDeserializingAdapter();
+
         return new GsonBuilder()
-                .registerTypeAdapter(Geo.class, new GeoAdapter())
-                .registerTypeAdapter(Position.class, new PositionAdapter())
+                .registerTypeAdapter(Geo.class, new GeoSerializingAdapter())
+                .registerTypeAdapter(Geo.class, deserializer)
+//                .registerTypeAdapter(Position.class, new PositionAdapter())
                 .serializeNulls()
                 .setLenient()
                 .create();

@@ -11,7 +11,7 @@ import java.lang.reflect.Type;
 
 import timber.log.Timber;
 
-public class GeoAdapter implements JsonSerializer<Geo> {
+public class GeoSerializingAdapter implements JsonSerializer<Geo> {
 
 
     @Override

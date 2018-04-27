@@ -17,10 +17,11 @@ public class Position {
     public static final String COLUMN_END_DATE = "endDate";
     public static final String COLUMN_START_DATE = "startDate";
     public static final String COLUMN_LAST_LOCATION_DATE = "lastLocationDate";
+    public static final String COLUMN_FIRST_LOCATION_DATE = "firstLocationDate";
     public static final String COLUMN_START_LOCATION = "startLocation";
     public static final String COLUMN_END_LOCATION = "endLocation";
     public static final String COLUMN_STATUS = "status";
-
+    public static final String COLUMN_USER = "user_id";
 
     @PrimaryKey
     @NonNull
@@ -32,16 +33,24 @@ public class Position {
     private String endDate;
     @ColumnInfo(name = COLUMN_LAST_LOCATION_DATE)
     private long lastLocationDate;
+    @ColumnInfo(name = COLUMN_FIRST_LOCATION_DATE)
+    private long firstLocationDate;
     @ColumnInfo(name = COLUMN_START_LOCATION)
     private String startLocation;
     @ColumnInfo(name = COLUMN_END_LOCATION)
     private String endLocation;
     @ColumnInfo(name = COLUMN_STATUS)
     private String status;
-
+    @ColumnInfo(name = COLUMN_USER)
+    private int user_id;
 
     public Position() {
         position_id = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
+    }
+
+    public Position(int user_id) {
+        this.position_id = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
+        this.user_id = user_id;
     }
 
     @NonNull
@@ -101,16 +110,34 @@ public class Position {
         this.status = status;
     }
 
+    public long getFirstLocationDate() {
+        return firstLocationDate;
+    }
+
+    public void setFirstLocationDate(long firstLocationDate) {
+        this.firstLocationDate = firstLocationDate;
+    }
+
+    public int getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
+    }
+
     @Override
     public String toString() {
         return "Position{" +
-                "ID=" + position_id +
+                "position_id=" + position_id +
                 ", startDate='" + startDate + '\'' +
                 ", endDate='" + endDate + '\'' +
                 ", lastLocationDate=" + lastLocationDate +
+                ", firstLocationDate=" + firstLocationDate +
                 ", startLocation='" + startLocation + '\'' +
                 ", endLocation='" + endLocation + '\'' +
                 ", status='" + status + '\'' +
+                ", user_id=" + user_id +
                 '}';
     }
 }

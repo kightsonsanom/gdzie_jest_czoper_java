@@ -37,7 +37,6 @@ public class PositionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 PrzerwaItemBinding przerwaItemBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.przerwa_item, parent, false);
                 return new PrzerwaViewHolder(przerwaItemBinding);
         }
-
         return null;
     }
 

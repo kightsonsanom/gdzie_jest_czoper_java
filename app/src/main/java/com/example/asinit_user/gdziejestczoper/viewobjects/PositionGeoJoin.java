@@ -49,8 +49,9 @@ public class PositionGeoJoin {
     @Override
     public String toString() {
         return "PositionGeoJoin{" +
-                "positionID=" + positionId +
-                ", geoID=" + geoId +
+                "positionId=" + positionId +
+                ", geoId=" + geoId +
+                ", assignTime=" + assignTime +
                 '}';
     }
 }

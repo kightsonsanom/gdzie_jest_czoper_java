@@ -24,12 +24,20 @@ public class Geo {
         geo_id = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
     }
 
-    public Geo(Location location, long date, int user_id) {
+    public Geo(Location location, int user_id) {
         geo_id = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
         this.location = location;
-        this.date = date;
+        this.date = System.currentTimeMillis();
         this.user_id = user_id;
         displayText = "\nID = " + geo_id + "\nLatitude = " + location.getLatitude() + "\nLongitude = " + location.getLongitude() + "\nDate = " + date;
+    }
+
+    public Geo(@NonNull long geo_id, Location location, long date, String displayText, int user_id) {
+        this.geo_id = geo_id;
+        this.location = location;
+        this.date = date;
+        this.displayText = displayText;
+        this.user_id = user_id;
     }
 
     public String getDisplayText() {

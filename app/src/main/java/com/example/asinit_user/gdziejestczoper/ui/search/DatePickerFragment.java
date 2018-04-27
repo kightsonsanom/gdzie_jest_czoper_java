@@ -56,9 +56,11 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 
         if (date.equals(Constants.START_DATE)) {
             c.set(year, month, day,0,0,0);
+            Timber.d("from time in milis = " + c.getTimeInMillis());
             searchFragmentViewModelCallback.onStartDateSet(c.getTimeInMillis());
         } else if (date.equals(Constants.END_DATE)) {
             c.set(year, month, day,23,59,59);
+            Timber.d("to time in milis = " + c.getTimeInMillis());
             searchFragmentViewModelCallback.onEndDateSet(c.getTimeInMillis());
         }
 

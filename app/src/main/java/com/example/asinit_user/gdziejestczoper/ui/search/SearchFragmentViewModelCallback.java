@@ -6,6 +6,7 @@ import android.arch.lifecycle.LiveData;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface SearchFragmentViewModelCallback {
@@ -16,5 +17,5 @@ public interface SearchFragmentViewModelCallback {
 
     void setLatestGeo(Geo geo);
 
-    void setObservablePositions(LiveData<List<Position>> observablePositions);
+    void setObservablePositions(LiveData<HashMap<String, List<Position>>> observablePositions);
 }

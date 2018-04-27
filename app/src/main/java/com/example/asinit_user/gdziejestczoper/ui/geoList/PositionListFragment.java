@@ -2,6 +2,7 @@ package com.example.asinit_user.gdziejestczoper.ui.geoList;
 
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -12,17 +13,22 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 
 import com.example.asinit_user.gdziejestczoper.R;
 import com.example.asinit_user.gdziejestczoper.databinding.PositionListFragmentViewBinding;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
+
 import com.example.asinit_user.gdziejestczoper.viewobjects.Resource;
+import com.example.asinit_user.gdziejestczoper.viewobjects.User;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
+import timber.log.Timber;
 
 public class PositionListFragment extends Fragment {
 
@@ -35,7 +41,7 @@ public class PositionListFragment extends Fragment {
 
     private PositionListFragmentViewModel viewModel;
     private PositionListFragmentViewBinding binding;
-
+    private final Fragment currentFragment = this;
 
     @Override
     public void onAttach(Context context) {
@@ -57,13 +63,46 @@ public class PositionListFragment extends Fragment {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(PositionListFragmentViewModel.class);
         binding.setModel(viewModel);
 
-        LiveData<Resource<List<Position>>> positions = viewModel.getObservablePositions();
-        positions.observe(this, resource-> {
+        initUserList();
+
+        setEventListeners();
+    }
+
+    private void initUserList() {
+
+        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1);
+
+        viewModel.getObservableUserNames().observe(this, resource -> {
             if (resource != null && resource.data != null) {
-                positionsAdapter.setPositionsList(resource.data);
+                itemsAdapter.addAll(resource.data);
             }
         });
-        binding.positionRecycler.setAdapter(positionsAdapter);
 
+        binding.userList.setAdapter(itemsAdapter);
+    }
+
+
+    private void setEventListeners() {
+
+        binding.userList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                binding.positionRecycler.setAdapter(positionsAdapter);
+                LiveData<Resource<List<Position>>> positions = viewModel.getPositionsForUserAndDay(position);
+
+                positions.observe(currentFragment, resource -> {
+                    if (resource != null && resource.data != null) {
+                        viewModel.sortPositions(resource.data);
+                        positionsAdapter.setPositionsList(resource.data);
+                    }
+                });
+
+                binding.userList.setVisibility(View.GONE);
+                binding.currentDay.setVisibility(View.VISIBLE);
+                binding.positionRecycler.setVisibility(View.VISIBLE);
+
+//                viewModel.onListClick(position);
+            }
+        });
     }
 }

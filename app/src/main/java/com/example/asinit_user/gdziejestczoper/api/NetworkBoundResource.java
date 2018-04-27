@@ -27,6 +27,8 @@ import com.example.asinit_user.gdziejestczoper.viewobjects.Resource;
 
 import java.util.Objects;
 
+import timber.log.Timber;
+
 /**
  * A generic class that can provide a resource backed by both the sqlite database and the network.
  * <p>
@@ -50,6 +52,7 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
             if (shouldFetch(data)) {
                 fetchFromNetwork(dbSource);
             } else {
+
                 result.addSource(dbSource, newData -> setValue(Resource.success(newData)));
             }
         });
@@ -63,6 +66,7 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
     }
 
     private void fetchFromNetwork(final LiveData<ResultType> dbSource) {
+        Timber.d("fetching data from network");
         LiveData<ApiResponse<RequestType>> apiResponse = createCall();
         // we re-attach dbSource as a new source, it will dispatch its latest value quickly
         result.addSource(dbSource, newData -> setValue(Resource.loading(newData)));
@@ -70,7 +74,9 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
             result.removeSource(apiResponse);
             result.removeSource(dbSource);
             //noinspection ConstantConditions
+            Timber.d("response.body = " + response.body + " reponse.status =" + response.code);
             if (response.isSuccessful()) {
+                Timber.d("response succefull in fetchFromNetwork");
                 appExecutors.diskIO().execute(() -> {
                     saveCallResult(processResponse(response));
                     appExecutors.mainThread().execute(() ->

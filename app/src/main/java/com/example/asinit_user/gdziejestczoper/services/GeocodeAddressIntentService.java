@@ -42,15 +42,18 @@ public class GeocodeAddressIntentService extends IntentService {
             e.printStackTrace();
         }
 
-        Address address = addresses.get(0);
-        ArrayList<String> addressFragments = new ArrayList<String>();
+        if (addresses!=null) {
+            Address address = addresses.get(0);
+            ArrayList<String> addressFragments = new ArrayList<>();
 
-        for(int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
-            addressFragments.add(address.getAddressLine(i));
+            for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
+                addressFragments.add(address.getAddressLine(i));
+            }
+            deliverResultToReceiver(Constants.SUCCESS_RESULT, TextUtils.join(System.getProperty("line.separator"),
+                    addressFragments));
+        } else {
+            deliverResultToReceiver(Constants.FAILURE_RESULT, "nieznany");
         }
-        deliverResultToReceiver(Constants.SUCCESS_RESULT, TextUtils.join(System.getProperty("line.separator"),
-                        addressFragments));
-
     }
 
     private void deliverResultToReceiver(int resultCode, String message) {

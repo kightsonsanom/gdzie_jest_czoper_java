@@ -26,8 +26,8 @@ public interface PositionDao {
     @Query("SELECT * FROM " + Position.TABLE_NAME  + " ORDER BY lastLocationDate DESC LIMIT 1")
     Position loadLatestPosition();
 
-    @Query("SELECT * FROM " + Position.TABLE_NAME  + " WHERE position.startDate < :today")
-    List<Position> getPositionForToday(String today);
+//    @Query("SELECT * FROM " + Position.TABLE_NAME  + " WHERE position.startDate < :today")
+//    List<Position> getPositionForToday(String today);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<Position> positions);
@@ -41,34 +41,15 @@ public interface PositionDao {
     @Query("SELECT * FROM " + Position.TABLE_NAME)
     List<Position> getAllPositions();
 
-    @Query("SELECT * FROM " + Position.TABLE_NAME  + " WHERE (position.startDate > :searchFromDay AND position.startDate < :searchToDay)")
-    LiveData<List<Position>> getLivePositionsFromRange(String searchFromDay, String searchToDay);
+    @Query("SELECT * FROM " + Position.TABLE_NAME  + " WHERE (position.lastLocationDate > :searchFromDay AND position.lastLocationDate< :searchToDay)")
+    LiveData<List<Position>> getLivePositionsFromRange(long searchFromDay, long searchToDay);
 
-    @Query("SELECT * FROM " + Position.TABLE_NAME  + " WHERE (position.startDate > :searchFromDay AND position.startDate < :searchToDay)")
-    List<Position> getPositionsFromRange(String searchFromDay, String searchToDay);
+    @Query("SELECT * FROM " + Position.TABLE_NAME  + " WHERE (position.lastLocationDate > :searchFromDay AND position.lastLocationDate < :searchToDay)")
+    List<Position> getPositionsFromRange(long searchFromDay, long searchToDay);
 
     @Query("SELECT * FROM " + Position.TABLE_NAME + " WHERE position.lastLocationDate >= (SELECT position.lastLocationDate FROM position WHERE position.position_id = :positionIDFromPreferences)")
     List<Position> getPositionsSinceFailure(long positionIDFromPreferences);
 
-
-    /** Methods for communication with content provider*/
-
-    @Insert
-    long insert(Position position);
-
-    @Insert
-    long[] insertAll(Position[] positions);
-
-    @Query("SELECT * FROM " + Position.TABLE_NAME)
-    Cursor selectAll();
-
-    @Query("SELECT * FROM " + Position.TABLE_NAME  + " WHERE position.position_id = :id")
-    Cursor selectById(long id);
-
-    @Query("DELETE FROM " + Position.TABLE_NAME  + " WHERE position.position_id = :id")
-    int deleteById(long id);
-
-    @Update
-    int update(Position position);
-
+    @Query("SELECT * FROM " + Position.TABLE_NAME + " p INNER JOIN (SELECT user_id from user WHERE nazwa = :nazwa) t on p.user_id = t.user_id WHERE (p.firstLocationDate > :fromDate AND p.lastLocationDate < :toDate) ")
+    LiveData<List<Position>> loadPositionsForDayAndUser(String nazwa, long fromDate, long toDate);
 }

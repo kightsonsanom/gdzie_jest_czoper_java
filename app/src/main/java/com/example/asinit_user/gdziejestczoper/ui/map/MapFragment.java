@@ -56,9 +56,9 @@ public class MapFragment extends Fragment {
     }
 
     private void subscribeToModel(MapViewModel viewModel) {
-        viewModel.getObservableGeo().observe(this, mapGeo-> {
-            if (mapGeo!=null && mapGeo.data != null) {
-                viewModel.setMapGeos(mapGeo.data);
+        viewModel.getObservableGeo().observe(this, geos-> {
+            if (geos!=null && geos.data != null) {
+                viewModel.setMapGeos(geos.data);
             }
         });
     }

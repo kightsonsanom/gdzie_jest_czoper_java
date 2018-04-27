@@ -122,12 +122,13 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
         synchronized (lock) {
             sendGeo(newGeo);
 
-            if (latestGeoFromDb == null) {
+            if (latestGeoFromDb == null || latestPositionFromDb == null) {
                 Timber.d("latestPositionFromDb is null lub geo za stare");
 
-                newPosition = new Position();
+                newPosition = new Position(userID);
                 newPosition.setStartLocation(locationAddress);
                 newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
+                newPosition.setFirstLocationDate(newGeo.getDate());
                 newPosition.setStatus("Nieznany");
                 newPosition.setLastLocationDate(newGeo.getDate());
 
@@ -135,14 +136,14 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 
             } else if (isLatestGeoFromDbTooOld()) {
                 Timber.d("Geo za stare");
-                newPosition = new Position();
+                newPosition = new Position(userID);
                 newPosition.setStartDate(Converters.longToString(latestGeoFromDb.getDate()));
                 newPosition.setEndDate(Converters.longToString(newGeo.getDate()));
                 newPosition.setStatus("Przerwa");
 
                 sendPosition(newPosition);
 
-                newPosition = new Position();
+                newPosition = new Position(userID);
                 newPosition.setStartLocation(locationAddress);
                 newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
                 newPosition.setStatus("Nieznany");
@@ -179,7 +180,7 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
                 if (isLastGeoFarAway()) {
                     Timber.d("bylo przemieszczenie");
 
-                    newPosition = new Position();
+                    newPosition = new Position(userID);
                     newPosition.setStatus("Ruch");
                     newPosition.setStartLocation(locationAddress);
                     newPosition.setLastLocationDate(newGeo.getDate() + NEW_POSITION_OFFSET);
@@ -202,7 +203,7 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
                     Timber.d("nie bylo przemieszczenia");
 
 
-                    newPosition = new Position();
+                    newPosition = new Position(userID);
                     newPosition.setStatus("Postój");
                     newPosition.setStartLocation(locationAddress);
                     newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
@@ -216,11 +217,13 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
             }
 
             if (newPosition != null) {
-                PositionGeoJoin positionGeoJoin = new PositionGeoJoin(newPosition.getPosition_id(), newGeo.getGeo_id(),newGeo.getDate());
+                PositionGeoJoin positionGeoJoin = new PositionGeoJoin(newPosition.getPosition_id(), newGeo.getGeo_id(), newGeo.getDate());
                 Timber.d("assignGeoToPosition = " + positionGeoJoin.toString());
                 assignGeoToPosition(positionGeoJoin);
             } else {
-                assignGeoToPosition(new PositionGeoJoin(latestPositionFromDb.getPosition_id(), newGeo.getGeo_id(), newGeo.getDate()));
+                PositionGeoJoin positionGeoJoin = new PositionGeoJoin(latestPositionFromDb.getPosition_id(), newGeo.getGeo_id(), newGeo.getDate());
+                Timber.d("assignGeoToPosition = " + positionGeoJoin.toString());
+                assignGeoToPosition(positionGeoJoin);
             }
 
 
@@ -245,7 +248,7 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
     }
 
     public void getLocationAddress(Location location) {
-        newGeo = new Geo(location, location.getTime(), userID);
+        newGeo = new Geo(location, userID);
 
         Timber.d("getLocationAddress");
         Intent intent = new Intent(context, GeocodeAddressIntentService.class);
@@ -314,8 +317,16 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
-            locationAddress = resultData.getString(Constants.RESULT_DATA_KEY);
-            getLastPositionFromDb();
+            switch (resultCode) {
+                case Constants.SUCCESS_RESULT:
+                    locationAddress = resultData.getString(Constants.RESULT_DATA_KEY);
+                    getLastPositionFromDb();
+                case Constants.FAILURE_RESULT:
+                    getLastPositionFromDb();
+
+                default:
+            }
+
         }
     }
 
