@@ -11,10 +11,12 @@ import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
 
 import java.util.List;
 
+import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
+
 @Dao
 public interface PositionGeoJoinDao {
 
-    @Insert
+    @Insert(onConflict = REPLACE)
     void insert (PositionGeoJoin positionGeoJoin);
 
 
