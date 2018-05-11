@@ -28,7 +28,7 @@ public class GeoDeserializingAdapter implements JsonDeserializer<Geo> {
             location.setLongitude(Double.parseDouble(locationString[1]));
 
         Geo geo = new Geo(
-                jsonObject.get("user_id").getAsLong(),
+                jsonObject.get("geo_id").getAsLong(),
                 location,
                 jsonObject.get("date").getAsLong(),
                 jsonObject.get("displayText").getAsString(),

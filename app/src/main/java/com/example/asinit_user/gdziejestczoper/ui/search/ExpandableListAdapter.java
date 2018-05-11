@@ -18,6 +18,7 @@ import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 import timber.log.Timber;
 
@@ -25,7 +26,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     private Context context;
     private List<String> days;
-    private HashMap<String, List<Position>> positions;
+    private TreeMap<String, List<Position>> positions;
 
     public ExpandableListAdapter(Context context) {
         this.context = context;
@@ -39,11 +40,11 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         this.days = days;
     }
 
-    public HashMap<String, List<Position>> getPositions() {
+    public TreeMap<String, List<Position>> getPositions() {
         return positions;
     }
 
-    public void setPositions(HashMap<String, List<Position>> positions) {
+    public void setPositions(TreeMap<String, List<Position>> positions) {
         this.positions = positions;
 
         List<String> days = new ArrayList<>(positions.keySet());

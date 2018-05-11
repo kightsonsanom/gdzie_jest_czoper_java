@@ -2,7 +2,6 @@ package com.example.asinit_user.gdziejestczoper.ui.geoList;
 
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -18,6 +17,7 @@ import android.widget.ArrayAdapter;
 
 import com.example.asinit_user.gdziejestczoper.R;
 import com.example.asinit_user.gdziejestczoper.databinding.PositionListFragmentViewBinding;
+import com.example.asinit_user.gdziejestczoper.utils.Converters;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 
 import com.example.asinit_user.gdziejestczoper.viewobjects.Resource;
@@ -92,7 +92,9 @@ public class PositionListFragment extends Fragment {
 
                 positions.observe(currentFragment, resource -> {
                     if (resource != null && resource.data != null) {
-                        viewModel.sortPositions(resource.data);
+                        displayPositions(resource.data);
+                        Converters.sortPositions(resource.data);
+                        displayPositions(resource.data);
                         positionsAdapter.setPositionsList(resource.data);
                     }
                 });
@@ -104,5 +106,12 @@ public class PositionListFragment extends Fragment {
 //                viewModel.onListClick(position);
             }
         });
+    }
+
+    private void displayPositions(List<Position> data) {
+        Timber.d("before and after");
+        for (Position p : data) {
+            Timber.d(" position = " + p);
+        }
     }
 }

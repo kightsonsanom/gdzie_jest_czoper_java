@@ -30,6 +30,8 @@ public class GeocodeAddressIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
+
+        Timber.d("onHandleIntent from geocoder");
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         List<Address> addresses = null;
 
@@ -38,22 +40,34 @@ public class GeocodeAddressIntentService extends IntentService {
 
         try {
             addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        if (addresses!=null) {
-            Address address = addresses.get(0);
-            ArrayList<String> addressFragments = new ArrayList<>();
+            if (addresses != null) {
+                Address address = addresses.get(0);
+                String addressString;
 
-            for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
-                addressFragments.add(address.getAddressLine(i));
+                addressString = address.getThoroughfare() + ", " + address.getSubThoroughfare();
+                deliverResultToReceiver(Constants.SUCCESS_RESULT, addressString);
+            } else {
+                Timber.d("geocoding addresses are null");
+                repeatGeocoding(Constants.FAILURE_RESULT, location);
             }
-            deliverResultToReceiver(Constants.SUCCESS_RESULT, TextUtils.join(System.getProperty("line.separator"),
-                    addressFragments));
-        } else {
-            deliverResultToReceiver(Constants.FAILURE_RESULT, "nieznany");
+        } catch (
+                Exception e)
+
+        {
+            e.printStackTrace();
+
+            Timber.d("geocoding failed");
+            repeatGeocoding(Constants.FAILURE_RESULT, location);
+            onDestroy();
         }
+
+    }
+
+    private void repeatGeocoding(int failureResult, Location location) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("location", location);
+        resultReceiver.send(failureResult, bundle);
     }
 
     private void deliverResultToReceiver(int resultCode, String message) {
@@ -61,6 +75,7 @@ public class GeocodeAddressIntentService extends IntentService {
         bundle.putString(Constants.RESULT_DATA_KEY, message);
         resultReceiver.send(resultCode, bundle);
     }
+
 
     @Override
     public void onDestroy() {

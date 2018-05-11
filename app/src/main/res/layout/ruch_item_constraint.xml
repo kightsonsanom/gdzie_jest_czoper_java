@@ -37,11 +37,11 @@
 
         <TextView
             android:id="@+id/ruch_start_time"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="52dp"
             android:layout_marginTop="20dp"
-            android:text="@{position.startDate}"
+            android:text="ruch srart time"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -66,7 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="32dp"
             android:layout_marginTop="20dp"
-            android:text="@{position.endDate}"
+            android:text="ruch_stop_time"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -77,10 +77,12 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:layout_marginStart="52dp"
-            android:text="@{position.startLocation}"
-            app:layout_constraintTop_toBottomOf="@id/ruch_start_time"
+            android:layout_marginTop="8dp"
+            android:text="ruch_gdzie_od"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ruch_start_time"
+            app:layout_constraintVertical_bias="1.0" />
 
 
         <TextView
@@ -89,8 +91,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="32dp"
-            android:text="@{position.endLocation}"
-            app:layout_constraintTop_toBottomOf="@id/ruch_stop_time"
+            android:text="ruch_gdzie_do"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

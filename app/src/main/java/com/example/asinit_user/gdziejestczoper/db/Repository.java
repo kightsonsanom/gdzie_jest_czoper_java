@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 
 import javax.inject.Inject;
@@ -102,7 +103,6 @@ public class Repository {
         observableGeo = new MediatorLiveData<>();
         observableGeo.addSource(geoDao.loadLatestLiveDataGeo(),
                 geo -> observableGeo.postValue(geo));
-
     }
 
     public void setPositionManagerCallback(PositionManagerCallback positionManagerCallback) {
@@ -160,7 +160,11 @@ public class Repository {
             @Override
             protected LiveData<List<Geo>> loadFromDb() {
                 Timber.d("Loading data from db");
-                return Transformations.map(geoDao.getLatestGeoForDistinctUsers(new SimpleSQLiteQuery("SELECT geo_id,location, min(date), displayText, user_id FROM geo GROUP BY user_id")), new Function<List<Geo>, List<Geo>>() {
+                return Transformations.map(geoDao.getLatestGeoForDistinctUsers(new SimpleSQLiteQuery("SELECT g.* FROM geo g  INNER JOIN (\n" +
+                        "    SELECT user_id, MAX(date) maxCzas\n" +
+                        "    FROM `geo`\n" +
+                        "    GROUP BY user_id\n" +
+                        "    ) t ON g.user_id=t.user_id AND g.date = t.maxCzas")), new Function<List<Geo>, List<Geo>>() {
                     @Override
                     public List<Geo> apply(List<Geo> input) {
                         for (Geo geo : input) {
@@ -505,47 +509,49 @@ public class Repository {
 //        });
 //    }
 
-    public LiveData<Resource<HashMap<String,List<Position>>>> getPositionsFromRange(long searchFromDay, long searchToDay) {
+    public LiveData<Resource<TreeMap<String,List<Position>>>> getPositionsFromRange(long searchFromDay, long searchToDay) {
         Timber.d("getPositionsFromRange method searchFromDay = " + searchFromDay + " searchToDay = " + searchToDay);
-        return new NetworkBoundResource<HashMap<String, List<Position>>, HashMap<String, List<Position>>>(appExecutors) {
+        return new NetworkBoundResource<TreeMap<String, List<Position>>, TreeMap<String, List<Position>>>(appExecutors) {
             @Override
-            protected void saveCallResult(@NonNull HashMap<String, List<Position>> item) {
+            protected void saveCallResult(@NonNull TreeMap<String, List<Position>> item) {
 
             }
 
             @Override
-            protected boolean shouldFetch(@Nullable HashMap<String, List<Position>> data) {
+            protected boolean shouldFetch(@Nullable TreeMap<String, List<Position>> data) {
                 return false;
             }
 
             @NonNull
             @Override
-            protected LiveData<HashMap<String, List<Position>>> loadFromDb() {
+            protected LiveData<TreeMap<String, List<Position>>> loadFromDb() {
                 List<Long> days = new ArrayList<>();
-                for (long i = searchFromDay;i<searchToDay;i +=86399230){
+                for (long i = searchFromDay;i<searchToDay;i +=86400000){
                     days.add(i);
                 }
                 Collections.sort(days);
 
 
-                return Transformations.map(positionDao.getLivePositionsFromRange(searchFromDay, searchToDay), new Function<List<Position>, HashMap<String, List<Position>>>() {
+                return Transformations.map(positionDao.getLivePositionsFromRange(searchFromDay, searchToDay), new Function<List<Position>, TreeMap<String, List<Position>>>() {
                     @Override
-                    public HashMap<String, List<Position>> apply(List<Position> input) {
-                        HashMap<String, List<Position>> positionMap = new HashMap<>();
+                    public TreeMap<String, List<Position>> apply(List<Position> input) {
+                        TreeMap<String, List<Position>> positionMap = new TreeMap<>();
 
                         for (int i = 0; i < days.size(); i++) {
                             Timber.d("making transformation for day: " + days.get(i));
                             List<Position> positionsForDay = new ArrayList<>();
                             for (Position p : input) {
 
-                                if (p.getFirstLocationDate() > days.get(i) && p.getFirstLocationDate() < days.get(i)+ 86399230) {
+                                if (p.getFirstLocationDate() > days.get(i) && p.getFirstLocationDate() < days.get(i)+ 86400000) {
                                     Timber.d("position from transformation = " + p.toString());
                                     positionsForDay.add(p);
                                 }
                             }
-
+                            Converters.sortPositions(positionsForDay);
                             positionMap.put(Converters.getDayFromMilis(days.get(i)), positionsForDay);
+
                         }
+                        Timber.d("map size = " + positionMap.size());
                         return positionMap;
                     }
                 });
@@ -553,7 +559,7 @@ public class Repository {
 
             @NonNull
             @Override
-            protected LiveData<ApiResponse<HashMap<String, List<Position>>>> createCall() {
+            protected LiveData<ApiResponse<TreeMap<String, List<Position>>>> createCall() {
                 return AbsentLiveData.create();
             }
 
@@ -679,7 +685,7 @@ public class Repository {
 
             @Override
             protected void saveCallResult(@NonNull List<Position> item) {
-
+                positionDao.insertAll(item);
             }
 
             @Override
@@ -699,5 +705,9 @@ public class Repository {
                 return czoperApi.getPositionsForDayAndUser(name, rangeFrom, rangeTo);
             }
         }.asLiveData();
+    }
+
+    public void setNewLocation(Location location) {
+        positionManagerCallback.setNewLocation(location);
     }
 }

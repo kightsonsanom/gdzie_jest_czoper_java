@@ -76,7 +76,6 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
             //noinspection ConstantConditions
             Timber.d("response.body = " + response.body + " reponse.status =" + response.code);
             if (response.isSuccessful()) {
-                Timber.d("response succefull in fetchFromNetwork");
                 appExecutors.diskIO().execute(() -> {
                     saveCallResult(processResponse(response));
                     appExecutors.mainThread().execute(() ->

@@ -56,8 +56,8 @@ public class PositionListFragmentViewModel extends ViewModel {
 
     public LiveData<Resource<List<Position>>> getPositionsForUserAndDay(int position) {
         String name = observableUserNames.getValue().data.get(position);
-        long timeFrom = System.currentTimeMillis() - (System.currentTimeMillis() % 86399230);
-        long timeTo = System.currentTimeMillis() - (System.currentTimeMillis() % 86399230) + 86399230;
+        long timeFrom = System.currentTimeMillis() - (System.currentTimeMillis() % 86400000 );
+        long timeTo = System.currentTimeMillis() - (System.currentTimeMillis() % 86400000 ) + 86400000 ;
 
 
         mObservablePositions = repository.getPostionsForUserAndDay(name, timeFrom, timeTo);
@@ -68,7 +68,5 @@ public class PositionListFragmentViewModel extends ViewModel {
         return observableUserNames;
     }
 
-    public void sortPositions(List<Position> data) {
-        Collections.sort(data, (o1, o2) -> (o1.getFirstLocationDate() - o2.getFirstLocationDate() > 0) ? 1 : 0);
-    }
+
 }

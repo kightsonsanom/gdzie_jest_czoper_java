@@ -46,7 +46,8 @@
                 <!--android:resource="@xml/authenticator" />-->
         <!--</service>-->
 
-        <receiver android:name=".services.AlarmReceiver" />
+        <receiver android:name=".services.AlarmReceiver"
+            android:directBootAware="true" />
 
         <!--<provider-->
             <!--android:name=".sync.CzoperContentProvider"-->

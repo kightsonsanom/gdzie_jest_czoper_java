@@ -5,6 +5,8 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -115,6 +117,19 @@ public class SearchFragment extends Fragment {
             }
         });
 
+
+        binding.acceptGeoBtn.setOnClickListener((v) -> {
+
+            String latitude = binding.latitude.getText().toString();
+            String longitude = binding.longitude.getText().toString();
+            Location location = new Location(LocationManager.GPS_PROVIDER);
+
+            location.setLatitude(Double.parseDouble(latitude));
+            location.setLongitude(Double.parseDouble(longitude));
+            location.setTime(System.currentTimeMillis());
+            viewModel.setNewLocation(location);
+
+        });
 
 //        binding.getPosBtn.setOnClickListener((v) -> {
 //            viewModel.getLatestGeo();

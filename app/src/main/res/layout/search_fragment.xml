@@ -83,6 +83,43 @@
 
         </LinearLayout>
 
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="20dp"
+            android:gravity="center">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <EditText
+                    android:id="@+id/latitude"
+                    android:hint="latitude"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/longitude"
+                    android:hint="longitude"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/accept_geo_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="zatwierdz"/>
+        </LinearLayout>
+
         <TextView
             android:id="@+id/position_from_today"
             android:layout_width="wrap_content"
@@ -91,13 +128,6 @@
             android:text="@{model.latestGeo}" />
 
 
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/position_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            app:layoutManager="LinearLayoutManager" />
 
         <ExpandableListView
             android:id="@+id/positions_expandable"

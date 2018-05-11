@@ -1,12 +1,16 @@
 package com.example.asinit_user.gdziejestczoper.utils;
 
 
+import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -49,5 +53,9 @@ public class Converters {
         Date date = new Date(i);
         SimpleDateFormat format = new SimpleDateFormat("dd MMM", new Locale("pl"));
         return format.format(date);
+    }
+
+    public static void sortPositions(List<Position> data) {
+        Collections.sort(data, (o1, o2) -> ((int)(o1.getFirstLocationDate() - o2.getFirstLocationDate())));
     }
 }

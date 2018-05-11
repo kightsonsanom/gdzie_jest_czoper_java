@@ -92,7 +92,7 @@ public class NavigationActivity extends AppCompatActivity implements HasSupportF
         }
 
         Intent intent = new Intent(this, AlarmReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(this, INTENT_ID, intent, 0);
+        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), INTENT_ID, intent, 0);
     }
 
     @Override

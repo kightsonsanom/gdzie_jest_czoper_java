@@ -21,6 +21,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Timber.d("received broadcast from alarm manager");
         GeoJobIntentService.enqueueWork(context, intent);
     }
 }

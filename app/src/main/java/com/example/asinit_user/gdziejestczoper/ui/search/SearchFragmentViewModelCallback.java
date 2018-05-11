@@ -8,6 +8,7 @@ import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 public interface SearchFragmentViewModelCallback {
 
@@ -17,5 +18,5 @@ public interface SearchFragmentViewModelCallback {
 
     void setLatestGeo(Geo geo);
 
-    void setObservablePositions(LiveData<HashMap<String, List<Position>>> observablePositions);
+    void setObservablePositions(LiveData<TreeMap<String, List<Position>>> observablePositions);
 }

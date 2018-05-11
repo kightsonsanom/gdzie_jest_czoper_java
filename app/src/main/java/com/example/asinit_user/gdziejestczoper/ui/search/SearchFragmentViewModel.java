@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.databinding.ObservableField;
+import android.location.Location;
 
 import com.example.asinit_user.gdziejestczoper.db.Repository;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
@@ -16,6 +17,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.TreeMap;
 
 import javax.inject.Inject;
 
@@ -27,7 +29,7 @@ public class SearchFragmentViewModel extends ViewModel implements SearchFragment
     public ObservableField<String> endDate = new ObservableField<>();
     public ObservableField<String> latestGeo = new ObservableField<>();
 
-    private  MediatorLiveData<HashMap<String,List<Position>>> mObservablePositions;
+    private  MediatorLiveData<TreeMap<String,List<Position>>> mObservablePositions;
 
     private Repository repository;
     //    private String searchToDay;
@@ -45,7 +47,7 @@ public class SearchFragmentViewModel extends ViewModel implements SearchFragment
         mObservablePositions.setValue(null);
     }
 
-    public LiveData<HashMap<String,List<Position>>> getObservablePositions() {
+    public LiveData<TreeMap<String,List<Position>>> getObservablePositions() {
         return mObservablePositions;
     }
 
@@ -101,11 +103,15 @@ public class SearchFragmentViewModel extends ViewModel implements SearchFragment
     }
 
     @Override
-    public void setObservablePositions(LiveData<HashMap<String, List<Position>>> observablePositions) {
+    public void setObservablePositions(LiveData<TreeMap<String, List<Position>>> observablePositions) {
 //        mObservablePositions.addSource(observablePositions, mObservablePositions::setValue);
     }
 
     public void getLatestGeo() {
         repository.getLatestGeoForTests();
+    }
+
+    public void setNewLocation(Location location) {
+        repository.setNewLocation(location);
     }
 }
