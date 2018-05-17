@@ -32,36 +32,31 @@ public class GeocodeAddressIntentService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
 
         Timber.d("onHandleIntent from geocoder");
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        Geocoder geocoder = new Geocoder(this, new Locale("pl_PL"));
         List<Address> addresses = null;
 
         Location location = intent.getParcelableExtra(Constants.LOCATION_DATA_EXTRA);
         resultReceiver = intent.getParcelableExtra(Constants.RECEIVER);
 
+
         try {
             addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-            if (addresses != null) {
+        if (addresses != null) {
                 Address address = addresses.get(0);
                 String addressString;
 
                 addressString = address.getThoroughfare() + ", " + address.getSubThoroughfare();
                 deliverResultToReceiver(Constants.SUCCESS_RESULT, addressString);
-            } else {
-                Timber.d("geocoding addresses are null");
-                repeatGeocoding(Constants.FAILURE_RESULT, location);
             }
-        } catch (
-                Exception e)
-
-        {
-            e.printStackTrace();
-
-            Timber.d("geocoding failed");
-            repeatGeocoding(Constants.FAILURE_RESULT, location);
-            onDestroy();
-        }
-
+            else {
+                Timber.d("geocoding addresses are null");
+//                repeatGeocoding(Constants.FAILURE_RESULT, location);
+                deliverResultToReceiver(Constants.SUCCESS_RESULT, "Geocoding poległ");
+            }
     }
 
     private void repeatGeocoding(int failureResult, Location location) {
