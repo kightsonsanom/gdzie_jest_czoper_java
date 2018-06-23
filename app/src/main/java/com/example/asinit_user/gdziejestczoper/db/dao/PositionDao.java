@@ -12,6 +12,7 @@ import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 
 import java.util.List;
 
+import static android.arch.persistence.room.OnConflictStrategy.IGNORE;
 import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 
 @Dao
@@ -29,7 +30,7 @@ public interface PositionDao {
 //    @Query("SELECT * FROM " + Position.TABLE_NAME  + " WHERE position.startDate < :today")
 //    List<Position> getPositionForToday(String today);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = IGNORE)
     void insertAll(List<Position> positions);
 
     @Insert(onConflict = REPLACE)

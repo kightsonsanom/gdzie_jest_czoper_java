@@ -69,6 +69,8 @@ public class SearchFragment extends Fragment {
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(SearchFragmentViewModel.class);
         binding.setModel(viewModel);
+        binding.latitude.setText("51.965");
+        binding.longitude.setText("15.534");
 
         setOnClickListeners();
 

@@ -161,6 +161,8 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
                     Timber.d("bylo przemieszczenie");
                     latestPositionFromDb.setStatus("Ruch");
                     latestPositionFromDb.setEndLocation(locationAddress);
+                    latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
+
 
                 } else {
                     Timber.d("nie bylo przemieszczenia");
@@ -296,6 +298,7 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 
     @Override
     public void setNewLocation(Location location) {
+        Timber.d("nowe location z łapy");
         assignLocationToGeo(location);
     }
 

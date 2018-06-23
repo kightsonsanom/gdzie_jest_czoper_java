@@ -15,6 +15,7 @@ import com.example.asinit_user.gdziejestczoper.utils.GeoDeserializingAdapter;
 import com.example.asinit_user.gdziejestczoper.utils.GeoSerializingAdapter;
 import com.example.asinit_user.gdziejestczoper.utils.LiveDataCallAdapterFactory;
 //import com.example.asinit_user.gdziejestczoper.utils.PositionAdapter;
+import com.example.asinit_user.gdziejestczoper.utils.PositionAdapter;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 import com.google.gson.Gson;
@@ -50,7 +51,7 @@ public class AppModule {
         return new GsonBuilder()
                 .registerTypeAdapter(Geo.class, new GeoSerializingAdapter())
                 .registerTypeAdapter(Geo.class, deserializer)
-//                .registerTypeAdapter(Position.class, new PositionAdapter())
+                .registerTypeAdapter(Position.class, new PositionAdapter())
                 .serializeNulls()
                 .setLenient()
                 .create();

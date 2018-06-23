@@ -1,6 +1,5 @@
 package com.example.asinit_user.gdziejestczoper.db;
 
-
 import android.arch.core.util.Function;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
@@ -32,14 +31,11 @@ import com.example.asinit_user.gdziejestczoper.ui.search.SearchFragmentViewModel
 import com.example.asinit_user.gdziejestczoper.viewobjects.RemotePositionGeoJoin;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Resource;
 import com.example.asinit_user.gdziejestczoper.viewobjects.User;
-import com.google.android.gms.common.api.Api;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.concurrent.locks.Lock;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -595,6 +591,7 @@ public class Repository {
     private void saveUserIDToPreferences(String login, List<User> userList) {
         for (User user : userList) {
             if (user.getLogin().equals(login)) {
+                Timber.d("user.getLogin = " + user.getLogin() + " " + user.getUser_id() );
                 sharedPreferencesRepo.setUserID(user.getUser_id());
             }
         }
@@ -704,6 +701,7 @@ public class Repository {
             protected LiveData<ApiResponse<List<Position>>> createCall() {
                 return czoperApi.getPositionsForDayAndUser(name, rangeFrom, rangeTo);
             }
+
         }.asLiveData();
     }
 
