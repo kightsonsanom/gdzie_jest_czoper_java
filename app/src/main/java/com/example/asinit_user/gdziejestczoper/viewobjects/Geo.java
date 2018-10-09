@@ -14,26 +14,26 @@ public class Geo {
 
     @PrimaryKey
     @NonNull
-    private long geo_id;
+    private long id;
     private Location location;
     private long date;
     private String displayText;
     private int user_id;
 
     public Geo() {
-        geo_id = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
+        id = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
     }
 
     public Geo(Location location, int user_id) {
-        geo_id = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
+        id = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
         this.location = location;
         this.date = System.currentTimeMillis();
         this.user_id = user_id;
-        displayText = "\nID = " + geo_id + "\nLatitude = " + location.getLatitude() + "\nLongitude = " + location.getLongitude() + "\nDate = " + date;
+        displayText = "\nID = " + id + "\nLatitude = " + location.getLatitude() + "\nLongitude = " + location.getLongitude() + "\nDate = " + date;
     }
 
     public Geo(@NonNull long geo_id, Location location, long date, String displayText, int user_id) {
-        this.geo_id = geo_id;
+        this.id = geo_id;
         this.location = location;
         this.date = date;
         this.displayText = displayText;
@@ -49,12 +49,12 @@ public class Geo {
     }
 
     @NonNull
-    public long getGeo_id() {
-        return geo_id;
+    public long getId() {
+        return id;
     }
 
-    public void setGeo_id(@NonNull long geo_id) {
-        this.geo_id = geo_id;
+    public void setId(@NonNull long id) {
+        this.id = id;
     }
 
     public Location getLocation() {
@@ -84,7 +84,7 @@ public class Geo {
     @Override
     public String toString() {
         return "Geo{" +
-                "geo_id=" + geo_id +
+                "geo_id=" + id +
                 ", location=" + location +
                 ", date=" + date +
                 ", displayText='" + displayText + '\'' +

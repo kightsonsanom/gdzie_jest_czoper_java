@@ -22,7 +22,7 @@ public class PositionAdapter implements JsonSerializer<Position> {
         Timber.d("Serializing position: " + src.toString());
 
 
-        obj.addProperty("position_id", src.getPosition_id());
+        obj.addProperty("id", src.getId());
         obj.addProperty("endDate", src.getEndDate());
         obj.addProperty("endLocation", src.getEndLocation());
         obj.addProperty("lastLocationDate", src.getLastLocationDate());
@@ -30,7 +30,6 @@ public class PositionAdapter implements JsonSerializer<Position> {
         obj.addProperty("startDate", src.getStartDate());
         obj.addProperty("startLocation", src.getStartLocation());
         obj.addProperty("status", src.getStatus());
-        obj.addProperty("user_id", src.getUser_id());
 
         return obj;
     }

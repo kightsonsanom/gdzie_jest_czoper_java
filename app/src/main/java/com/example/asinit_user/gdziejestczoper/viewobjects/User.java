@@ -18,6 +18,15 @@ public class User {
     private String login;
     private String password;
 
+    public User() {
+    }
+
+    public User(@NonNull int user_id, String nazwa, String login, String password) {
+        this.user_id = user_id;
+        this.nazwa = nazwa;
+        this.login = login;
+        this.password = password;
+    }
 
     @NonNull
     public int getUser_id() {

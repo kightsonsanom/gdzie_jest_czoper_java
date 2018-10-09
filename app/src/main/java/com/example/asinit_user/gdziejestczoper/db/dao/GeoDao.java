@@ -22,7 +22,7 @@ public interface GeoDao {
     @Query("SELECT * FROM geo")
     LiveData<List<Geo>> loadGeos();
 
-    @Query("SELECT * FROM geo i WHERE i.geo_id = :geoID")
+    @Query("SELECT * FROM geo i WHERE i.id = :geoID")
     LiveData<Geo> loadGeo(long geoID);
 
     @Query("SELECT * FROM geo ORDER BY date DESC LIMIT 1")
@@ -34,7 +34,7 @@ public interface GeoDao {
     @Query("SELECT * FROM geo")
     List<Geo> getAllGeos();
 
-    @Query("SELECT * FROM " + Geo.TABLE_NAME + " WHERE geo.date >= (SELECT geo.date FROM geo WHERE geo.geo_id = :geoIDFromPreferences)")
+    @Query("SELECT * FROM " + Geo.TABLE_NAME + " WHERE geo.date >= (SELECT geo.date FROM geo WHERE geo.id = :geoIDFromPreferences)")
     List<Geo> getGeosSinceFailure(long geoIDFromPreferences);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

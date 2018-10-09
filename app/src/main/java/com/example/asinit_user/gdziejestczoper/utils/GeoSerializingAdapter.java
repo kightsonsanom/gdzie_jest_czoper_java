@@ -19,11 +19,10 @@ public class GeoSerializingAdapter implements JsonSerializer<Geo> {
         JsonObject obj = new JsonObject();
         Timber.d("Serializing geo: " + src.toString());
         String locationString = src.getLocation().getLatitude()+", " + src.getLocation().getLongitude();
-        obj.addProperty("geo_id",src.getGeo_id());
+        obj.addProperty("id",src.getId());
         obj.addProperty("date",src.getDate());
         obj.addProperty("displayText",src.getDisplayText());
         obj.addProperty("location", locationString);
-        obj.addProperty("user_id", src.getUser_id());
 
         return obj;
     }

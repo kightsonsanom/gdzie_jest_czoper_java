@@ -46,11 +46,9 @@ public class AppModule {
     @Singleton
     Gson provideGson(){
 
-        JsonDeserializer<Geo> deserializer = new GeoDeserializingAdapter();
-
         return new GsonBuilder()
                 .registerTypeAdapter(Geo.class, new GeoSerializingAdapter())
-                .registerTypeAdapter(Geo.class, deserializer)
+                .registerTypeAdapter(Geo.class, new GeoDeserializingAdapter())
                 .registerTypeAdapter(Position.class, new PositionAdapter())
                 .serializeNulls()
                 .setLenient()
@@ -67,7 +65,7 @@ public class AppModule {
 
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.1.26:8080/tutorial/webapi/")
+                .baseUrl("http://192.168.1.2:8080/api/")
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(new LiveDataCallAdapterFactory())

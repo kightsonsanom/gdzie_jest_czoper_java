@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/MVVMApplication.iml" filepath="$PROJECT_DIR$/MVVMApplication.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gdziejestczoper.iml" filepath="$PROJECT_DIR$/gdziejestczoper.iml" />
     </modules>
   </component>
 </project>

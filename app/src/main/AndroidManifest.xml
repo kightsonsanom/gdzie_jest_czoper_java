@@ -36,33 +36,24 @@
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service android:name=".services.GeocodeAddressIntentService" />
-        <!--<service android:name=".sync.AuthenticatorService">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.accounts.AccountAuthenticator" />-->
-            <!--</intent-filter>-->
-
-            <!--<meta-data-->
-                <!--android:name="android.accounts.AccountAuthenticator"-->
-                <!--android:resource="@xml/authenticator" />-->
-        <!--</service>-->
 
         <receiver android:name=".services.AlarmReceiver"
             android:directBootAware="true" />
 
-        <!--<provider-->
-            <!--android:name=".sync.CzoperContentProvider"-->
-            <!--android:authorities="com.example.asinit_user.gdziejestczoper.sync"-->
-            <!--android:exported="true"-->
-            <!--android:permission="com.example.asinit_user.gdziejestczoper.provider.READ_WRITE"-->
-            <!--android:syncable="true" />-->
-
-        <activity android:name=".ui.mainView.NavigationActivity">
-
-        </activity>
-        <activity android:name=".ui.searchResult.SearchResultList" />
 
         <activity
-            android:name=".ui.login.LoginActivity">
+            android:name=".ui.mainView.NavigationActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity
+            android:name=".ui.searchResult.SearchResultList"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity
+            android:name=".ui.login.LoginActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

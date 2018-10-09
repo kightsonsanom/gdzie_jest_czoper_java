@@ -54,5 +54,7 @@ public class LoginManager implements LoginManagerCallback{
         loginCallback.showError();
     }
 
-
+    public void setMockUser() {
+        repository.setMockUser();
+    }
 }

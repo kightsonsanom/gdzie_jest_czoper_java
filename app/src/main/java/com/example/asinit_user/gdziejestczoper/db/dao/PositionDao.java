@@ -21,7 +21,7 @@ public interface PositionDao {
     @Query("SELECT * FROM " + Position.TABLE_NAME)
     LiveData<List<Position>> loadPositions();
 
-    @Query("SELECT * FROM " + Position.TABLE_NAME  + "  i WHERE i.position_id = :positionID")
+    @Query("SELECT * FROM " + Position.TABLE_NAME  + "  i WHERE i.id = :positionID")
     LiveData<Position> loadPosition(long positionID);
 
     @Query("SELECT * FROM " + Position.TABLE_NAME  + " ORDER BY lastLocationDate DESC LIMIT 1")
@@ -48,7 +48,7 @@ public interface PositionDao {
     @Query("SELECT * FROM " + Position.TABLE_NAME  + " WHERE (position.lastLocationDate > :searchFromDay AND position.lastLocationDate < :searchToDay)")
     List<Position> getPositionsFromRange(long searchFromDay, long searchToDay);
 
-    @Query("SELECT * FROM " + Position.TABLE_NAME + " WHERE position.lastLocationDate >= (SELECT position.lastLocationDate FROM position WHERE position.position_id = :positionIDFromPreferences)")
+    @Query("SELECT * FROM " + Position.TABLE_NAME + " WHERE position.lastLocationDate >= (SELECT position.lastLocationDate FROM position WHERE position.id = :positionIDFromPreferences)")
     List<Position> getPositionsSinceFailure(long positionIDFromPreferences);
 
     @Query("SELECT * FROM " + Position.TABLE_NAME + " p INNER JOIN (SELECT user_id from user WHERE nazwa = :nazwa) t on p.user_id = t.user_id WHERE (p.firstLocationDate > :fromDate AND p.lastLocationDate < :toDate) ")
