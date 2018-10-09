@@ -113,21 +113,27 @@ public class LoginActivity extends AppCompatActivity implements LoginCallback {
             cancel = true;
         }
 
+        boolean loginCheckbox = binding.loginCheckbox.isChecked();
+        if (loginCheckbox) {
+            cancel = false;
+        }
+
         Timber.d("attempt login before asynctask");
         Log.d("TAG", "attempt login before asynctask");
         if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
             focusView.requestFocus();
         } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            showProgress(true);
+
+            if (loginCheckbox) {
+                loginManager.setMockUser();
+            } else {
+                showProgress(true);
 //            viewModel.setLoginCallback(this);
-            loginManager.getUsers(username, userPassword);
+                loginManager.getUsers(username, userPassword);
+            }
+
         }
     }
-
 
     private void showProgress(final boolean show) {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
@@ -135,12 +141,12 @@ public class LoginActivity extends AppCompatActivity implements LoginCallback {
         // the progress spinner.
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-        binding.loginForm.setVisibility(show ? View.GONE : View.VISIBLE);
-        binding.loginForm.animate().setDuration(shortAnimTime).alpha(
+        binding.usernameLoginForm.setVisibility(show ? View.GONE : View.VISIBLE);
+        binding.usernameLoginForm.animate().setDuration(shortAnimTime).alpha(
                 show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                binding.loginForm.setVisibility(show ? View.GONE : View.VISIBLE);
+                binding.usernameLoginForm.setVisibility(show ? View.GONE : View.VISIBLE);
             }
         });
 //

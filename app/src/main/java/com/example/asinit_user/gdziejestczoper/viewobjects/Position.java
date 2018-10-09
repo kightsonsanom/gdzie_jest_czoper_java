@@ -13,7 +13,7 @@ import java.util.UUID;
 public class Position {
 
     public static final String TABLE_NAME = "position";
-    public static final String COLUMN_ID = "position_id";
+    public static final String COLUMN_ID = "id";
     public static final String COLUMN_END_DATE = "endDate";
     public static final String COLUMN_START_DATE = "startDate";
     public static final String COLUMN_LAST_LOCATION_DATE = "lastLocationDate";
@@ -26,7 +26,7 @@ public class Position {
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = COLUMN_ID)
-    private long position_id;
+    private long id;
     @ColumnInfo(name = COLUMN_START_DATE)
     private String startDate;
     @ColumnInfo(name = COLUMN_END_DATE)
@@ -45,21 +45,22 @@ public class Position {
     private int user_id;
 
     public Position() {
-        position_id = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
+        id = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
     }
 
     public Position(int user_id) {
-        this.position_id = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
+        this.id = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
         this.user_id = user_id;
     }
 
+
     @NonNull
-    public long getPosition_id() {
-        return position_id;
+    public long getId() {
+        return id;
     }
 
-    public void setPosition_id(@NonNull long position_id) {
-        this.position_id = position_id;
+    public void setId(@NonNull long id) {
+        this.id = id;
     }
 
     public String getStartDate() {
@@ -129,7 +130,7 @@ public class Position {
     @Override
     public String toString() {
         return "Position{" +
-                "position_id=" + position_id +
+                "position_id=" + id +
                 ", startDate='" + startDate + '\'' +
                 ", endDate='" + endDate + '\'' +
                 ", lastLocationDate=" + lastLocationDate +

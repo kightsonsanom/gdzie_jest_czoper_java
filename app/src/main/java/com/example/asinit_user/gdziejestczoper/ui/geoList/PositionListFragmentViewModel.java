@@ -61,6 +61,7 @@ public class PositionListFragmentViewModel extends ViewModel {
 
 
         mObservablePositions = repository.getPostionsForUserAndDay(name, timeFrom, timeTo);
+
         return mObservablePositions;
     }
 

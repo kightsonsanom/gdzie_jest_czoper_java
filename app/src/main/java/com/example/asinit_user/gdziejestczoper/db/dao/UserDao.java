@@ -27,4 +27,7 @@ public interface UserDao {
 
     @Query("SELECT nazwa FROM user")
     LiveData<List<String>> getAllUserNames();
+
+    @Query("SELECT user_id FROM user WHERE nazwa = :name")
+    int getUserID(String name);
 }

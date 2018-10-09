@@ -1,6 +1,8 @@
 package com.example.asinit_user.gdziejestczoper.di;
 
 
+import com.example.asinit_user.gdziejestczoper.di.scopes.PositionListFragmentScope;
+import com.example.asinit_user.gdziejestczoper.di.scopes.SearchFragmentScope;
 import com.example.asinit_user.gdziejestczoper.ui.geoList.PositionsAdapter;
 import com.example.asinit_user.gdziejestczoper.ui.mainView.GeoAdapter;
 

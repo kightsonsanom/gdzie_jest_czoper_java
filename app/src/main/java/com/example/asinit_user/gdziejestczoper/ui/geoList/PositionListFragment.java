@@ -42,6 +42,7 @@ public class PositionListFragment extends Fragment {
     private PositionListFragmentViewModel viewModel;
     private PositionListFragmentViewBinding binding;
     private final Fragment currentFragment = this;
+    private boolean userListVisible;
 
     @Override
     public void onAttach(Context context) {
@@ -78,6 +79,7 @@ public class PositionListFragment extends Fragment {
             }
         });
 
+        userListVisible = true;
         binding.userList.setAdapter(itemsAdapter);
     }
 
@@ -102,10 +104,18 @@ public class PositionListFragment extends Fragment {
                 binding.userList.setVisibility(View.GONE);
                 binding.currentDay.setVisibility(View.VISIBLE);
                 binding.positionRecycler.setVisibility(View.VISIBLE);
-
+                userListVisible = false;
 //                viewModel.onListClick(position);
             }
         });
+    }
+
+    public void returnToUserList(){
+        binding.userList.setVisibility(View.VISIBLE);
+        binding.currentDay.setVisibility(View.GONE);
+        binding.positionRecycler.setVisibility(View.GONE);
+        userListVisible = true;
+
     }
 
     private void displayPositions(List<Position> data) {
@@ -113,5 +123,9 @@ public class PositionListFragment extends Fragment {
         for (Position p : data) {
             Timber.d(" position = " + p);
         }
+    }
+
+    public boolean isUserListVisible() {
+        return userListVisible;
     }
 }

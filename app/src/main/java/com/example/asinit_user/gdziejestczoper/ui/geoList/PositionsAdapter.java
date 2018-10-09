@@ -58,14 +58,14 @@ public class PositionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
                 @Override
                 public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                    return Objects.equals(PositionsAdapter.this.positionList.get(oldItemPosition).getPosition_id(), positionList.get(newItemPosition).getPosition_id());
+                    return Objects.equals(PositionsAdapter.this.positionList.get(oldItemPosition).getId(), positionList.get(newItemPosition).getId());
                 }
 
                 @Override
                 public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
                     Position newAction = positionList.get(newItemPosition);
                     Position oldAction = PositionsAdapter.this.positionList.get(oldItemPosition);
-                    return Objects.equals(newAction.getPosition_id(), oldAction.getPosition_id());
+                    return Objects.equals(newAction.getId(), oldAction.getId());
                 }
 
             });

@@ -23,16 +23,25 @@ public class GeoDeserializingAdapter implements JsonDeserializer<Geo> {
         JsonObject jsonObject = json.getAsJsonObject();
         String [] locationString = jsonObject.get("location").getAsString().split(", ");
 
+
+        Timber.d("location string length= " + locationString.length);
+
+        if (locationString.length<2){
+            locationString = new String[2];
+            locationString[0]="51.941067";
+            locationString[1]= "15.504336";
+        }
+
         Location location = new Location(LocationManager.GPS_PROVIDER);
             location.setLatitude(Double.parseDouble(locationString[0]));
             location.setLongitude(Double.parseDouble(locationString[1]));
 
         Geo geo = new Geo(
-                jsonObject.get("geo_id").getAsLong(),
+                jsonObject.get("id").getAsLong(),
                 location,
                 jsonObject.get("date").getAsLong(),
                 jsonObject.get("displayText").getAsString(),
-                jsonObject.get("user_id").getAsInt()
+                jsonObject.getAsJsonObject("user").get("user_id").getAsInt()
         );
 
         Timber.d("geo from deserialization = " + geo);

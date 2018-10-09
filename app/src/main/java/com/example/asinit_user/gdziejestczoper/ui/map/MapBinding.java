@@ -35,13 +35,11 @@ public class MapBinding {
                 if (geoList != null) {
                     Timber.d("geoList.size() = " + geoList.size());
                     for (Geo geo : geoList) {
-                            Timber.d("geo to display: " + geo.toString());
                             LatLng latLng = new LatLng(geo.getLocation().getLatitude(), geo.getLocation().getLongitude());
-                            Timber.d("creating marker for user: " + geo.getUser_id());
                             googleMap.addMarker(new MarkerOptions()
                                     .position(latLng)
-                                    .title(String.valueOf(geo.getUser_id()))
-                                    .icon(getBitmapDescriptor(geo.getUser_id())));
+                                    .title(String.valueOf(geo.getUser_id())));
+//                                    .icon(getBitmapDescriptor(geo.getUser_id())));
                     }
                 }
             });

@@ -44,6 +44,9 @@ import timber.log.Timber;
 public class NavigationActivity extends AppCompatActivity implements HasSupportFragmentInjector {
 
     public static final int INTENT_ID = 100;
+    public static final String POSITION_LIST_FRAGMENT = "PositionListFragment";
+    public static final String MAP_FRAGMENT = "MapFragment";
+    public static final String SEARCH_FRAGMENT = "SearchFragment";
 
     @Inject
     DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
@@ -91,8 +94,7 @@ public class NavigationActivity extends AppCompatActivity implements HasSupportF
             changeFragment(1);
         }
 
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), INTENT_ID, intent, 0);
+
     }
 
     @Override
@@ -101,42 +103,73 @@ public class NavigationActivity extends AppCompatActivity implements HasSupportF
     }
 
     private void changeFragment(int position) {
+        String fragmentTag = null;
         Fragment selectedFragment = null;
+
         switch (position) {
             case 0:
                 selectedFragment = new PositionListFragment();
+                fragmentTag = POSITION_LIST_FRAGMENT;
                 break;
             case 1:
                 selectedFragment = new MapFragment();
+                fragmentTag = MAP_FRAGMENT;
+
                 break;
             case 2:
                 selectedFragment = new SearchFragment();
+                fragmentTag = SEARCH_FRAGMENT;
+
                 break;
             case 3:
                 selectedFragment = new MapFragment();
+                fragmentTag = MAP_FRAGMENT;
+
 
         }
 
-        makeTransaction(position, selectedFragment);
+        makeTransaction(position, selectedFragment, fragmentTag);
     }
 
-    private void makeTransaction(int position, Fragment selectedFragment) {
+    private void makeTransaction(int position, Fragment selectedFragment, String fragmentTag) {
         Timber.d("Entering fragment number :" + position + " fragment name :" + selectedFragment.toString());
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.container, selectedFragment);
+        transaction.replace(R.id.container, selectedFragment, fragmentTag);
         transaction.commit();
     }
 
     @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WAKE_LOCK})
     public void startGeoService() {
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), INTENT_ID, intent, 0);
+
         AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 5000,300000, pendingIntent);
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 5000, 60000, pendingIntent);
     }
+
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    public void onBackPressed() {
+        Fragment currentFragment = fragmentManager.findFragmentByTag(POSITION_LIST_FRAGMENT);
 
-        NavigationActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+        if (currentFragment != null && currentFragment.isVisible()) {
+            PositionListFragment positionListFragment = (PositionListFragment) currentFragment;
+
+            if (!positionListFragment.isUserListVisible()) {
+                positionListFragment.returnToUserList();
+            } else {
+                super.onBackPressed();
+            }
+        }
+
+
+        }
+
+        @Override
+        public void onRequestPermissionsResult ( int requestCode, @NonNull String[] permissions,
+        @NonNull int[] grantResults){
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+            NavigationActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+        }
     }
-}

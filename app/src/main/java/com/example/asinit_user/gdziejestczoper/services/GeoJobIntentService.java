@@ -36,7 +36,7 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 
     private Context context;
 
-    private final static float ACCEPTABLE_DISTANCE_BETWEEN_GEO = 150f;
+    private final static float ACCEPTABLE_DISTANCE_BETWEEN_GEO = 300f;
     // kiedy konczy sie ruch i zaczyna postoj to postoj musi byc bardziej aktualny od ruchu
     private static final long NEW_POSITION_OFFSET = 1;
 
@@ -223,11 +223,11 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
             }
 
             if (newPosition != null) {
-                PositionGeoJoin positionGeoJoin = new PositionGeoJoin(newPosition.getPosition_id(), newGeo.getGeo_id(), newGeo.getDate());
+                PositionGeoJoin positionGeoJoin = new PositionGeoJoin(newPosition.getId(), newGeo.getId(), newGeo.getDate());
                 Timber.d("assignGeoToPosition = " + positionGeoJoin.toString());
                 assignGeoToPosition(positionGeoJoin);
             } else {
-                PositionGeoJoin positionGeoJoin = new PositionGeoJoin(latestPositionFromDb.getPosition_id(), newGeo.getGeo_id(), newGeo.getDate());
+                PositionGeoJoin positionGeoJoin = new PositionGeoJoin(latestPositionFromDb.getId(), newGeo.getId(), newGeo.getDate());
                 Timber.d("assignGeoToPosition = " + positionGeoJoin.toString());
                 assignGeoToPosition(positionGeoJoin);
             }
@@ -281,7 +281,7 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 
 
     private void getOldestGeoForPositionFromDb() {
-        repository.getOldestGeoForPosition(latestPositionFromDb.getPosition_id());
+        repository.getOldestGeoForPosition(latestPositionFromDb.getId());
     }
 
 

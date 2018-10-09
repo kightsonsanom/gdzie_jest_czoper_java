@@ -1,4 +1,4 @@
-package com.example.asinit_user.gdziejestczoper.di;
+package com.example.asinit_user.gdziejestczoper.di.scopes;
 
 
 import java.lang.annotation.Retention;
@@ -8,5 +8,5 @@ import javax.inject.Scope;
 
 @Scope
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SearchFragmentScope {
+public @interface PositionListFragmentScope {
 }
