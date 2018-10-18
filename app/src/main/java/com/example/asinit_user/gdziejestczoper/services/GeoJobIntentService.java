@@ -33,6 +33,7 @@ import timber.log.Timber;
 public class GeoJobIntentService extends JobIntentService implements PositionManagerCallback {
 
     static final int JOB_ID = 1000;
+    public static final int THREE_HOURS_INTERVAL = 10800000;
 
     private Context context;
 
@@ -177,20 +178,26 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
             } else if (latestPositionFromDb.getStatus().equals("Postój")) {
                 Timber.d("status geo postój");
 
+
                 latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
                 latestPositionFromDb.setLastLocationDate(newGeo.getDate());
                 updatePosition(latestPositionFromDb);
 
                 if (isLastGeoFarAway()) {
                     Timber.d("bylo przemieszczenie");
-
                     newPosition = new Position(userID);
                     newPosition.setStatus("Ruch");
-                    newPosition.setStartLocation(locationAddress);
+                    newPosition.setStartLocation(latestPositionFromDb.getStartLocation());
+                    newPosition.setEndLocation(locationAddress);
                     newPosition.setLastLocationDate(newGeo.getDate() + NEW_POSITION_OFFSET);
                     newPosition.setFirstLocationDate(newGeo.getDate());
                     newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
                     sendPosition(newPosition);
+                } else {
+                    if (latestPositionFromDb.getStartLocation().equals(Constants.GEOCODING_FAILURE)){
+                        latestPositionFromDb.setStartLocation(locationAddress);
+                        updatePosition(latestPositionFromDb);
+                    }
                 }
 
             } else if (latestPositionFromDb.getStatus().equals("Ruch")) {
@@ -206,7 +213,6 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 
                 } else {
                     Timber.d("nie bylo przemieszczenia");
-
 
                     newPosition = new Position(userID);
                     newPosition.setStatus("Postój");
@@ -272,7 +278,7 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 
 
     private boolean isLatestGeoFromDbTooOld() {
-        return (System.currentTimeMillis() - latestPositionFromDb.getLastLocationDate()) > 10800000;
+        return (System.currentTimeMillis() - latestPositionFromDb.getLastLocationDate()) > THREE_HOURS_INTERVAL;
     }
 
     private void sendGeo(Geo newGeo) {

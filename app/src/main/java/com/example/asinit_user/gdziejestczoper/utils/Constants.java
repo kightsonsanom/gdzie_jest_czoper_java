@@ -16,5 +16,6 @@ public final class Constants {
 
     public static final String START_DATE = "START_DATE";
     public static final String END_DATE = "END_DATE";
+    public static final String GEOCODING_FAILURE = "GEOCODING_FAILURE";
 
 }

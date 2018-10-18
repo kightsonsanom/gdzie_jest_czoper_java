@@ -62,24 +62,26 @@ public class GeocodeAddressIntentService extends IntentService implements Geocod
         Location location = intent.getParcelableExtra(Constants.LOCATION_DATA_EXTRA);
         resultReceiver = intent.getParcelableExtra(Constants.RECEIVER);
 
-        double lat =location.getLatitude();
+        double lat = location.getLatitude();
         double lng = location.getLongitude();
 
 
-//        try {
-//            addresses = geocoder.getFromLocation(lat, lng, 1);
-//            if (addresses != null && addresses.size() > 0) {
-//                Address address = addresses.get(0);
-//                String addressString;
-//
-//                addressString = address.getThoroughfare() + ", " + address.getSubThoroughfare();
-//                deliverResultToReceiver(Constants.SUCCESS_RESULT, addressString);
-//            } else {
-                String address = String.format(Locale.ENGLISH, "https://maps.googleapis.com/maps/api/geocode/json?latlng=%1$f,%2$f&key=AIzaSyADPN7X3cxWbdMfpi5aHoikbaOv9N1L1LY", lat, lng);
+        try {
+            addresses = geocoder.getFromLocation(lat, lng, 1);
+            if (addresses != null && addresses.size() > 0) {
+                Address address = addresses.get(0);
+                String addressString;
+
+                addressString = address.getThoroughfare() + ", " + address.getSubThoroughfare();
+                deliverResultToReceiver(Constants.SUCCESS_RESULT, addressString);
+            } else {
+                String address = String.format(Locale.ENGLISH, "https://maps.googleapis.com/maps/api/geocode/json?latlng=%1$f,%2$f&location_type=ROOFTOP&result_type=point_of_interest&key=AIzaSyADPN7X3cxWbdMfpi5aHoikbaOv9N1L1LY", lat, lng);
                 repository.getReverseGeocoding(address);
             }
-//        } catch (IOException e) {
-//            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 
@@ -140,6 +142,7 @@ public class GeocodeAddressIntentService extends IntentService implements Geocod
     @Override
     public void onFailureGetAddress() {
 
+        deliverResultToReceiver(Constants.FAILURE_RESULT, Constants.GEOCODING_FAILURE);
     }
 
 
