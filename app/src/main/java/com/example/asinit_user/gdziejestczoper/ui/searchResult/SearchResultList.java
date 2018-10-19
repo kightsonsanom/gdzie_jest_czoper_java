@@ -24,7 +24,5 @@ public class SearchResultList extends AppCompatActivity {
         setContentView(R.layout.activity_search_result_list);
 
 
-
-
     }
 }

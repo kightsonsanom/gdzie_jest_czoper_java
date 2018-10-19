@@ -55,6 +55,7 @@ import timber.log.Timber;
 @Singleton
 public class Repository {
 
+    public static final int DAY_DURATION_INTERVAL = 86400000;
     private PositionManagerCallback positionManagerCallback;
     private SearchFragmentViewModelCallback searchFragmentViewModelCallback;
     private LoginManagerCallback loginManagerCallback;
@@ -488,19 +489,12 @@ public class Repository {
     }
 
     public List<Position> getAllPositions() {
-        appExecutors.diskIO().execute(() -> {
-            allPositions = positionDao.getAllPositions();
-        });
+        appExecutors.diskIO().execute(() -> allPositions = positionDao.getAllPositions());
         return allPositions;
     }
 
     public List<Geo> getAllGeos() {
-        appExecutors.diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                allGeos = geoDao.getAllGeos();
-            }
-        });
+        appExecutors.diskIO().execute(() -> allGeos = geoDao.getAllGeos());
         return allGeos;
     }
 
@@ -518,7 +512,7 @@ public class Repository {
 //        });
 //    }
 
-    public LiveData<Resource<TreeMap<String, List<Position>>>> getPositionsFromRange(long searchFromDay, long searchToDay) {
+    public LiveData<Resource<TreeMap<String, List<Position>>>> getPositionsFromRange(String userName, long searchFromDay, long searchToDay) {
         Timber.d("getPositionsFromRange method searchFromDay = " + searchFromDay + " searchToDay = " + searchToDay);
         return new NetworkBoundResource<TreeMap<String, List<Position>>, TreeMap<String, List<Position>>>(appExecutors) {
             @Override
@@ -535,13 +529,13 @@ public class Repository {
             @Override
             protected LiveData<TreeMap<String, List<Position>>> loadFromDb() {
                 List<Long> days = new ArrayList<>();
-                for (long i = searchFromDay; i < searchToDay; i += 86400000) {
+                for (long i = searchFromDay; i < searchToDay; i += DAY_DURATION_INTERVAL) {
                     days.add(i);
                 }
                 Collections.sort(days);
 
 
-                return Transformations.map(positionDao.getLivePositionsFromRange(searchFromDay, searchToDay), new Function<List<Position>, TreeMap<String, List<Position>>>() {
+                return Transformations.map(positionDao.getLivePositionsFromRangeAndUser(userName, searchFromDay, searchToDay), new Function<List<Position>, TreeMap<String, List<Position>>>() {
                     @Override
                     public TreeMap<String, List<Position>> apply(List<Position> input) {
                         TreeMap<String, List<Position>> positionMap = new TreeMap<>();
@@ -551,7 +545,7 @@ public class Repository {
                             List<Position> positionsForDay = new ArrayList<>();
                             for (Position p : input) {
 
-                                if (p.getFirstLocationDate() > days.get(i) && p.getFirstLocationDate() < days.get(i) + 86400000) {
+                                if (p.getFirstLocationDate() > days.get(i) && p.getFirstLocationDate() < days.get(i) + DAY_DURATION_INTERVAL) {
                                     Timber.d("position from transformation = " + p.toString());
                                     positionsForDay.add(p);
                                 }
@@ -772,5 +766,16 @@ public class Repository {
                 geocodeAddressCallback.onFailureGetAddress();
             }
         });
+    }
+
+    public List<User> getUserNames() {
+        appExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                allUsers = userDao.getAllUsers();
+            }
+        });
+
+        return allUsers;
     }
 }

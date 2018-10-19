@@ -34,11 +34,12 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
-public class PositionListFragmentViewModel extends ViewModel {
+public class PositionListFragmentViewModel extends ViewModel{
 
     //pozycje, które obserwujemy na bazie
     private LiveData<Resource<List<Position>>> mObservablePositions;
     private final LiveData<Resource<List<String>>> observableUserNames;
+
 
     // pozycja obserwowana z widoku
     public ObservableField<String> currentDay = new ObservableField<>();
@@ -56,8 +57,8 @@ public class PositionListFragmentViewModel extends ViewModel {
 
     public LiveData<Resource<List<Position>>> getPositionsForUserAndDay(int position) {
         String name = observableUserNames.getValue().data.get(position);
-        long timeFrom = System.currentTimeMillis() - (System.currentTimeMillis() % 86400000 );
-        long timeTo = System.currentTimeMillis() - (System.currentTimeMillis() % 86400000 ) + 86400000 ;
+        long timeFrom = System.currentTimeMillis() - (System.currentTimeMillis() % 86400000);
+        long timeTo = System.currentTimeMillis() - (System.currentTimeMillis() % 86400000) + 86400000;
 
 
         mObservablePositions = repository.getPostionsForUserAndDay(name, timeFrom, timeTo);
@@ -68,6 +69,5 @@ public class PositionListFragmentViewModel extends ViewModel {
     public LiveData<Resource<List<String>>> getObservableUserNames() {
         return observableUserNames;
     }
-
 
 }

@@ -42,8 +42,8 @@ public interface PositionDao {
     @Query("SELECT * FROM " + Position.TABLE_NAME)
     List<Position> getAllPositions();
 
-    @Query("SELECT * FROM " + Position.TABLE_NAME  + " WHERE (position.lastLocationDate > :searchFromDay AND position.lastLocationDate< :searchToDay)")
-    LiveData<List<Position>> getLivePositionsFromRange(long searchFromDay, long searchToDay);
+    @Query("SELECT * FROM " + Position.TABLE_NAME + " p INNER JOIN (SELECT user_id from user WHERE nazwa = :nazwa) t on p.user_id = t.user_id WHERE (p.lastLocationDate > :searchFromDay AND p.lastLocationDate< :searchToDay)")
+    LiveData<List<Position>> getLivePositionsFromRangeAndUser(String nazwa, long searchFromDay, long searchToDay);
 
     @Query("SELECT * FROM " + Position.TABLE_NAME  + " WHERE (position.lastLocationDate > :searchFromDay AND position.lastLocationDate < :searchToDay)")
     List<Position> getPositionsFromRange(long searchFromDay, long searchToDay);

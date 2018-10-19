@@ -11,6 +11,7 @@ import com.example.asinit_user.gdziejestczoper.db.Repository;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 import com.example.asinit_user.gdziejestczoper.utils.Converters;
+import com.example.asinit_user.gdziejestczoper.viewobjects.Resource;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,12 +31,14 @@ public class SearchFragmentViewModel extends ViewModel implements SearchFragment
     public ObservableField<String> latestGeo = new ObservableField<>();
 
     private  MediatorLiveData<TreeMap<String,List<Position>>> mObservablePositions;
+    private final LiveData<Resource<List<String>>> observableUserNames;
 
     private Repository repository;
     //    private String searchToDay;
 //    private String searchToDay;
     private long searchFromDay;
     private long searchToDay;
+    private String userName;
 
 
     @Inject
@@ -45,6 +48,7 @@ public class SearchFragmentViewModel extends ViewModel implements SearchFragment
 
         mObservablePositions = new MediatorLiveData<>();
         mObservablePositions.setValue(null);
+        observableUserNames = repository.getAllUsersNames();
     }
 
     public LiveData<TreeMap<String,List<Position>>> getObservablePositions() {
@@ -98,8 +102,8 @@ public class SearchFragmentViewModel extends ViewModel implements SearchFragment
         }
     }
 
-    public void getAllPositions() {
-        mObservablePositions.addSource(repository.getPositionsFromRange(searchFromDay, searchToDay), (result) -> mObservablePositions.setValue(result.data));;
+    public void getAllPositionsForUser() {
+        mObservablePositions.addSource(repository.getPositionsFromRange(userName, searchFromDay, searchToDay), (result) -> mObservablePositions.setValue(result.data));;
     }
 
     @Override
@@ -113,5 +117,13 @@ public class SearchFragmentViewModel extends ViewModel implements SearchFragment
 
     public void setNewLocation(Location location) {
         repository.setNewLocation(location);
+    }
+
+    public LiveData<Resource<List<String>>> getObservableUserNames() {
+        return observableUserNames;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

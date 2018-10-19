@@ -71,6 +71,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
+
         return positions.get(days.get(groupPosition)).get(childPosition);
     }
 

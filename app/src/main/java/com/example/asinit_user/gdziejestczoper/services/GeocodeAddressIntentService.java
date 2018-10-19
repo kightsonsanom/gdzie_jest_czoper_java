@@ -69,10 +69,7 @@ public class GeocodeAddressIntentService extends IntentService implements Geocod
         try {
             addresses = geocoder.getFromLocation(lat, lng, 1);
             if (addresses != null && addresses.size() > 0) {
-                Address address = addresses.get(0);
-                String addressString;
-
-                addressString = address.getThoroughfare() + ", " + address.getSubThoroughfare();
+                String addressString = getAddressString(addresses);
                 deliverResultToReceiver(Constants.SUCCESS_RESULT, addressString);
             } else {
                 String address = String.format(Locale.ENGLISH, "https://maps.googleapis.com/maps/api/geocode/json?latlng=%1$f,%2$f&location_type=ROOFTOP&result_type=point_of_interest&key=AIzaSyADPN7X3cxWbdMfpi5aHoikbaOv9N1L1LY", lat, lng);
@@ -83,6 +80,16 @@ public class GeocodeAddressIntentService extends IntentService implements Geocod
         }
     }
 
+    private String getAddressString(List<Address> addresses) {
+        Address address = addresses.get(0);
+        String addressString;
+        if (address.getSubThoroughfare()!= null) {
+            addressString = address.getThoroughfare() + ", " + address.getSubThoroughfare();
+        } else {
+            addressString = address.getThoroughfare();
+        }
+        return addressString;
+    }
 
 
     private void deliverResultToReceiver(int resultCode, String message) {
