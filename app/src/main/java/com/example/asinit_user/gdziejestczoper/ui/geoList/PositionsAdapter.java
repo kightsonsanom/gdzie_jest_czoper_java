@@ -106,16 +106,7 @@ public class PositionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public int getItemViewType(int position) {
-        String status = positionList.get(position).getStatus();
-        if (status.equals("Ruch")) {
-            return 0;
-        } else if (status.equals("Postój")) {
-            return 1;
-        } else if (status.equals("Nieznany")) {
-            return 2;
-        } else if (status.equals("Przerwa"))
-            return 3;
-        return 0;
+        return positionList.get(position).getStatus();
     }
 
     @Override

@@ -24,8 +24,8 @@ public interface PositionDao {
     @Query("SELECT * FROM " + Position.TABLE_NAME  + "  i WHERE i.id = :positionID")
     LiveData<Position> loadPosition(long positionID);
 
-    @Query("SELECT * FROM " + Position.TABLE_NAME  + " ORDER BY lastLocationDate DESC LIMIT 1")
-    Position loadLatestPosition();
+    @Query("SELECT * FROM " + Position.TABLE_NAME  + " WHERE position.user_id=:userID ORDER BY lastLocationDate DESC LIMIT 1")
+    Position loadLatestPosition(int userID);
 
 //    @Query("SELECT * FROM " + Position.TABLE_NAME  + " WHERE position.startDate < :today")
 //    List<Position> getPositionForToday(String today);

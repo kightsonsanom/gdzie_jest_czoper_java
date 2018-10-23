@@ -38,8 +38,8 @@ public class MapBinding {
                             LatLng latLng = new LatLng(geo.getLocation().getLatitude(), geo.getLocation().getLongitude());
                             googleMap.addMarker(new MarkerOptions()
                                     .position(latLng)
-                                    .title(String.valueOf(geo.getUser_id())));
-//                                    .icon(getBitmapDescriptor(geo.getUser_id())));
+                                    .title(String.valueOf(geo.getUser_id()))
+                                    .icon(getBitmapDescriptor(geo.getUser_id())));
                     }
                 }
             });
@@ -50,9 +50,10 @@ public class MapBinding {
     private static BitmapDescriptor getBitmapDescriptor(int user_id) {
         switch (user_id) {
             case 1:
-                return BitmapDescriptorFactory.fromResource(R.mipmap.sala_round);
-            case 2:
                 return BitmapDescriptorFactory.fromResource(R.mipmap.tomek_round);
+//                return BitmapDescriptorFactory.fromResource(R.mipmap.sala_round);
+            case 2:
+                return BitmapDescriptorFactory.fromResource(R.mipmap.pawel_round);
             default:
                 return BitmapDescriptorFactory.fromResource(R.mipmap.sala_round);
         }

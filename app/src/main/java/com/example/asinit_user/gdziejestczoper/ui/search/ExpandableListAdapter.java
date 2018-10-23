@@ -109,29 +109,26 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         final Position childEvent = (Position) getChild(groupPosition, childPosition);
-        final String positionStatus = childEvent.getStatus();
-
-        Timber.d("inside getChildView method");
+        final int positionStatus = childEvent.getStatus();
 
         LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         switch (positionStatus) {
-            case "Ruch":
+            case 0:
                 RuchItemBinding ruchItemBinding = DataBindingUtil.inflate(inflater, R.layout.ruch_item, parent, false);
                 ruchItemBinding.setPosition(childEvent);
                 ruchItemBinding.executePendingBindings();
                 return ruchItemBinding.getRoot();
-            case "Postój":
+            case 1:
                 PostojItemBinding postojItemBinding = DataBindingUtil.inflate(inflater, R.layout.postoj_item, parent, false);
                 postojItemBinding.setPosition(childEvent);
                 postojItemBinding.executePendingBindings();
                 return postojItemBinding.getRoot();
-            case "Nieznany":
-                Timber.d("case nieznany");
+            case 2:
                 NieznanyItemBinding nieznanyItemBinding = DataBindingUtil.inflate(inflater, R.layout.nieznany_item, parent, false);
                 nieznanyItemBinding.setPosition(childEvent);
                 nieznanyItemBinding.executePendingBindings();
                 return nieznanyItemBinding.getRoot();
-            case "Przerwa":
+            case 3:
                 PrzerwaItemBinding przerwaItemBinding = DataBindingUtil.inflate(inflater, R.layout.przerwa_item, parent, false);
                 przerwaItemBinding.setPosition(childEvent);
                 przerwaItemBinding.executePendingBindings();

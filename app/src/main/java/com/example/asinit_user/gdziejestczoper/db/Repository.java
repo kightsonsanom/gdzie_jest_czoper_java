@@ -447,7 +447,7 @@ public class Repository {
 
     public void getLatestGeo() {
         appExecutors.diskIO().execute(() -> {
-            latestGeoFromDb = geoDao.loadLatestGeo();
+            latestGeoFromDb = geoDao.loadLatestGeo(sharedPreferencesRepo.getUserID());
             if (latestGeoFromDb != null) {
                 Timber.d("latestGeoFromDb ID = " + latestGeoFromDb.getId() + " czas: " + latestGeoFromDb.getDate());
             } else {
@@ -459,7 +459,7 @@ public class Repository {
 
     public void getLatestPosition() {
         appExecutors.diskIO().execute(() -> {
-            latestPositionFromDb = positionDao.loadLatestPosition();
+            latestPositionFromDb = positionDao.loadLatestPosition(sharedPreferencesRepo.getUserID());
             if (latestPositionFromDb != null) {
                 Timber.d("latestPositionFromDb ID = " + latestPositionFromDb.getId() + " czas: " + latestPositionFromDb.getLastLocationDate());
             } else {
@@ -483,7 +483,7 @@ public class Repository {
 
     public void getLatestGeoForTests() {
         appExecutors.diskIO().execute(() -> {
-            Geo latestGeo = geoDao.loadLatestGeo();
+            Geo latestGeo = geoDao.loadLatestGeo(sharedPreferencesRepo.getUserID());
             searchFragmentViewModelCallback.setLatestGeo(latestGeo);
         });
     }

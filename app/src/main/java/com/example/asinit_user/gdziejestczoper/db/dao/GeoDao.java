@@ -25,8 +25,8 @@ public interface GeoDao {
     @Query("SELECT * FROM geo i WHERE i.id = :geoID")
     LiveData<Geo> loadGeo(long geoID);
 
-    @Query("SELECT * FROM geo ORDER BY date DESC LIMIT 1")
-    Geo loadLatestGeo();
+    @Query("SELECT * FROM geo g WHERE g.user_id=:userID ORDER BY date DESC LIMIT 1")
+    Geo loadLatestGeo(int userID);
 
     @Query("SELECT * FROM geo ORDER BY date DESC LIMIT 1")
     LiveData<Geo> loadLatestLiveDataGeo();

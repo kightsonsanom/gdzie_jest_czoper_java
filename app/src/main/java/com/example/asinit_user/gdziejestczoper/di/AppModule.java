@@ -65,13 +65,11 @@ public class AppModule {
 
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.1.2:8080/api/")
+                .baseUrl("http://192.168.1.26:8585/api/")
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(new LiveDataCallAdapterFactory())
                 .build();
-
-
         return retrofit.create(CzoperApi.class);
     }
 

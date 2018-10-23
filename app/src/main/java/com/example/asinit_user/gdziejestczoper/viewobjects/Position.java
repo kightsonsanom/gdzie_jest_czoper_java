@@ -12,6 +12,19 @@ import java.util.UUID;
 @Entity(tableName = Position.TABLE_NAME)
 public class Position {
 
+//    private enum Status{
+//        RUCH(0),
+//        POSTOJ(1),
+//        NIEZNANY(2),
+//        PRZERWA(3);
+//
+//        private int intValue;
+//
+//        Status(int value){
+//            this.intValue = value;
+//        }
+//    }
+
     public static final String TABLE_NAME = "position";
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_END_DATE = "endDate";
@@ -40,7 +53,7 @@ public class Position {
     @ColumnInfo(name = COLUMN_END_LOCATION)
     private String endLocation;
     @ColumnInfo(name = COLUMN_STATUS)
-    private String status;
+    private int status;
     @ColumnInfo(name = COLUMN_USER)
     private int user_id;
 
@@ -103,11 +116,12 @@ public class Position {
         this.endLocation = endLocation;
     }
 
-    public String getStatus() {
+
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
