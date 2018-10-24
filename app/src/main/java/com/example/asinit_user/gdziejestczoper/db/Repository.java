@@ -3,11 +3,9 @@ package com.example.asinit_user.gdziejestczoper.db;
 import android.arch.core.util.Function;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.Transformations;
 import android.arch.persistence.db.SimpleSQLiteQuery;
 import android.location.Location;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -21,6 +19,7 @@ import com.example.asinit_user.gdziejestczoper.db.dao.PositionGeoJoinDao;
 import com.example.asinit_user.gdziejestczoper.db.dao.UserDao;
 import com.example.asinit_user.gdziejestczoper.services.GeocodeAddressCallback;
 import com.example.asinit_user.gdziejestczoper.ui.login.LoginManagerCallback;
+import com.example.asinit_user.gdziejestczoper.utils.Constants;
 import com.example.asinit_user.gdziejestczoper.utils.Converters;
 import com.example.asinit_user.gdziejestczoper.viewobjects.AbsentLiveData;
 import com.example.asinit_user.gdziejestczoper.viewobjects.MapGeo;
@@ -32,12 +31,7 @@ import com.example.asinit_user.gdziejestczoper.ui.search.SearchFragmentViewModel
 import com.example.asinit_user.gdziejestczoper.viewobjects.RemotePositionGeoJoin;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Resource;
 import com.example.asinit_user.gdziejestczoper.viewobjects.User;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -595,6 +589,34 @@ public class Repository {
 
     }
 
+    private void getInitialPositionData(String login){
+        Call<List<Position>> call = czoperApi.getPositionsForDayAndUser(login, Constants.START_DAY, Constants.END_DAY);
+
+        call.enqueue(new Callback<List<Position>>() {
+            @Override
+            public void onResponse(Call<List<Position>> call, Response<List<Position>> response) {
+
+                if (response.body() != null && response.body().size() > 0) {
+                    positionDao.insertAll(response.body());
+//                    getInitialGeoData(String login);
+                    loginManagerCallback.onLoginSuccess();
+                } else {
+                    loginManagerCallback.onLoginFailure();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Position>> call, Throwable t) {
+                Timber.d("getUsers onFailure");
+                loginManagerCallback.onLoginFailure();
+            }
+        });
+    }
+
+    private void getInitialGeoData(String login){
+//        Call<List<Geo>> call = czoperApi.getPositionsForDayAndUser(login, Constants.START_DAY, Constants.END_DAY);
+    }
+
     private void saveUserIDToPreferences(String login, List<User> userList) {
         for (User user : userList) {
             if (user.getLogin().equals(login)) {
@@ -694,7 +716,7 @@ public class Repository {
                 Timber.d("position for day and user from network:");
                 for (Position p : item) {
                     p.setUser_id(userID);
-                    Timber.d("modified user = " + p.toString());
+                    Timber.d("position from network = " + p.toString());
                 }
                 positionDao.insertAll(item);
             }
@@ -713,19 +735,17 @@ public class Repository {
                 Timber.d("list of position = ");
 
                 if (positionList.getValue() != null) {
-
                     for (Position p : positionList.getValue()) {
                         Timber.d("element = " + p.toString());
                     }
                 }
-
                 return positionList;
             }
 
             @NonNull
             @Override
             protected LiveData<ApiResponse<List<Position>>> createCall() {
-                return czoperApi.getPositionsForDayAndUser(name, rangeFrom, rangeTo);
+                return czoperApi.getLivePositionsForDayAndUser(name, rangeFrom, rangeTo);
             }
 
         }.asLiveData();
@@ -777,5 +797,10 @@ public class Repository {
         });
 
         return allUsers;
+    }
+
+    public String displayGeoJobIntentServiceError() {
+        Timber.d("GeoJobIntentServiceError = " + sharedPreferencesRepo.getErrorValue());
+        return sharedPreferencesRepo.getErrorValue();
     }
 }

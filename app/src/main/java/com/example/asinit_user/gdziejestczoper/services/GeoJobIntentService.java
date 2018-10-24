@@ -125,125 +125,131 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 
     public void setLocationPosition() {
         synchronized (lock) {
-            sendGeo(newGeo);
+            try {
 
-            if (latestGeoFromDb == null || latestPositionFromDb == null) {
-                Timber.d("latestPositionFromDb is null lub geo za stare");
+                sendGeo(newGeo);
 
-                newPosition = new Position(userID);
-                newPosition.setStartLocation(locationAddress);
-                newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
-                newPosition.setFirstLocationDate(newGeo.getDate());
-                newPosition.setStatus(STATUS_NIEZNANY);
-                newPosition.setLastLocationDate(newGeo.getDate());
-
-                sendPosition(newPosition);
-
-            } else if (isLatestGeoFromDbTooOld()) {
-                Timber.d("Geo za stare");
-                newPosition = new Position(userID);
-                newPosition.setStartDate(Converters.longToString(latestGeoFromDb.getDate()));
-                newPosition.setEndDate(Converters.longToString(newGeo.getDate()));
-                newPosition.setFirstLocationDate(newGeo.getDate());
-                newPosition.setStatus(STATUS_PRZERWA);
-
-                sendPosition(newPosition);
-
-                newPosition = new Position(userID);
-                newPosition.setStartLocation(locationAddress);
-                newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
-                newPosition.setFirstLocationDate(newGeo.getDate());
-                newPosition.setStatus(STATUS_NIEZNANY);
-                newPosition.setLastLocationDate(newGeo.getDate());
-
-                sendPosition(newPosition);
-
-            } else if (latestPositionFromDb.getStatus() == STATUS_NIEZNANY) {
-
-                Timber.d("status geo nieznany");
-
-                if (isLastGeoFarAway()) {
-                    Timber.d("bylo przemieszczenie");
-                    latestPositionFromDb.setStatus(2);
-                    latestPositionFromDb.setEndLocation(locationAddress);
-                    latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
-
-
-                } else {
-                    Timber.d("nie bylo przemieszczenia");
-                    latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
-                    latestPositionFromDb.setStatus(STATUS_POSTOJ);
-                }
-
-                latestPositionFromDb.setLastLocationDate(newGeo.getDate());
-                updatePosition(latestPositionFromDb);
-
-
-            } else if (latestPositionFromDb.getStatus() == STATUS_POSTOJ) {
-                Timber.d("status geo postój");
-
-
-                latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
-                latestPositionFromDb.setLastLocationDate(newGeo.getDate());
-                updatePosition(latestPositionFromDb);
-
-                if (isLastGeoFarAway()) {
-                    Timber.d("bylo przemieszczenie");
-                    newPosition = new Position(userID);
-                    newPosition.setStatus(STATUS_RUCH);
-                    newPosition.setStartLocation(latestPositionFromDb.getStartLocation());
-                    newPosition.setEndLocation(locationAddress);
-                    newPosition.setLastLocationDate(newGeo.getDate() + NEW_POSITION_OFFSET);
-                    newPosition.setFirstLocationDate(newGeo.getDate());
-                    newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
-                    sendPosition(newPosition);
-                } else {
-                    if (latestPositionFromDb.getStartLocation().equals(Constants.GEOCODING_FAILURE)){
-                        latestPositionFromDb.setStartLocation(locationAddress);
-                        updatePosition(latestPositionFromDb);
-                    }
-                }
-
-            } else if (latestPositionFromDb.getStatus() == STATUS_RUCH) {
-                Timber.d("status geo ruch");
-
-                latestPositionFromDb.setLastLocationDate(newGeo.getDate());
-                latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
-                latestPositionFromDb.setEndLocation(locationAddress);
-                updatePosition(latestPositionFromDb);
-
-                if (isLastGeoFarAway()) {
-                    Timber.d("bylo przemieszczenie");
-
-                } else {
-                    Timber.d("nie bylo przemieszczenia");
+                if (latestGeoFromDb == null || latestPositionFromDb == null) {
+                    Timber.d("latestPositionFromDb is null lub geo za stare");
 
                     newPosition = new Position(userID);
-                    newPosition.setStatus(STATUS_POSTOJ);
                     newPosition.setStartLocation(locationAddress);
-                    newPosition.setFirstLocationDate(newGeo.getDate());
                     newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
-                    newPosition.setLastLocationDate(newGeo.getDate() + NEW_POSITION_OFFSET);
+                    newPosition.setFirstLocationDate(newGeo.getDate());
+                    newPosition.setStatus(STATUS_NIEZNANY);
+                    newPosition.setLastLocationDate(newGeo.getDate());
+
                     sendPosition(newPosition);
+
+                } else if (isLatestGeoFromDbTooOld()) {
+                    Timber.d("Geo za stare");
+                    newPosition = new Position(userID);
+                    newPosition.setStartDate(Converters.longToString(latestGeoFromDb.getDate()));
+                    newPosition.setEndDate(Converters.longToString(newGeo.getDate()));
+                    newPosition.setFirstLocationDate(newGeo.getDate());
+                    newPosition.setStatus(STATUS_PRZERWA);
+
+                    sendPosition(newPosition);
+
+                    newPosition = new Position(userID);
+                    newPosition.setStartLocation(locationAddress);
+                    newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
+                    newPosition.setFirstLocationDate(newGeo.getDate());
+                    newPosition.setStatus(STATUS_NIEZNANY);
+                    newPosition.setLastLocationDate(newGeo.getDate());
+
+                    sendPosition(newPosition);
+
+                } else if (latestPositionFromDb.getStatus() == STATUS_NIEZNANY) {
+
+                    Timber.d("status geo nieznany");
+
+                    if (isLastGeoFarAway()) {
+                        Timber.d("bylo przemieszczenie");
+                        latestPositionFromDb.setStatus(2);
+                        latestPositionFromDb.setEndLocation(locationAddress);
+                        latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
+
+
+                    } else {
+                        Timber.d("nie bylo przemieszczenia");
+                        latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
+                        latestPositionFromDb.setStatus(STATUS_POSTOJ);
+                    }
+
+                    latestPositionFromDb.setLastLocationDate(newGeo.getDate());
+                    updatePosition(latestPositionFromDb);
+
+
+                } else if (latestPositionFromDb.getStatus() == STATUS_POSTOJ) {
+                    Timber.d("status geo postój");
+
+
+                    latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
+                    latestPositionFromDb.setLastLocationDate(newGeo.getDate());
+                    updatePosition(latestPositionFromDb);
+
+                    if (isLastGeoFarAway()) {
+                        Timber.d("bylo przemieszczenie");
+                        newPosition = new Position(userID);
+                        newPosition.setStatus(STATUS_RUCH);
+                        newPosition.setStartLocation(latestPositionFromDb.getStartLocation());
+                        newPosition.setEndLocation(locationAddress);
+                        newPosition.setLastLocationDate(newGeo.getDate() + NEW_POSITION_OFFSET);
+                        newPosition.setFirstLocationDate(newGeo.getDate());
+                        newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
+                        sendPosition(newPosition);
+                    } else {
+                        if (latestPositionFromDb.getStartLocation().equals(Constants.GEOCODING_FAILURE)) {
+                            latestPositionFromDb.setStartLocation(locationAddress);
+                            updatePosition(latestPositionFromDb);
+                        }
+                    }
+
+                } else if (latestPositionFromDb.getStatus() == STATUS_RUCH) {
+                    Timber.d("status geo ruch");
+
+                    latestPositionFromDb.setLastLocationDate(newGeo.getDate());
+                    latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
+                    latestPositionFromDb.setEndLocation(locationAddress);
+                    updatePosition(latestPositionFromDb);
+
+                    if (isLastGeoFarAway()) {
+                        Timber.d("bylo przemieszczenie");
+
+                    } else {
+                        Timber.d("nie bylo przemieszczenia");
+
+                        newPosition = new Position(userID);
+                        newPosition.setStatus(STATUS_POSTOJ);
+                        newPosition.setStartLocation(locationAddress);
+                        newPosition.setFirstLocationDate(newGeo.getDate());
+                        newPosition.setStartDate(Converters.longToString(newGeo.getDate()));
+                        newPosition.setLastLocationDate(newGeo.getDate() + NEW_POSITION_OFFSET);
+                        sendPosition(newPosition);
+                    }
+
+                } else {
+                    Timber.d("Zaden status sie nie zgadzal");
+                    throw new RuntimeException("Wrong position status");
                 }
 
-            } else {
-                Timber.d("Zaden status sie nie zgadzal");
-                throw new RuntimeException("Wrong position status");
+                if (newPosition != null) {
+                    PositionGeoJoin positionGeoJoin = new PositionGeoJoin(newPosition.getId(), newGeo.getId(), newGeo.getDate());
+                    Timber.d("assignGeoToPosition = " + positionGeoJoin.toString());
+                    assignGeoToPosition(positionGeoJoin);
+                } else {
+                    PositionGeoJoin positionGeoJoin = new PositionGeoJoin(latestPositionFromDb.getId(), newGeo.getId(), newGeo.getDate());
+                    Timber.d("assignGeoToPosition = " + positionGeoJoin.toString());
+                    assignGeoToPosition(positionGeoJoin);
+                }
+
+
+                mFusedLocationClient.removeLocationUpdates(locationCallback);
+            } catch (NullPointerException e){
+                String values = "latestPositionFromDB = " + latestPositionFromDb + "\nlatestGeoFromDB = " + latestGeoFromDb;
+                sharedPreferencesRepo.setErrorValue(values);
             }
-
-            if (newPosition != null) {
-                PositionGeoJoin positionGeoJoin = new PositionGeoJoin(newPosition.getId(), newGeo.getId(), newGeo.getDate());
-                Timber.d("assignGeoToPosition = " + positionGeoJoin.toString());
-                assignGeoToPosition(positionGeoJoin);
-            } else {
-                PositionGeoJoin positionGeoJoin = new PositionGeoJoin(latestPositionFromDb.getId(), newGeo.getId(), newGeo.getDate());
-                Timber.d("assignGeoToPosition = " + positionGeoJoin.toString());
-                assignGeoToPosition(positionGeoJoin);
-            }
-
-
-            mFusedLocationClient.removeLocationUpdates(locationCallback);
 
             lock.notify();
         }

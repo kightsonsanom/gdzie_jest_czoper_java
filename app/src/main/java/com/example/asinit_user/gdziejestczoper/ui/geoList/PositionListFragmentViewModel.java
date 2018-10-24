@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import com.example.asinit_user.gdziejestczoper.db.Repository;
+import com.example.asinit_user.gdziejestczoper.utils.Constants;
 import com.example.asinit_user.gdziejestczoper.utils.Converters;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Resource;
@@ -57,8 +58,8 @@ public class PositionListFragmentViewModel extends ViewModel{
 
     public LiveData<Resource<List<Position>>> getPositionsForUserAndDay(int position) {
         String name = observableUserNames.getValue().data.get(position);
-        long timeFrom = System.currentTimeMillis() - (System.currentTimeMillis() % 86400000);
-        long timeTo = System.currentTimeMillis() - (System.currentTimeMillis() % 86400000) + 86400000;
+        long timeFrom = Constants.START_DAY;
+        long timeTo = Constants.END_DAY;
 
 
         mObservablePositions = repository.getPostionsForUserAndDay(name, timeFrom, timeTo);

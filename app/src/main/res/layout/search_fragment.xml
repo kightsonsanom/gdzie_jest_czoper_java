@@ -39,8 +39,8 @@
                 android:id="@+id/startdate_et"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="OD"
                 android:layout_weight="1"
+                android:hint="OD"
                 android:inputType="date"
                 android:text="@{model.startDate}" />
 
@@ -63,7 +63,6 @@
         </LinearLayout>
 
 
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -78,51 +77,64 @@
                 android:layout_gravity="center"
                 android:text="SZUKAJ" />
 
+            <Button
+                android:id="@+id/show_error_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ShowError" />
+
+            <TextView
+                android:id="@+id/show_error_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+
             <!--<Button-->
-                <!--android:id="@+id/get_pos_btn"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_gravity="center"-->
-                <!--android:text="get pos from today" />-->
+            <!--android:id="@+id/get_pos_btn"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:text="get pos from today" />-->
 
 
         </LinearLayout>
 
 
         <!--<LinearLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:orientation="vertical"-->
-            <!--android:layout_marginTop="20dp"-->
-            <!--android:gravity="center">-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="vertical"-->
+        <!--android:layout_marginTop="20dp"-->
+        <!--android:gravity="center">-->
 
-            <!--<LinearLayout-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:orientation="horizontal"-->
-                <!--android:gravity="center">-->
+        <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:gravity="center">-->
 
-                <!--<EditText-->
-                    <!--android:id="@+id/latitude"-->
-                    <!--android:hint="latitude"-->
-                    <!--android:layout_weight="1"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content" />-->
+        <!--<EditText-->
+        <!--android:id="@+id/latitude"-->
+        <!--android:hint="latitude"-->
+        <!--android:layout_weight="1"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content" />-->
 
-                <!--<EditText-->
-                    <!--android:id="@+id/longitude"-->
-                    <!--android:hint="longitude"-->
-                    <!--android:layout_weight="1"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content" />-->
+        <!--<EditText-->
+        <!--android:id="@+id/longitude"-->
+        <!--android:hint="longitude"-->
+        <!--android:layout_weight="1"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content" />-->
 
-            <!--</LinearLayout>-->
+        <!--</LinearLayout>-->
 
-            <!--<Button-->
-                <!--android:id="@+id/accept_geo_btn"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:text="zatwierdz"/>-->
+        <!--<Button-->
+        <!--android:id="@+id/accept_geo_btn"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="zatwierdz"/>-->
         <!--</LinearLayout>-->
 
         <TextView
@@ -131,7 +143,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@{model.latestGeo}" />
-
 
 
         <ExpandableListView

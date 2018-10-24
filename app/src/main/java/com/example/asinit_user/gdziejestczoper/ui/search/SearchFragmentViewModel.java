@@ -126,4 +126,8 @@ public class SearchFragmentViewModel extends ViewModel implements SearchFragment
     public void setUserName(String userName) {
         this.userName = userName;
     }
+
+    public String displayError() {
+        return repository.displayGeoJobIntentServiceError();
+    }
 }

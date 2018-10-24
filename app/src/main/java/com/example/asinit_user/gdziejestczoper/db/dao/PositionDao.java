@@ -30,7 +30,7 @@ public interface PositionDao {
 //    @Query("SELECT * FROM " + Position.TABLE_NAME  + " WHERE position.startDate < :today")
 //    List<Position> getPositionForToday(String today);
 
-    @Insert(onConflict = IGNORE)
+    @Insert(onConflict = REPLACE)
     void insertAll(List<Position> positions);
 
     @Insert(onConflict = REPLACE)

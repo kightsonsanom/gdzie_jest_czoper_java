@@ -35,11 +35,11 @@ public class MapBinding {
                 if (geoList != null) {
                     Timber.d("geoList.size() = " + geoList.size());
                     for (Geo geo : geoList) {
-                            LatLng latLng = new LatLng(geo.getLocation().getLatitude(), geo.getLocation().getLongitude());
-                            googleMap.addMarker(new MarkerOptions()
-                                    .position(latLng)
-                                    .title(String.valueOf(geo.getUser_id()))
-                                    .icon(getBitmapDescriptor(geo.getUser_id())));
+                        LatLng latLng = new LatLng(geo.getLocation().getLatitude(), geo.getLocation().getLongitude());
+                        googleMap.addMarker(new MarkerOptions()
+                                .position(latLng)
+                                .title(getTitle(geo.getUser_id()))
+                                .icon(getBitmapDescriptor(geo.getUser_id())));
                     }
                 }
             });
@@ -54,8 +54,24 @@ public class MapBinding {
 //                return BitmapDescriptorFactory.fromResource(R.mipmap.sala_round);
             case 2:
                 return BitmapDescriptorFactory.fromResource(R.mipmap.pawel_round);
+            case 3:
+                return BitmapDescriptorFactory.fromResource(R.mipmap.sala_round);
             default:
                 return BitmapDescriptorFactory.fromResource(R.mipmap.sala_round);
         }
+    }
+
+    private static String getTitle(int user_id) {
+        switch (user_id) {
+            case 1:
+                return "Tomek";
+            case 2:
+                return "Paweł";
+            case 3:
+                return "Test";
+            default:
+                return "default";
+        }
+
     }
 }

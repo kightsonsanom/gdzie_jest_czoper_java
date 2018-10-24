@@ -61,6 +61,8 @@ public class SearchFragment extends Fragment {
     }
 
 
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -131,6 +133,13 @@ public class SearchFragment extends Fragment {
                 Timber.d("search button should work");
                 viewModel.getAllPositionsForUser();
             }
+        });
+
+        binding.showErrorButton.setOnClickListener((v) -> {
+           String error = viewModel.displayError();
+           if (!error.equals("defaultString")){
+               binding.showErrorText.setText("jest exception!");
+           }
         });
 
 

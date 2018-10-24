@@ -31,7 +31,7 @@ import retrofit2.http.Url;
 public interface CzoperApi {
 
     @GET("position/positionForDayAndUser")
-    LiveData<ApiResponse<List<Position>>> getPositionsForDayAndUser(@Query("userName") String userName, @Query("rangeFrom") long rangeFrom, @Query("rangeTo") long rangeTo);
+    LiveData<ApiResponse<List<Position>>> getLivePositionsForDayAndUser(@Query("userName") String userName, @Query("rangeFrom") long rangeFrom, @Query("rangeTo") long rangeTo);
 
     @GET("position")
     LiveData<ApiResponse<List<Position>>> getAllPositions();
@@ -65,6 +65,10 @@ public interface CzoperApi {
 
     @GET("user")
     Call<List<User>> getUsers(@Query("login") String login, @Query("password") String password);
+
+    @GET("position/positionForDayAndUser")
+    Call<List<Position>> getPositionsForDayAndUser(@Query("userName") String userName, @Query("rangeFrom") long rangeFrom, @Query("rangeTo") long rangeTo);
+
 
     @GET
     Call<JsonElement> getReverseGeocoding(@Url String url);

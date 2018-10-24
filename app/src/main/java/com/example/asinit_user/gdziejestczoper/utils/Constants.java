@@ -18,4 +18,6 @@ public final class Constants {
     public static final String END_DATE = "END_DATE";
     public static final String GEOCODING_FAILURE = "GEOCODING_FAILURE";
 
+    public static final long START_DAY = System.currentTimeMillis() - (System.currentTimeMillis() % 86400000);;
+    public static final long END_DAY = System.currentTimeMillis() - (System.currentTimeMillis() % 86400000) + 86400000;
 }

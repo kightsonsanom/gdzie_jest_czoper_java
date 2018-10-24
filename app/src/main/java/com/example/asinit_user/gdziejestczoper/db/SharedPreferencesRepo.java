@@ -9,6 +9,7 @@ import com.example.asinit_user.gdziejestczoper.R;
 public class SharedPreferencesRepo {
 
 
+    public static final String DEFAULT_STRING = "defaultString";
     private final SharedPreferences.Editor editor;
     private final SharedPreferences sharedPreferences;
 
@@ -76,6 +77,16 @@ public class SharedPreferencesRepo {
 
     public int getUserID(){
         return sharedPreferences.getInt("userID",0);
+    }
+
+    public void setErrorValue(String value){
+        editor.putString("errorValue", value);
+        editor.commit();
+    }
+
+
+    public String getErrorValue(){
+        return sharedPreferences.getString("errorValue", DEFAULT_STRING);
     }
 
 }
