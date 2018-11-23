@@ -247,7 +247,11 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 
                 mFusedLocationClient.removeLocationUpdates(locationCallback);
             } catch (NullPointerException e){
-                String values = "latestPositionFromDB = " + latestPositionFromDb + "\nlatestGeoFromDB = " + latestGeoFromDb;
+                String values = "latestPositionFromDB = " + latestPositionFromDb +
+                        "\nlatestGeoFromDB = " + latestGeoFromDb +
+//                        "\nuserID = " + repository.getUserID() +
+                        "\nrepository = " + repository;
+
                 sharedPreferencesRepo.setErrorValue(values);
             }
 

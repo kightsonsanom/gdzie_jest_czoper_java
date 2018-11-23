@@ -31,6 +31,8 @@ public class MapBinding {
 
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition, cameraZoom));
 
+                googleMap.clear();
+
                 // Add a marker
                 if (geoList != null) {
                     Timber.d("geoList.size() = " + geoList.size());

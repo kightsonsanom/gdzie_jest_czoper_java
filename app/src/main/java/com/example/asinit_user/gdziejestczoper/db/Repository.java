@@ -492,20 +492,6 @@ public class Repository {
         return allGeos;
     }
 
-//    public void getPositionsFromRange(String searchFromDay, String searchToDay) {
-//        Timber.d("getPositionsFromRange method searchFromDay = " + searchFromDay + " searchToDay = " + searchToDay);
-//        appExecutors.diskIO().execute(() -> {
-//            List<Position> positions = positionDao.getPositionsFromRange(searchFromDay, searchToDay);
-//            LiveData<List<Position>> livePositions = positionDao.getLivePositionsFromRange(searchFromDay, searchToDay);
-//
-//            Timber.d("positions = " + positions);
-//            Timber.d("livePositions = " + livePositions.getValue());
-//
-//            searchFragmentViewModelCallback.setObservablePositions(livePositions);
-//
-//        });
-//    }
-
     public LiveData<Resource<TreeMap<String, List<Position>>>> getPositionsFromRange(String userName, long searchFromDay, long searchToDay) {
         Timber.d("getPositionsFromRange method searchFromDay = " + searchFromDay + " searchToDay = " + searchToDay);
         return new NetworkBoundResource<TreeMap<String, List<Position>>, TreeMap<String, List<Position>>>(appExecutors) {
@@ -529,28 +515,25 @@ public class Repository {
                 Collections.sort(days);
 
 
-                return Transformations.map(positionDao.getLivePositionsFromRangeAndUser(userName, searchFromDay, searchToDay), new Function<List<Position>, TreeMap<String, List<Position>>>() {
-                    @Override
-                    public TreeMap<String, List<Position>> apply(List<Position> input) {
-                        TreeMap<String, List<Position>> positionMap = new TreeMap<>();
+                return Transformations.map(positionDao.getLivePositionsFromRangeAndUser(userName, searchFromDay, searchToDay), input -> {
+                    TreeMap<String, List<Position>> positionMap = new TreeMap<>();
 
-                        for (int i = 0; i < days.size(); i++) {
-                            Timber.d("making transformation for day: " + days.get(i));
-                            List<Position> positionsForDay = new ArrayList<>();
-                            for (Position p : input) {
+                    for (int i = 0; i < days.size(); i++) {
+                        Timber.d("making transformation for day: " + days.get(i));
+                        List<Position> positionsForDay = new ArrayList<>();
+                        for (Position p : input) {
 
-                                if (p.getFirstLocationDate() > days.get(i) && p.getFirstLocationDate() < days.get(i) + DAY_DURATION_INTERVAL) {
-                                    Timber.d("position from transformation = " + p.toString());
-                                    positionsForDay.add(p);
-                                }
+                            if (p.getFirstLocationDate() > days.get(i) && p.getFirstLocationDate() < days.get(i) + DAY_DURATION_INTERVAL) {
+                                Timber.d("position from transformation = " + p.toString());
+                                positionsForDay.add(p);
                             }
-                            Converters.sortPositions(positionsForDay);
-                            positionMap.put(Converters.getDayFromMilis(days.get(i)), positionsForDay);
-
                         }
-                        Timber.d("map size = " + positionMap.size());
-                        return positionMap;
+                        Converters.sortPositions(positionsForDay);
+                        positionMap.put(Converters.getDayFromMilis(days.get(i)), positionsForDay);
+
                     }
+                    Timber.d("map size = " + positionMap.size());
+                    return positionMap;
                 });
             }
 
@@ -788,19 +771,13 @@ public class Repository {
         });
     }
 
-    public List<User> getUserNames() {
-        appExecutors.diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                allUsers = userDao.getAllUsers();
-            }
-        });
-
-        return allUsers;
-    }
-
     public String displayGeoJobIntentServiceError() {
         Timber.d("GeoJobIntentServiceError = " + sharedPreferencesRepo.getErrorValue());
         return sharedPreferencesRepo.getErrorValue();
     }
+
+    public int getUserID(){
+        return sharedPreferencesRepo.getUserID();
+    }
+
 }
