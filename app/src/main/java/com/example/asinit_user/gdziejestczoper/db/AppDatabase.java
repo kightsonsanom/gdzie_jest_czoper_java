@@ -13,7 +13,10 @@ import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.PositionGeoJoin;
 import com.example.asinit_user.gdziejestczoper.viewobjects.User;
 
-@Database(entities = {Position.class, Geo.class, PositionGeoJoin.class, User.class}, version = 1, exportSchema = false)
+@Database(entities = {Position.class,
+        Geo.class,
+        PositionGeoJoin.class,
+        User.class}, version = 1, exportSchema = false)
 @TypeConverters({GeoTypeConverters.class})
 public abstract class AppDatabase extends RoomDatabase {
 

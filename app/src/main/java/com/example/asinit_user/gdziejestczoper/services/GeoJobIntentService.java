@@ -3,8 +3,6 @@ package com.example.asinit_user.gdziejestczoper.services;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -12,7 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.JobIntentService;
 
 import com.example.asinit_user.gdziejestczoper.db.Repository;
-import com.example.asinit_user.gdziejestczoper.db.SharedPreferencesRepo;
+import com.example.asinit_user.gdziejestczoper.db.SharedPreferencesRepository;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 import com.example.asinit_user.gdziejestczoper.viewobjects.PositionGeoJoin;
@@ -23,7 +21,6 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import javax.inject.Inject;
 
@@ -33,7 +30,7 @@ import timber.log.Timber;
 public class GeoJobIntentService extends JobIntentService implements PositionManagerCallback {
 
     static final int JOB_ID = 1000;
-    public static final int THREE_HOURS_INTERVAL = 10800000;
+    public static final int NO_GEO_BREAK = 900000;
     public static final int STATUS_NIEZNANY = 2;
     public static final int STATUS_POSTOJ = 1;
     public static final int STATUS_PRZERWA = 3;
@@ -52,7 +49,7 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
     Repository repository;
 
     @Inject
-    SharedPreferencesRepo sharedPreferencesRepo;
+    SharedPreferencesRepository sharedPreferencesRepository;
 
     Geo newGeo;
     Geo latestGeoFromDb;
@@ -71,18 +68,18 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
         repository.setPositionManagerCallback(this);
         context = getApplicationContext();
         Timber.d("starting localization service");
-        userID = sharedPreferencesRepo.getUserID();
+        userID = sharedPreferencesRepository.getUserID();
 
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
-                Timber.d("new location arrived");
-                assignLocationToGeo(locationResult.getLastLocation());
+                startProcessingGeo(locationResult.getLastLocation());
             }
         };
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
         LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
 
         lookForLocation = new Thread(() -> {
@@ -166,7 +163,7 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 
                     if (isLastGeoFarAway()) {
                         Timber.d("bylo przemieszczenie");
-                        latestPositionFromDb.setStatus(2);
+                        latestPositionFromDb.setStatus(STATUS_RUCH);
                         latestPositionFromDb.setEndLocation(locationAddress);
                         latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
 
@@ -252,7 +249,7 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 //                        "\nuserID = " + repository.getUserID() +
                         "\nrepository = " + repository;
 
-                sharedPreferencesRepo.setErrorValue(values);
+                sharedPreferencesRepository.setErrorValue(values);
             }
 
             lock.notify();
@@ -273,13 +270,12 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
         return distance > ACCEPTABLE_DISTANCE_BETWEEN_GEO;
     }
 
-    public void assignLocationToGeo(Location location) {
+    public void startProcessingGeo(Location location) {
         newGeo = new Geo(location, userID);
         startGeoCodingService(location);
     }
 
     public void startGeoCodingService(Location location){
-        Timber.d("startGeoCodingService");
         Intent intent = new Intent(context, GeocodeAddressIntentService.class);
         intent.putExtra(Constants.RECEIVER, addressResultReceiver);
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, location);
@@ -292,7 +288,7 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 
 
     private boolean isLatestGeoFromDbTooOld() {
-        return (System.currentTimeMillis() - latestPositionFromDb.getLastLocationDate()) > THREE_HOURS_INTERVAL;
+        return (System.currentTimeMillis() - latestPositionFromDb.getLastLocationDate()) > NO_GEO_BREAK;
     }
 
     private void sendGeo(Geo newGeo) {
@@ -319,7 +315,7 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
     @Override
     public void setNewLocation(Location location) {
         Timber.d("nowe location z łapy");
-        assignLocationToGeo(location);
+        startGeoCodingService(location);
     }
 
     private void getLastPositionFromDb() {

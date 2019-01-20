@@ -48,6 +48,8 @@ public class NavigationActivity extends AppCompatActivity implements HasSupportF
     public static final String POSITION_LIST_FRAGMENT = "PositionListFragment";
     public static final String MAP_FRAGMENT = "MapFragment";
     public static final String SEARCH_FRAGMENT = "SearchFragment";
+    public static final int START_SERVICE_INTERVAL = 250000;
+    public static final int FIRST_TRIGGER_INTERVAL = 5000;
 
     @Inject
     DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
@@ -58,21 +60,17 @@ public class NavigationActivity extends AppCompatActivity implements HasSupportF
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.geo_list_view:
-                    Timber.d("Navigating to geo list");
-                    changeFragment(0);
+                    NavigationActivity.this.changeFragment(0);
                     break;
                 case R.id.map_view:
-                    Timber.d("Navigating to map");
-                    changeFragment(1);
+                    NavigationActivity.this.changeFragment(1);
                     break;
                 case R.id.search_view:
-                    Timber.d("Navigating to search");
-                    changeFragment(2);
+                    NavigationActivity.this.changeFragment(2);
                     break;
             }
             return true;
@@ -124,10 +122,7 @@ public class NavigationActivity extends AppCompatActivity implements HasSupportF
             case 3:
                 selectedFragment = new MapFragment();
                 fragmentTag = MAP_FRAGMENT;
-
-
         }
-
         makeTransaction(position, selectedFragment, fragmentTag);
     }
 
@@ -142,9 +137,8 @@ public class NavigationActivity extends AppCompatActivity implements HasSupportF
     public void startGeoService() {
         Intent intent = new Intent(this, AlarmReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), INTENT_ID, intent, 0);
-
         AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 5000, 250000, pendingIntent);
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, FIRST_TRIGGER_INTERVAL, START_SERVICE_INTERVAL, pendingIntent);
     }
 
 
@@ -161,15 +155,13 @@ public class NavigationActivity extends AppCompatActivity implements HasSupportF
                 super.onBackPressed();
             }
         }
-
-
-        }
-
-        @Override
-        public void onRequestPermissionsResult ( int requestCode, @NonNull String[] permissions,
-        @NonNull int[] grantResults){
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-            NavigationActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
-        }
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        NavigationActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+    }
+}

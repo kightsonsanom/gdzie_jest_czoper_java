@@ -6,7 +6,7 @@ import android.arch.persistence.room.Room;
 
 import com.example.asinit_user.gdziejestczoper.api.CzoperApi;
 import com.example.asinit_user.gdziejestczoper.db.AppDatabase;
-import com.example.asinit_user.gdziejestczoper.db.SharedPreferencesRepo;
+import com.example.asinit_user.gdziejestczoper.db.SharedPreferencesRepository;
 import com.example.asinit_user.gdziejestczoper.db.dao.PositionDao;
 import com.example.asinit_user.gdziejestczoper.db.dao.GeoDao;
 import com.example.asinit_user.gdziejestczoper.db.dao.PositionGeoJoinDao;
@@ -20,7 +20,6 @@ import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
 
 import javax.inject.Singleton;
 
@@ -38,8 +37,8 @@ public class AppModule {
 
     @Provides
     @Singleton
-    SharedPreferencesRepo provideSharedPreferences(Application application){
-        return new SharedPreferencesRepo(application.getApplicationContext());
+    SharedPreferencesRepository provideSharedPreferences(Application application){
+        return new SharedPreferencesRepository(application.getApplicationContext());
     }
 
     @Provides
@@ -65,7 +64,8 @@ public class AppModule {
 
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://94.23.53.86:8585/czoper/api/")
+//                .baseUrl("http://94.23.53.86:8585/czoper/api/")
+                .baseUrl("http://192.168.1.3:8585/api/")
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(new LiveDataCallAdapterFactory())

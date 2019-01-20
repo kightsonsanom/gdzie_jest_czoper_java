@@ -51,6 +51,6 @@ public interface PositionDao {
     @Query("SELECT * FROM " + Position.TABLE_NAME + " WHERE position.lastLocationDate >= (SELECT position.lastLocationDate FROM position WHERE position.id = :positionIDFromPreferences)")
     List<Position> getPositionsSinceFailure(long positionIDFromPreferences);
 
-    @Query("SELECT * FROM " + Position.TABLE_NAME + " p INNER JOIN (SELECT user_id from user WHERE nazwa = :nazwa) t on p.user_id = t.user_id WHERE (p.firstLocationDate > :fromDate AND p.lastLocationDate < :toDate) ")
+    @Query("SELECT * FROM " + Position.TABLE_NAME + " p INNER JOIN (SELECT user_id from user WHERE nazwa = :nazwa) t on p.user_id = t.user_id WHERE (p.lastLocationDate > :fromDate AND p.firstLocationDate < :toDate) ")
     LiveData<List<Position>> loadPositionsForDayAndUser(String nazwa, long fromDate, long toDate);
 }

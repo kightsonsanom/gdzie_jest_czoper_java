@@ -66,24 +66,31 @@ public class MapFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        Timber.d("onResume");
+
         mapView.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        Timber.d("onPause");
+
         mapView.onPause();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Timber.d("onDestroy");
+
         mapView.onDestroy();
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        Timber.d("onStop");
         mapView.onStop();
     }
 

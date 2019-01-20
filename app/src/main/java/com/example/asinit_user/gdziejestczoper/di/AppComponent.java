@@ -11,7 +11,7 @@ import dagger.Component;
 import dagger.android.AndroidInjectionModule;
 
 @Singleton
-@Component(modules = {AndroidInjectionModule.class, AppModule.class, NavigationActivityModule.class, ServiceBuilderModule.class, ActivityBuilderModule.class})
+@Component(modules = {AndroidInjectionModule.class, AppModule.class, ServiceBuilderModule.class, ActivityBuilderModule.class})
 public interface AppComponent {
 
 //  Component.Builder is a custom builder for AppComponent. We provide BindsInstance for the application.

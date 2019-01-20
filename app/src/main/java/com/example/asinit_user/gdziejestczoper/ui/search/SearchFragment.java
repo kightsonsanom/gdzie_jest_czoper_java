@@ -19,7 +19,6 @@ import android.widget.Spinner;
 import com.example.asinit_user.gdziejestczoper.R;
 import com.example.asinit_user.gdziejestczoper.databinding.SearchFragmentBinding;
 import com.example.asinit_user.gdziejestczoper.ui.geoList.PositionsAdapter;
-import com.example.asinit_user.gdziejestczoper.ui.searchResult.SearchResultList;
 import com.example.asinit_user.gdziejestczoper.utils.Constants;
 
 import java.util.ArrayList;
@@ -59,8 +58,6 @@ public class SearchFragment extends Fragment {
             fragment.updateListener(viewModel);
         }
     }
-
-
 
 
     @Nullable

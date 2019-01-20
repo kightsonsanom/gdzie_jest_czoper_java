@@ -13,11 +13,9 @@ import dagger.android.ContributesAndroidInjector;
 @Module
 abstract class ServiceBuilderModule {
 
-    @ServiceScope
-    @ContributesAndroidInjector(modules = GeoServiceModule.class)
+    @ContributesAndroidInjector
     abstract GeoJobIntentService contributeGeoService();
 
-    @GeocodeScope
-    @ContributesAndroidInjector(modules = GeocodeModule.class)
+    @ContributesAndroidInjector
     abstract GeocodeAddressIntentService contributeGeocodeService();
 }

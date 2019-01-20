@@ -60,19 +60,15 @@ public class PositionListFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(PositionListFragmentViewModel.class);
         binding.setModel(viewModel);
-
+        binding.setLifecycleOwner(this);
         initUserList();
-
         setEventListeners();
     }
 
     private void initUserList() {
-
         ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1);
-
         viewModel.getObservableUserNames().observe(this, resource -> {
             if (resource != null && resource.data != null) {
                 itemsAdapter.addAll(resource.data);
@@ -94,9 +90,7 @@ public class PositionListFragment extends Fragment {
 
                 positions.observe(currentFragment, resource -> {
                     if (resource != null && resource.data != null) {
-                        displayPositions(resource.data);
                         Converters.sortPositions(resource.data);
-                        displayPositions(resource.data);
                         positionsAdapter.setPositionsList(resource.data);
                     }
                 });
@@ -120,6 +114,7 @@ public class PositionListFragment extends Fragment {
 
     private void displayPositions(List<Position> data) {
         Timber.d("before and after");
+
         for (Position p : data) {
             Timber.d(" position = " + p);
         }

@@ -1,9 +1,14 @@
 package com.example.asinit_user.gdziejestczoper.ui.map;
 
 
+import android.content.Context;
 import android.databinding.BindingAdapter;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 
 import com.example.asinit_user.gdziejestczoper.R;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
@@ -53,7 +58,6 @@ public class MapBinding {
         switch (user_id) {
             case 1:
                 return BitmapDescriptorFactory.fromResource(R.mipmap.tomek_round);
-//                return BitmapDescriptorFactory.fromResource(R.mipmap.sala_round);
             case 2:
                 return BitmapDescriptorFactory.fromResource(R.mipmap.pawel_round);
             case 3:
@@ -70,10 +74,18 @@ public class MapBinding {
             case 2:
                 return "Paweł";
             case 3:
-                return "Test";
+                return "Sala";
             default:
                 return "default";
         }
+    }
 
+    private static BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 }

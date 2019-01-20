@@ -26,6 +26,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:weightSum="6"
             android:orientation="horizontal">
 
             <ImageView
@@ -37,9 +38,9 @@
 
             <EditText
                 android:id="@+id/startdate_et"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="3"
                 android:hint="OD"
                 android:inputType="date"
                 android:text="@{model.startDate}" />
@@ -55,7 +56,7 @@
                 android:id="@+id/stopdate_et"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="3"
                 android:hint="DO"
                 android:inputType="date"
                 android:text="@{model.endDate}" />
@@ -80,6 +81,7 @@
             <Button
                 android:id="@+id/show_error_button"
                 android:layout_width="wrap_content"
+                android:visibility="gone"
                 android:layout_height="wrap_content"
                 android:text="ShowError" />
 
@@ -90,12 +92,12 @@
 
 
 
-            <!--<Button-->
-            <!--android:id="@+id/get_pos_btn"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center"-->
-            <!--android:text="get pos from today" />-->
+            <Button
+            android:id="@+id/accept_geo_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="get pos from today" />
 
 
         </LinearLayout>

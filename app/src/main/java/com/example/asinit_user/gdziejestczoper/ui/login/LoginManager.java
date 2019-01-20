@@ -1,14 +1,7 @@
 package com.example.asinit_user.gdziejestczoper.ui.login;
 
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
-
 import com.example.asinit_user.gdziejestczoper.db.Repository;
-import com.example.asinit_user.gdziejestczoper.db.SharedPreferencesRepo;
-import com.example.asinit_user.gdziejestczoper.viewobjects.User;
-
-import java.util.List;
 
 import javax.inject.Inject;
 

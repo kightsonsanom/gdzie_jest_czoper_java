@@ -6,17 +6,18 @@ import android.content.SharedPreferences;
 
 import com.example.asinit_user.gdziejestczoper.R;
 
-public class SharedPreferencesRepo {
+public class SharedPreferencesRepository {
 
 
     public static final String DEFAULT_STRING = "defaultString";
+    public static final String USER_ID = "userID";
+
+
     private final SharedPreferences.Editor editor;
     private final SharedPreferences sharedPreferences;
 
-    public SharedPreferencesRepo (Context context){
-
+    public SharedPreferencesRepository(Context context){
         sharedPreferences = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-
         editor = sharedPreferences.edit();
     }
 
@@ -71,12 +72,12 @@ public class SharedPreferencesRepo {
     }
 
     public void setUserID(int userID) {
-        editor.putInt("userID", userID);
+        editor.putInt(USER_ID, userID);
         editor.commit();
     }
 
     public int getUserID(){
-        return sharedPreferences.getInt("userID",0);
+        return sharedPreferences.getInt(USER_ID, 0);
     }
 
     public void setErrorValue(String value){

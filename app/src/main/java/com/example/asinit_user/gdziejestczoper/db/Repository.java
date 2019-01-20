@@ -66,29 +66,30 @@ public class Repository {
     private PositionGeoJoinDao positionGeoJoinDao;
     private CzoperApi czoperApi;
     private AppExecutors appExecutors;
-    private SharedPreferencesRepo sharedPreferencesRepo;
+    private SharedPreferencesRepository sharedPreferencesRepository;
 
     private Geo latestGeoFromDb;
     private Position latestPositionFromDb;
     private List<Geo> allGeos;
     private List<Position> allPositions;
-    private List<User> allUsers;
     private LiveData<Geo> latestGeoForUser;
 
-    private final Object lock = new Object();
-
-    private Thread getLatestMapGeo;
-    private LiveData<List<MapGeo>> mapGeos;
-
     @Inject
-    public Repository(PositionDao positionDao, GeoDao geoDao, PositionGeoJoinDao positionGeoJoinDao, UserDao userDao, AppExecutors appExecutors, CzoperApi czoperApi, SharedPreferencesRepo sharedPreferencesRepo) {
+    public Repository(PositionDao positionDao,
+                      GeoDao geoDao,
+                      PositionGeoJoinDao positionGeoJoinDao,
+                      UserDao userDao,
+                      AppExecutors appExecutors,
+                      CzoperApi czoperApi,
+                      SharedPreferencesRepository sharedPreferencesRepository) {
+
         this.appExecutors = appExecutors;
         this.positionDao = positionDao;
         this.positionGeoJoinDao = positionGeoJoinDao;
         this.geoDao = geoDao;
         this.userDao = userDao;
         this.czoperApi = czoperApi;
-        this.sharedPreferencesRepo = sharedPreferencesRepo;
+        this.sharedPreferencesRepository = sharedPreferencesRepository;
 
         observablePositions = new MediatorLiveData<>();
         observablePositions.addSource(positionDao.loadPositions(),
@@ -188,11 +189,10 @@ public class Repository {
 
     public void postPosition(Position position) {
         appExecutors.diskIO().execute(() -> {
-            Timber.d("inserting position into DB ID: " + position.getId() + " czas: " + position.getLastLocationDate());
             positionDao.insertPosition(position);
         });
 
-        long positionIDFromPreferences = sharedPreferencesRepo.getPositionID();
+        long positionIDFromPreferences = sharedPreferencesRepository.getPositionID();
 
         if (positionIDFromPreferences == 0) {
             sendPositionToServer(position);
@@ -203,26 +203,22 @@ public class Repository {
 
     private void sendPositionToServer(Position position) {
 
-        Call<Void> call = czoperApi.sendPosition(sharedPreferencesRepo.getUserID(), position);
+        Call<Void> call = czoperApi.sendPosition(sharedPreferencesRepository.getUserID(), position);
 
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                Timber.d("send single position onResponse");
-                sharedPreferencesRepo.setIsPositionSend(true);
-                sharedPreferencesRepo.putPositionID(0);
-
-                Timber.d(" wasGeoSend in sendPositionToServer = " + sharedPreferencesRepo.getIsGeoSend());
-                if (sharedPreferencesRepo.getIsGeoSend()) {
+                sharedPreferencesRepository.setIsPositionSend(true);
+                sharedPreferencesRepository.putPositionID(0);
+                if (sharedPreferencesRepository.getIsGeoSend()) {
                     assignGeoToPositionOnServer();
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Timber.d("postPosition send position onFailure call:  " + call + "throw: " + t);
-                sharedPreferencesRepo.putPositionID(position.getId());
-                sharedPreferencesRepo.setIsGeoSend(false);
+                sharedPreferencesRepository.putPositionID(position.getId());
+                sharedPreferencesRepository.setIsGeoSend(false);
                 saveLastAssignedTimeToPreferences();
             }
         });
@@ -242,16 +238,16 @@ public class Repository {
 
     private void sendPositionsListToServer(List<Position> positionlist) {
 
-        Call<Void> call = czoperApi.sendPositionList(sharedPreferencesRepo.getUserID(), positionlist);
+        Call<Void> call = czoperApi.sendPositionList(sharedPreferencesRepository.getUserID(), positionlist);
 
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Timber.d("send position list onResponse");
-                sharedPreferencesRepo.setIsPositionSend(true);
-                sharedPreferencesRepo.putPositionID(0);
+                sharedPreferencesRepository.setIsPositionSend(true);
+                sharedPreferencesRepository.putPositionID(0);
 
-                if (sharedPreferencesRepo.getIsGeoSend()) {
+                if (sharedPreferencesRepository.getIsGeoSend()) {
                     assignGeoToPositionOnServer();
                 }
             }
@@ -259,7 +255,7 @@ public class Repository {
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 Timber.d("send position list onFailure call:  " + call + "throw: " + t);
-                sharedPreferencesRepo.setIsGeoSend(false);
+                sharedPreferencesRepository.setIsGeoSend(false);
             }
         });
     }
@@ -270,7 +266,7 @@ public class Repository {
             geoDao.insertGeo(geo);
         });
 
-        long geoIDFromPreferences = sharedPreferencesRepo.getGeoID();
+        long geoIDFromPreferences = sharedPreferencesRepository.getGeoID();
 
         if (geoIDFromPreferences == 0) {
             sendGeoToServer(geo);
@@ -280,16 +276,16 @@ public class Repository {
     }
 
     private void sendGeoToServer(Geo geo) {
-        Call<Void> call = czoperApi.sendGeo(sharedPreferencesRepo.getUserID(), geo);
+        Call<Void> call = czoperApi.sendGeo(sharedPreferencesRepository.getUserID(), geo);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Timber.d("send single geo onResponse");
-                sharedPreferencesRepo.putGeoID(0);
-                sharedPreferencesRepo.setIsGeoSend(true);
+                sharedPreferencesRepository.putGeoID(0);
+                sharedPreferencesRepository.setIsGeoSend(true);
 
-                Timber.d(" wasPositionSend in sendPositionToServer = " + sharedPreferencesRepo.getIsPositionSend());
-                if (sharedPreferencesRepo.getIsPositionSend()) {
+                Timber.d(" wasPositionSend in sendPositionToServer = " + sharedPreferencesRepository.getIsPositionSend());
+                if (sharedPreferencesRepository.getIsPositionSend()) {
                     assignGeoToPositionOnServer();
                 }
             }
@@ -297,10 +293,10 @@ public class Repository {
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                sharedPreferencesRepo.putGeoID(geo.getId());
+                sharedPreferencesRepository.putGeoID(geo.getId());
                 Timber.d("send single geo onFailure call:  " + call + "throw: " + t);
                 saveLastAssignedTimeToPreferences();
-                sharedPreferencesRepo.setIsPositionSend(false);
+                sharedPreferencesRepository.setIsPositionSend(false);
             }
         });
     }
@@ -318,23 +314,23 @@ public class Repository {
     }
 
     private void sendGeoListToServer(List<Geo> geolist) {
-        Call<Void> call = czoperApi.sendGeoList(sharedPreferencesRepo.getUserID(), geolist);
+        Call<Void> call = czoperApi.sendGeoList(sharedPreferencesRepository.getUserID(), geolist);
 
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Timber.d("send geo list onResponse");
-                sharedPreferencesRepo.putGeoID(0);
-                sharedPreferencesRepo.setIsGeoSend(true);
+                sharedPreferencesRepository.putGeoID(0);
+                sharedPreferencesRepository.setIsGeoSend(true);
 
-                if (sharedPreferencesRepo.getIsPositionSend()) {
+                if (sharedPreferencesRepository.getIsPositionSend()) {
                     assignGeoToPositionOnServer();
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                sharedPreferencesRepo.setIsPositionSend(false);
+                sharedPreferencesRepository.setIsPositionSend(false);
                 Timber.d("send position list onFailure call:  " + call + "throw: " + t);
             }
         });
@@ -342,10 +338,10 @@ public class Repository {
 
 
     private void assignGeoToPositionOnServer() {
-        sharedPreferencesRepo.setIsPositionSend(false);
-        sharedPreferencesRepo.setIsGeoSend(false);
+        sharedPreferencesRepository.setIsPositionSend(false);
+        sharedPreferencesRepository.setIsGeoSend(false);
         Timber.d("assignGeoToPositionOnServer method");
-        long lastAssignTimeFromPreferences = sharedPreferencesRepo.getLastAssignedTime();
+        long lastAssignTimeFromPreferences = sharedPreferencesRepository.getLastAssignedTime();
         Timber.d("lastAssignTimeFromPreferences = " + lastAssignTimeFromPreferences);
 
         if (lastAssignTimeFromPreferences != 0) {
@@ -380,7 +376,7 @@ public class Repository {
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                sharedPreferencesRepo.setLastAssginedTime(0);
+                sharedPreferencesRepository.setLastAssginedTime(0);
                 Timber.d("sendSingleAssignToServer onResponse");
             }
 
@@ -400,7 +396,7 @@ public class Repository {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Timber.d("sendAssignsToServer onResponse");
-                sharedPreferencesRepo.setLastAssginedTime(0);
+                sharedPreferencesRepository.setLastAssginedTime(0);
             }
 
             @Override
@@ -415,7 +411,7 @@ public class Repository {
             PositionGeoJoin lastAssignment = positionGeoJoinDao.getLastAssignment();
             long lastAssignedTime = lastAssignment.getAssignTime();
             Timber.d("lastAssignedTime = %s", lastAssignedTime);
-            sharedPreferencesRepo.setLastAssginedTime(lastAssignedTime);
+            sharedPreferencesRepository.setLastAssginedTime(lastAssignedTime);
         });
     }
 
@@ -430,7 +426,7 @@ public class Repository {
         appExecutors.diskIO().execute(() -> positionDao.updatePosition(position));
 
 
-        long positionIDFromPreferences = sharedPreferencesRepo.getPositionID();
+        long positionIDFromPreferences = sharedPreferencesRepository.getPositionID();
 
         if (positionIDFromPreferences == 0) {
             sendPositionToServer(position);
@@ -441,7 +437,7 @@ public class Repository {
 
     public void getLatestGeo() {
         appExecutors.diskIO().execute(() -> {
-            latestGeoFromDb = geoDao.loadLatestGeo(sharedPreferencesRepo.getUserID());
+            latestGeoFromDb = geoDao.loadLatestGeo(sharedPreferencesRepository.getUserID());
             if (latestGeoFromDb != null) {
                 Timber.d("latestGeoFromDb ID = " + latestGeoFromDb.getId() + " czas: " + latestGeoFromDb.getDate());
             } else {
@@ -453,12 +449,7 @@ public class Repository {
 
     public void getLatestPosition() {
         appExecutors.diskIO().execute(() -> {
-            latestPositionFromDb = positionDao.loadLatestPosition(sharedPreferencesRepo.getUserID());
-            if (latestPositionFromDb != null) {
-                Timber.d("latestPositionFromDb ID = " + latestPositionFromDb.getId() + " czas: " + latestPositionFromDb.getLastLocationDate());
-            } else {
-                Timber.d("latestPositionFromDb is null");
-            }
+            latestPositionFromDb = positionDao.loadLatestPosition(sharedPreferencesRepository.getUserID());
             positionManagerCallback.setLatestPositionFromDb(latestPositionFromDb);
         });
     }
@@ -477,7 +468,7 @@ public class Repository {
 
     public void getLatestGeoForTests() {
         appExecutors.diskIO().execute(() -> {
-            Geo latestGeo = geoDao.loadLatestGeo(sharedPreferencesRepo.getUserID());
+            Geo latestGeo = geoDao.loadLatestGeo(sharedPreferencesRepository.getUserID());
             searchFragmentViewModelCallback.setLatestGeo(latestGeo);
         });
     }
@@ -604,7 +595,7 @@ public class Repository {
         for (User user : userList) {
             if (user.getLogin().equals(login)) {
                 Timber.d("user.getLogin = " + user.getLogin() + " " + user.getUser_id());
-                sharedPreferencesRepo.setUserID(user.getUser_id());
+                sharedPreferencesRepository.setUserID(user.getUser_id());
             }
         }
     }
@@ -772,12 +763,12 @@ public class Repository {
     }
 
     public String displayGeoJobIntentServiceError() {
-        Timber.d("GeoJobIntentServiceError = " + sharedPreferencesRepo.getErrorValue());
-        return sharedPreferencesRepo.getErrorValue();
+        Timber.d("GeoJobIntentServiceError = " + sharedPreferencesRepository.getErrorValue());
+        return sharedPreferencesRepository.getErrorValue();
     }
 
     public int getUserID(){
-        return sharedPreferencesRepo.getUserID();
+        return sharedPreferencesRepository.getUserID();
     }
 
 }
