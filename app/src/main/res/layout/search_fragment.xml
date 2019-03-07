@@ -26,8 +26,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:weightSum="6"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:weightSum="6">
 
             <ImageView
                 android:id="@+id/startdate_image_view"
@@ -81,9 +81,9 @@
             <Button
                 android:id="@+id/show_error_button"
                 android:layout_width="wrap_content"
-                android:visibility="gone"
                 android:layout_height="wrap_content"
-                android:text="ShowError" />
+                android:text="ShowError"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/show_error_text"
@@ -91,53 +91,59 @@
                 android:layout_height="wrap_content" />
 
 
-
-            <Button
-            android:id="@+id/accept_geo_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="get pos from today" />
+            <!--<Button-->
+                <!--android:id="@+id/accept_geo_btn"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:text="get pos from today" />-->
 
 
         </LinearLayout>
 
 
-        <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:orientation="vertical"-->
-        <!--android:layout_marginTop="20dp"-->
-        <!--android:gravity="center">-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:orientation="vertical">
 
-        <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:orientation="horizontal"-->
-        <!--android:gravity="center">-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
 
-        <!--<EditText-->
-        <!--android:id="@+id/latitude"-->
-        <!--android:hint="latitude"-->
-        <!--android:layout_weight="1"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content" />-->
+                <EditText
+                    android:id="@+id/latitude"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="latitude" />
 
-        <!--<EditText-->
-        <!--android:id="@+id/longitude"-->
-        <!--android:hint="longitude"-->
-        <!--android:layout_weight="1"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content" />-->
+                <EditText
+                    android:id="@+id/longitude"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="longitude" />
 
-        <!--</LinearLayout>-->
+                <EditText
+                    android:id="@+id/time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="time" />
 
-        <!--<Button-->
-        <!--android:id="@+id/accept_geo_btn"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="zatwierdz"/>-->
-        <!--</LinearLayout>-->
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/accept_geo_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="zatwierdz" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/position_from_today"

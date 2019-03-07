@@ -86,6 +86,10 @@ public class SearchFragment extends Fragment {
 
 //        binding.positionRecycler.setAdapter(positionsAdapter);
         initUserSpinner();
+
+
+        binding.latitude.setText("51.");
+        binding.longitude.setText("15.");
     }
 
     private void initUserSpinner() {
@@ -140,19 +144,25 @@ public class SearchFragment extends Fragment {
         });
 
 
-        // wywolanie przycisku, ktory symulowal pobranie nowej lokalizacji z GPS
-//        binding.acceptGeoBtn.setOnClickListener((v) -> {
-//
-//            String latitude = binding.latitude.getText().toString();
-//            String longitude = binding.longitude.getText().toString();
-//            Location location = new Location(LocationManager.GPS_PROVIDER);
-//
-//            location.setLatitude(Double.parseDouble(latitude));
-//            location.setLongitude(Double.parseDouble(longitude));
-//            location.setTime(System.currentTimeMillis());
-//            viewModel.setNewLocation(location);
-//
-//        });
+//         wywolanie przycisku, ktory symulowal pobranie nowej lokalizacji z GPS
+        binding.acceptGeoBtn.setOnClickListener((v) -> {
+
+            String latitude = binding.latitude.getText().toString();
+            String longitude = binding.longitude.getText().toString();
+            String time = binding.time.getText().toString();
+            Location location = new Location(LocationManager.GPS_PROVIDER);
+
+            location.setLatitude(Double.parseDouble(latitude));
+            location.setLongitude(Double.parseDouble(longitude));
+
+            if(time.isEmpty()){
+                location.setTime(System.currentTimeMillis());
+            } else {
+                location.setTime(Long.parseLong(time));
+            }
+            viewModel.setNewLocation(location);
+
+        });
 
 //        binding.getPosBtn.setOnClickListener((v) -> {
 //            viewModel.getLatestGeo();

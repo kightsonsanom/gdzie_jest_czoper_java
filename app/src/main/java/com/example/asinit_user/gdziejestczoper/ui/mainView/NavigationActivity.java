@@ -48,7 +48,7 @@ public class NavigationActivity extends AppCompatActivity implements HasSupportF
     public static final String POSITION_LIST_FRAGMENT = "PositionListFragment";
     public static final String MAP_FRAGMENT = "MapFragment";
     public static final String SEARCH_FRAGMENT = "SearchFragment";
-    public static final int START_SERVICE_INTERVAL = 250000;
+    public static final int START_SERVICE_INTERVAL = 7200000;
     public static final int FIRST_TRIGGER_INTERVAL = 5000;
 
     @Inject

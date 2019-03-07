@@ -54,7 +54,7 @@ public class GeocodeAddressIntentService extends IntentService implements Geocod
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
 
-        Timber.d("Repository test = " + repository.getTestData());
+//        Timber.d("Repository test = " + repository.getTestData());
         Timber.d("onHandleIntent from geocoder");
         Geocoder geocoder = new Geocoder(this, new Locale("pl_PL"));
         List<Address> addresses = null;
