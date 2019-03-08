@@ -9,6 +9,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -31,6 +33,8 @@ import com.firebase.jobdispatcher.Job;
 import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.Trigger;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
@@ -50,6 +54,8 @@ public class NavigationActivity extends AppCompatActivity implements HasSupportF
     public static final String SEARCH_FRAGMENT = "SearchFragment";
     public static final int START_SERVICE_INTERVAL = 7200000;
     public static final int FIRST_TRIGGER_INTERVAL = 5000;
+
+    public ArrayList<Location> locations;
 
     @Inject
     DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
@@ -89,12 +95,48 @@ public class NavigationActivity extends AppCompatActivity implements HasSupportF
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         if (savedInstanceState == null) {
+            locations = new ArrayList<>();
+//            locations.add(dodajLokacje(15.490865,51.934473, System.currentTimeMillis() + 300000 ));
+//            locations.add(dodajLokacje(15.490865,51.934473, System.currentTimeMillis() + 300001  ));
+
+//POSTOJ - Sucharskiego
+            locations.add(dodajLokacje(15.490886, 51.934460, System.currentTimeMillis() + 300002 ));
+            locations.add(dodajLokacje(15.490886, 51.934460, System.currentTimeMillis() + 300003 ));
+//PRZERWA
+            locations.add(dodajLokacje(15.490886, 51.934460, 1552082160000l));
+//RUCH - Wiezienie -> PCK
+            locations.add(dodajLokacje(15.494357, 51.936770,  System.currentTimeMillis() + 1 +(1552082160000l - System.currentTimeMillis())));
+            locations.add(dodajLokacje(15.493624,51.939867,  System.currentTimeMillis() + 1 +(1552082160000l - System.currentTimeMillis())));
+//PRZERWA
+            locations.add(dodajLokacje(15.493624,51.939867,  1552082160000l));
+//POSTOJ - PCK
+            locations.add(dodajLokacje( 15.493624,51.939867,  System.currentTimeMillis() + (1552082160000l - System.currentTimeMillis())));
+
             bottomNavigationView.setSelectedItemId(R.id.map_view);
             changeFragment(1);
         }
 
     }
 
+    public Location getLocation(){
+        return locations.remove(0);
+    }
+
+    private Location dodajLokacje(double longitude, double latitude) {
+        Location location = new Location(LocationManager.GPS_PROVIDER);
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+        location.setTime(System.currentTimeMillis());
+        return location;
+    }
+
+    private Location dodajLokacje(double longitude, double latitude, long time) {
+        Location location = new Location(LocationManager.GPS_PROVIDER);
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+        location.setTime(time);
+        return location;
+    }
     @Override
     public AndroidInjector<Fragment> supportFragmentInjector() {
         return dispatchingAndroidInjector;

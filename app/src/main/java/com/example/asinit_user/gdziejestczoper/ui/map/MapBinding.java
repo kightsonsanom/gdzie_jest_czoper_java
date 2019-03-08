@@ -42,6 +42,7 @@ public class MapBinding {
                 if (geoList != null) {
                     Timber.d("geoList.size() = " + geoList.size());
                     for (Geo geo : geoList) {
+                        Timber.d("geo = " + geo);
                         LatLng latLng = new LatLng(geo.getLocation().getLatitude(), geo.getLocation().getLongitude());
                         googleMap.addMarker(new MarkerOptions()
                                 .position(latLng)
@@ -72,9 +73,9 @@ public class MapBinding {
             case 1:
                 return "Tomek";
             case 2:
-                return "Paweł";
+                return "Maciej";
             case 3:
-                return "Sala";
+                return "Damian";
             default:
                 return "default";
         }

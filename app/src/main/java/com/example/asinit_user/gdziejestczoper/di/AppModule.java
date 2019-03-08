@@ -65,7 +65,7 @@ public class AppModule {
 
         Retrofit retrofit = new Retrofit.Builder()
 //                .baseUrl("http://94.23.53.86:8585/czoper/api/")
-                .baseUrl("http://192.168.1.3:8585/api/")
+                .baseUrl("http://192.168.1.54:8585/api/")
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(new LiveDataCallAdapterFactory())

@@ -32,6 +32,15 @@ public class Geo {
         displayText = "\nID = " + id + "\nLatitude = " + location.getLatitude() + "\nLongitude = " + location.getLongitude() + "\nDate = " + date;
     }
 
+    public Geo(Location location, int user_id, long date) {
+        id = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
+        this.location = location;
+        this.date = date;
+        this.user_id = user_id;
+        displayText = "\nID = " + id + "\nLatitude = " + location.getLatitude() + "\nLongitude = " + location.getLongitude() + "\nDate = " + date;
+    }
+
+
     public Geo(@NonNull long geo_id, Location location, long date, String displayText, int user_id) {
         this.id = geo_id;
         this.location = location;

@@ -58,6 +58,7 @@ public class PositionListFragmentViewModel extends ViewModel{
 
     public LiveData<Resource<List<Position>>> getPositionsForUserAndDay(int position) {
         String name = observableUserNames.getValue().data.get(position);
+        Timber.d("Opening user " + name + " position list");
         long timeFrom = Constants.START_DAY;
         long timeTo = Constants.END_DAY;
 

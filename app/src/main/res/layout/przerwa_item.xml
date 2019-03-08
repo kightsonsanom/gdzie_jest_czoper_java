@@ -30,6 +30,7 @@
             android:id="@+id/time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -37,6 +38,7 @@
                 android:id="@+id/przerwa_start_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textSize="18sp"
                 android:text="@{position.startDate}" />
 
             <ImageView
@@ -49,6 +51,7 @@
             <TextView
                 android:id="@+id/przerwa_stop_time"
                 android:layout_width="wrap_content"
+                android:textSize="18sp"
                 android:layout_height="wrap_content"
                 android:text="@{position.endDate}" />
 

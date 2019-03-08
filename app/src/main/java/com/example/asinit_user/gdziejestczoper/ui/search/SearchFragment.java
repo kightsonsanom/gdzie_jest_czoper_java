@@ -19,6 +19,7 @@ import android.widget.Spinner;
 import com.example.asinit_user.gdziejestczoper.R;
 import com.example.asinit_user.gdziejestczoper.databinding.SearchFragmentBinding;
 import com.example.asinit_user.gdziejestczoper.ui.geoList.PositionsAdapter;
+import com.example.asinit_user.gdziejestczoper.ui.mainView.NavigationActivity;
 import com.example.asinit_user.gdziejestczoper.utils.Constants;
 
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ public class SearchFragment extends Fragment {
     private DatePickerFragment datePickerFragment;
     private SearchFragmentViewModel viewModel;
     private SearchFragmentBinding binding;
+
 
     @Override
     public void onAttach(Context context) {
@@ -78,18 +80,18 @@ public class SearchFragment extends Fragment {
 
         setOnClickListeners();
 
-//        viewModel.getObservablePositions().observe(this, positions-> {
-//            if (positions != null) {
-//                positionsAdapter.setPositionsList(positions);
-//            }
-//        });
-
-//        binding.positionRecycler.setAdapter(positionsAdapter);
+//        if (savedInstanceState == null) {
+//
+//        } else {
+//            locations = savedInstanceState.getParcelableArrayList("locations");
+//        }
+//
         initUserSpinner();
 
 
         binding.latitude.setText("51.");
         binding.longitude.setText("15.");
+        binding.time.setText("1551985200000");
     }
 
     private void initUserSpinner() {
@@ -123,7 +125,7 @@ public class SearchFragment extends Fragment {
 
         binding.searchButton.setOnClickListener((v) -> {
             if (checkRequiredFields()) {
-                viewModel.setUserName((String)binding.userSpinner.getSelectedItem());
+                viewModel.setUserName((String) binding.userSpinner.getSelectedItem());
                 viewModel.getObservablePositions().observe(this, positions -> {
                     if (positions != null) {
                         ExpandableListAdapter expandableAdapter = new ExpandableListAdapter(getActivity());
@@ -137,30 +139,33 @@ public class SearchFragment extends Fragment {
         });
 
         binding.showErrorButton.setOnClickListener((v) -> {
-           String error = viewModel.displayError();
-           if (!error.equals("defaultString")){
-               binding.showErrorText.setText("jest exception!");
-           }
+            String error = viewModel.displayError();
+            if (!error.equals("defaultString")) {
+                binding.showErrorText.setText("jest exception!");
+            }
         });
 
 
 //         wywolanie przycisku, ktory symulowal pobranie nowej lokalizacji z GPS
         binding.acceptGeoBtn.setOnClickListener((v) -> {
 
-            String latitude = binding.latitude.getText().toString();
-            String longitude = binding.longitude.getText().toString();
-            String time = binding.time.getText().toString();
-            Location location = new Location(LocationManager.GPS_PROVIDER);
 
-            location.setLatitude(Double.parseDouble(latitude));
-            location.setLongitude(Double.parseDouble(longitude));
-
-            if(time.isEmpty()){
-                location.setTime(System.currentTimeMillis());
-            } else {
-                location.setTime(Long.parseLong(time));
-            }
-            viewModel.setNewLocation(location);
+//            String latitude = binding.latitude.getText().toString();
+//            String longitude = binding.longitude.getText().toString();
+//            String time = binding.time.getText().toString();
+//            Location location = new Location(LocationManager.GPS_PROVIDER);
+//
+//            location.setLatitude(Double.parseDouble(latitude));
+//            location.setLongitude(Double.parseDouble(longitude));
+//
+//            if(time.isEmpty()){
+//                location.setTime(System.currentTimeMillis());
+//            } else {
+//                location.setTime(Long.parseLong(time));
+//            }
+//            Timber.d("locations.get(0) = " + locations.get(0));
+            viewModel.setNewLocation(((NavigationActivity) getActivity()).getLocation());
+//            viewModel.setNewLocation(location);
 
         });
 
@@ -175,4 +180,3 @@ public class SearchFragment extends Fragment {
         return !binding.startdateEt.getText().toString().equals("") && !binding.stopdateEt.getText().toString().equals("") && binding.userSpinner.getSelectedItem() != null;
     }
 }
-
