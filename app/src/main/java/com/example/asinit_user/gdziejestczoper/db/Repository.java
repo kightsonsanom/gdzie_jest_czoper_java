@@ -564,7 +564,10 @@ public class Repository {
     }
 
     private void getInitialPositionData(String login){
-        Call<List<Position>> call = czoperApi.getPositionsForDayAndUser(login, Constants.START_DAY, Constants.END_DAY);
+
+        long timeFrom = System.currentTimeMillis() - (System.currentTimeMillis() % 86400000);
+        long timeTo = System.currentTimeMillis() - (System.currentTimeMillis() % 86400000) + 86400000;
+        Call<List<Position>> call = czoperApi.getPositionsForDayAndUser(login, timeFrom, timeTo);
 
         call.enqueue(new Callback<List<Position>>() {
             @Override
@@ -682,15 +685,27 @@ public class Repository {
     public LiveData<Resource<List<Position>>> getPostionsForUserAndDay(String name, long rangeFrom, long rangeTo) {
         return new NetworkBoundResource<List<Position>, List<Position>>(appExecutors) {
 
+            LiveData<List<Position>> positionList;
 
             @Override
             protected void saveCallResult(@NonNull List<Position> item) {
 
                 int userID = userDao.getUserID(name);
-                Timber.d("position for day and user from network:");
-                for (Position p : item) {
-                    p.setUser_id(userID);
-                    Timber.d("position from network = " + p.toString());
+
+                for (Position networkPosition : item) {
+                    networkPosition.setUser_id(userID);
+
+// don't update DB elements if they are more recent than elements from network
+                    if (positionList.getValue()!=null){
+                        for (Position dbPosition: positionList.getValue()){
+                            if (networkPosition.getId()==dbPosition.getId()){
+                                if(networkPosition.getLastLocationDate() < dbPosition.getLastLocationDate()){
+                                    item.remove(networkPosition);
+                                }
+                            }
+                        }
+                    }
+                    Timber.d("position from network = " + networkPosition.toString());
                 }
                 positionDao.insertAll(item);
             }
@@ -705,7 +720,7 @@ public class Repository {
             protected LiveData<List<Position>> loadFromDb() {
 
 
-                LiveData<List<Position>> positionList = positionDao.loadPositionsForDayAndUser(name, rangeFrom, rangeTo);
+                positionList = positionDao.loadPositionsForDayAndUser(name, rangeFrom, rangeTo);
                 Timber.d("list of position = ");
 
                 if (positionList.getValue() != null) {

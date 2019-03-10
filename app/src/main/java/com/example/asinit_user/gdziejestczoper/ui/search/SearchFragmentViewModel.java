@@ -103,7 +103,7 @@ public class SearchFragmentViewModel extends ViewModel implements SearchFragment
     }
 
     public void getAllPositionsForUser() {
-        mObservablePositions.addSource(repository.getPositionsFromRange(userName, searchFromDay, searchToDay), (result) -> mObservablePositions.setValue(result.data));;
+        mObservablePositions.addSource(repository.getPositionsFromRange(userName, searchFromDay, searchToDay), (result) -> mObservablePositions.setValue(result.data));
     }
 
     @Override

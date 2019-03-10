@@ -52,10 +52,15 @@ public class NavigationActivity extends AppCompatActivity implements HasSupportF
     public static final String POSITION_LIST_FRAGMENT = "PositionListFragment";
     public static final String MAP_FRAGMENT = "MapFragment";
     public static final String SEARCH_FRAGMENT = "SearchFragment";
-    public static final int START_SERVICE_INTERVAL = 7200000;
+    public static final int START_SERVICE_INTERVAL = 240000000;
     public static final int FIRST_TRIGGER_INTERVAL = 5000;
 
+    public static final int MIN_5 = 300000;
+    public static final int MIN_60 =3600000;
+
+
     public ArrayList<Location> locations;
+
 
     @Inject
     DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
@@ -96,19 +101,26 @@ public class NavigationActivity extends AppCompatActivity implements HasSupportF
 
         if (savedInstanceState == null) {
             locations = new ArrayList<>();
-//            locations.add(dodajLokacje(15.490865,51.934473, System.currentTimeMillis() + 300000 ));
-//            locations.add(dodajLokacje(15.490865,51.934473, System.currentTimeMillis() + 300001  ));
 
 //POSTOJ - Sucharskiego
-            locations.add(dodajLokacje(15.490886, 51.934460, System.currentTimeMillis() + 300002 ));
-            locations.add(dodajLokacje(15.490886, 51.934460, System.currentTimeMillis() + 300003 ));
-//PRZERWA
-            locations.add(dodajLokacje(15.490886, 51.934460, 1552082160000l));
+            locations.add(dodajLokacje(15.490865,51.934473, System.currentTimeMillis() + MIN_5 ));
+            locations.add(dodajLokacje(15.490865,51.934473, System.currentTimeMillis() + (MIN_5 *2)));
+            locations.add(dodajLokacje(15.490886, 51.934460, System.currentTimeMillis() + (MIN_5 *3) ));
+            locations.add(dodajLokacje(15.490886, 51.934460, System.currentTimeMillis() + (MIN_5 *4)));
+
+//PRZERWA - Sucharskiego
+            locations.add(dodajLokacje(15.490886, 51.934460, System.currentTimeMillis() + (MIN_60) + (MIN_5 *4)));
+
 //RUCH - Wiezienie -> PCK
-            locations.add(dodajLokacje(15.494357, 51.936770,  System.currentTimeMillis() + 1 +(1552082160000l - System.currentTimeMillis())));
-            locations.add(dodajLokacje(15.493624,51.939867,  System.currentTimeMillis() + 1 +(1552082160000l - System.currentTimeMillis())));
+            locations.add(dodajLokacje(15.494357, 51.936770,  System.currentTimeMillis() + (MIN_60) + (MIN_5 *5)));
+            locations.add(dodajLokacje(15.493624,51.939867,  System.currentTimeMillis() + (MIN_60) + (MIN_5 *6)));
 //PRZERWA
-            locations.add(dodajLokacje(15.493624,51.939867,  1552082160000l));
+            locations.add(dodajLokacje(15.493624,51.939867,  System.currentTimeMillis() + (MIN_60) + (MIN_5 *7)));
+
+            locations.add(dodajLokacje(15.493624,51.939867,  System.currentTimeMillis() + (MIN_60*2) + (MIN_5 *7)));
+
+            locations.add(dodajLokacje(15.493624,51.939867,  System.currentTimeMillis() + (MIN_60*3) + (MIN_5 *7)));
+
 //POSTOJ - PCK
             locations.add(dodajLokacje( 15.493624,51.939867,  System.currentTimeMillis() + (1552082160000l - System.currentTimeMillis())));
 

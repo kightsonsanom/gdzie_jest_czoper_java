@@ -58,14 +58,12 @@ public class PositionListFragmentViewModel extends ViewModel{
 
     public LiveData<Resource<List<Position>>> getPositionsForUserAndDay(int position) {
         String name = observableUserNames.getValue().data.get(position);
+
+        long timeFrom = System.currentTimeMillis() - (System.currentTimeMillis() % 86400000);
+        long timeTo = System.currentTimeMillis() - (System.currentTimeMillis() % 86400000) + 86400000;
         Timber.d("Opening user " + name + " position list");
-        long timeFrom = Constants.START_DAY;
-        long timeTo = Constants.END_DAY;
 
-
-        mObservablePositions = repository.getPostionsForUserAndDay(name, timeFrom, timeTo);
-
-        return mObservablePositions;
+        return repository.getPostionsForUserAndDay(name, timeFrom, timeTo);
     }
 
     public LiveData<Resource<List<String>>> getObservableUserNames() {

@@ -30,7 +30,7 @@ import timber.log.Timber;
 public class GeoJobIntentService extends JobIntentService implements PositionManagerCallback {
 
     static final int JOB_ID = 1000;
-    public static final int NO_GEO_BREAK_15MIN = 900000;
+    public static final int NO_GEO_BREAK_15MIN = 1500000;
     public static final int STATUS_NIEZNANY = 2;
     public static final int STATUS_POSTOJ = 1;
     public static final int STATUS_PRZERWA = 3;
@@ -143,7 +143,7 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
                     newPosition = new Position(userID);
                     newPosition.setStartDate(Converters.longToString(latestGeoFromDb.getDate()));
                     newPosition.setEndDate(Converters.longToString(newGeo.getDate()));
-                    newPosition.setFirstLocationDate(newGeo.getDate());
+                    newPosition.setFirstLocationDate(latestGeoFromDb.getDate());
                     newPosition.setLastLocationDate(newGeo.getDate());
                     newPosition.setStatus(STATUS_PRZERWA);
 

@@ -39,7 +39,7 @@ public interface PositionDao {
     @Update(onConflict = REPLACE)
     void updatePosition(Position position);
 
-    @Query("SELECT * FROM " + Position.TABLE_NAME)
+    @Query("SELECT * FROM " + Position.TABLE_NAME + " ORDER BY lastLocationDate")
     List<Position> getAllPositions();
 
     @Query("SELECT * FROM " + Position.TABLE_NAME + " p INNER JOIN (SELECT user_id from user WHERE nazwa = :nazwa) t on p.user_id = t.user_id WHERE (p.lastLocationDate > :searchFromDay AND p.lastLocationDate< :searchToDay)")

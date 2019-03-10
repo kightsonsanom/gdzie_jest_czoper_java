@@ -3,10 +3,7 @@ package com.example.asinit_user.gdziejestczoper.ui.search;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,16 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 
 import com.example.asinit_user.gdziejestczoper.R;
 import com.example.asinit_user.gdziejestczoper.databinding.SearchFragmentBinding;
 import com.example.asinit_user.gdziejestczoper.ui.geoList.PositionsAdapter;
 import com.example.asinit_user.gdziejestczoper.ui.mainView.NavigationActivity;
 import com.example.asinit_user.gdziejestczoper.utils.Constants;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -75,23 +68,13 @@ public class SearchFragment extends Fragment {
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(SearchFragmentViewModel.class);
         binding.setModel(viewModel);
-//        binding.latitude.setText("51.965");
-//        binding.longitude.setText("15.534");
-
         setOnClickListeners();
-
-//        if (savedInstanceState == null) {
-//
-//        } else {
-//            locations = savedInstanceState.getParcelableArrayList("locations");
-//        }
-//
         initUserSpinner();
 
 
-        binding.latitude.setText("51.");
-        binding.longitude.setText("15.");
-        binding.time.setText("1551985200000");
+//        binding.latitude.setText("51.");
+//        binding.longitude.setText("15.");
+//        binding.time.setText("1551985200000");
     }
 
     private void initUserSpinner() {
@@ -133,7 +116,6 @@ public class SearchFragment extends Fragment {
                         binding.positionsExpandable.setAdapter(expandableAdapter);
                     }
                 });
-                Timber.d("search button should work");
                 viewModel.getAllPositionsForUser();
             }
         });
@@ -148,32 +130,14 @@ public class SearchFragment extends Fragment {
 
 //         wywolanie przycisku, ktory symulowal pobranie nowej lokalizacji z GPS
         binding.acceptGeoBtn.setOnClickListener((v) -> {
-
-
-//            String latitude = binding.latitude.getText().toString();
-//            String longitude = binding.longitude.getText().toString();
-//            String time = binding.time.getText().toString();
-//            Location location = new Location(LocationManager.GPS_PROVIDER);
-//
-//            location.setLatitude(Double.parseDouble(latitude));
-//            location.setLongitude(Double.parseDouble(longitude));
-//
-//            if(time.isEmpty()){
-//                location.setTime(System.currentTimeMillis());
-//            } else {
-//                location.setTime(Long.parseLong(time));
-//            }
-//            Timber.d("locations.get(0) = " + locations.get(0));
             viewModel.setNewLocation(((NavigationActivity) getActivity()).getLocation());
-//            viewModel.setNewLocation(location);
-
         });
 
-//        binding.getPosBtn.setOnClickListener((v) -> {
-//            viewModel.getLatestGeo();
-//            viewModel.getAllInfoFromDB();
-//
-//        });
+        binding.getPosBtn.setOnClickListener((v) -> {
+            viewModel.getLatestGeo();
+            viewModel.getAllInfoFromDB();
+
+        });
     }
 
     private boolean checkRequiredFields() {

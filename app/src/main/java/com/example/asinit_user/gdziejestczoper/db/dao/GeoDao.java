@@ -31,7 +31,7 @@ public interface GeoDao {
     @Query("SELECT * FROM geo ORDER BY date DESC LIMIT 1")
     LiveData<Geo> loadLatestLiveDataGeo();
 
-    @Query("SELECT * FROM geo")
+    @Query("SELECT * FROM geo ORDER BY date")
     List<Geo> getAllGeos();
 
     @Query("SELECT * FROM " + Geo.TABLE_NAME + " WHERE geo.date >= (SELECT geo.date FROM geo WHERE geo.id = :geoIDFromPreferences)")
