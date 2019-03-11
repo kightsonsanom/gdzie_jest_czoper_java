@@ -141,9 +141,9 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
                 } else if (isLatestGeoFromDbTooOld()) {
                     Timber.d("Geo za stare");
                     newPosition = new Position(userID);
-                    newPosition.setStartDate(Converters.longToString(latestGeoFromDb.getDate()));
+                    newPosition.setStartDate(Converters.longToString(latestPositionFromDb.getLastLocationDate()));
                     newPosition.setEndDate(Converters.longToString(newGeo.getDate()));
-                    newPosition.setFirstLocationDate(latestGeoFromDb.getDate());
+                    newPosition.setFirstLocationDate(latestPositionFromDb.getLastLocationDate());
                     newPosition.setLastLocationDate(newGeo.getDate());
                     newPosition.setStatus(STATUS_PRZERWA);
 
@@ -205,12 +205,12 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
                 } else if (latestPositionFromDb.getStatus() == STATUS_RUCH) {
                     Timber.d("status geo ruch");
 
-                    latestPositionFromDb.setLastLocationDate(newGeo.getDate());
-                    latestPositionFromDb.setEndLocation(locationAddress);
-                    updatePosition(latestPositionFromDb);
-
                     if (isLastGeoFarAway()) {
                         Timber.d("bylo przemieszczenie");
+                        latestPositionFromDb.setLastLocationDate(newGeo.getDate());
+                        latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
+                        latestPositionFromDb.setEndLocation(locationAddress);
+                        updatePosition(latestPositionFromDb);
 
                     } else {
                         Timber.d("nie bylo przemieszczenia");
