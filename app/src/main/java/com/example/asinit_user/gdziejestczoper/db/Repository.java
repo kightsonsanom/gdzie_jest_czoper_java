@@ -203,7 +203,7 @@ public class Repository {
 
     private void sendPositionToServer(Position position) {
 
-        Call<Void> call = czoperApi.sendPosition(sharedPreferencesRepository.getUserID(), position);
+        Call<Void> call = czoperApi.sendPosition(position.getUser_id(), position);
 
         call.enqueue(new Callback<Void>() {
             @Override
@@ -276,7 +276,7 @@ public class Repository {
     }
 
     private void sendGeoToServer(Geo geo) {
-        Call<Void> call = czoperApi.sendGeo(sharedPreferencesRepository.getUserID(), geo);
+        Call<Void> call = czoperApi.sendGeo(geo.getUser_id(), geo);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {

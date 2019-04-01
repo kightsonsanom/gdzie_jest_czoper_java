@@ -270,7 +270,8 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
     }
 
     public void startProcessingGeo(Location location) {
-        newGeo = new Geo(location, userID, location.getTime());
+        newGeo = new Geo(location, userID);
+        Timber.d("Creating new geo: " + newGeo);
         startGeoCodingService(location);
     }
 
@@ -278,7 +279,8 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
         Intent intent = new Intent(context, GeocodeAddressIntentService.class);
         intent.putExtra(Constants.RECEIVER, addressResultReceiver);
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, location);
-        context.startService(intent);
+
+        GeocodeAddressIntentService.enqueueWork(context, intent);
     }
 
     private void sendPosition(Position newPosition) {
@@ -314,7 +316,8 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
     @Override
     public void setNewLocation(Location location) {
         Timber.d("nowe location z łapy");
-        startProcessingGeo(location);
+        newGeo = new Geo(location, userID, location.getTime());
+        startGeoCodingService(location);
     }
 
     private void getLastPositionFromDb() {

@@ -3,6 +3,7 @@ package com.example.asinit_user.gdziejestczoper.di;
 
 import android.app.Application;
 import android.arch.persistence.room.Room;
+import android.location.Geocoder;
 
 import com.example.asinit_user.gdziejestczoper.api.CzoperApi;
 import com.example.asinit_user.gdziejestczoper.db.AppDatabase;
@@ -20,6 +21,8 @@ import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import java.util.Locale;
 
 import javax.inject.Singleton;
 
@@ -56,6 +59,12 @@ public class AppModule {
 
     @Provides
     @Singleton
+    Geocoder provideGeocoder(Application application){
+        return new Geocoder(application.getApplicationContext(), new Locale("pl_PL"));
+    }
+
+    @Provides
+    @Singleton
     CzoperApi provideCzoperApi(Gson gson) {
 
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
@@ -64,8 +73,8 @@ public class AppModule {
 
 
         Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl("http://94.23.53.86:8585/czoper/api/")
-                .baseUrl("http://192.168.1.3:8585/api/")
+                .baseUrl("http://94.23.53.86:8585/czoper/api/")
+//                .baseUrl("http://192.168.1.3:8585/api/")
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(new LiveDataCallAdapterFactory())

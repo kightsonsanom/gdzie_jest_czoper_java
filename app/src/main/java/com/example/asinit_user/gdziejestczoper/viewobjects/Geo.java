@@ -5,6 +5,8 @@ import android.arch.persistence.room.PrimaryKey;
 import android.location.Location;
 import android.support.annotation.NonNull;
 
+import com.example.asinit_user.gdziejestczoper.utils.Converters;
+
 import java.util.UUID;
 
 @Entity(tableName = Geo.TABLE_NAME)
@@ -29,7 +31,7 @@ public class Geo {
         this.location = location;
         this.date = System.currentTimeMillis();
         this.user_id = user_id;
-        displayText = "\nID = " + id + "\nLatitude = " + location.getLatitude() + "\nLongitude = " + location.getLongitude() + "\nDate = " + date;
+        displayText = "Date = " + Converters.longToString(date);
     }
 
     public Geo(Location location, int user_id, long date) {
@@ -37,7 +39,7 @@ public class Geo {
         this.location = location;
         this.date = date;
         this.user_id = user_id;
-        displayText = "\nID = " + id + "\nLatitude = " + location.getLatitude() + "\nLongitude = " + location.getLongitude() + "\nDate = " + date;
+        displayText = "Date = " + Converters.longToString(date);
     }
 
 

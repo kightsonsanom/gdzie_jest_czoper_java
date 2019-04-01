@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import android.view.WindowManager;
 import android.widget.Toast;
 
 
@@ -32,10 +33,6 @@ import javax.inject.Inject;
 import dagger.android.AndroidInjection;
 import timber.log.Timber;
 
-/**
- * A login screen that offers login via email/password.
- */
-
 public class LoginActivity extends AppCompatActivity implements LoginCallback {
 
     @Inject
@@ -50,6 +47,7 @@ public class LoginActivity extends AppCompatActivity implements LoginCallback {
         super.onCreate(savedInstanceState);
         Timber.d("Main activity onCreate");
 
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         loginManager.setLoginCallback(this);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         loginManager.isUserLoggedIn();
@@ -61,8 +59,8 @@ public class LoginActivity extends AppCompatActivity implements LoginCallback {
             }
         });
 
-        binding.username.setText("Tomek");
-        binding.password.setText("tomek");
+//        binding.username.setText("Damian");
+//        binding.password.setText("damian");
 
     }
 

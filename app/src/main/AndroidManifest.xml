@@ -24,7 +24,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/czoper"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/czoper_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data
@@ -35,7 +35,12 @@
             android:name=".services.GeoJobIntentService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service android:name=".services.GeocodeAddressIntentService" />
+
+        <service android:name=".services.GeocodeAddressIntentService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+
 
         <receiver android:name=".services.AlarmReceiver"
             android:directBootAware="true" />

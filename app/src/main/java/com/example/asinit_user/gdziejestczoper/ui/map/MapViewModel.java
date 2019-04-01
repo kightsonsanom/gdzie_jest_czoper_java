@@ -18,13 +18,12 @@ import javax.inject.Inject;
 public class MapViewModel extends ViewModel {
 
 
-    private Repository repository;
-    public ObservableField<List<Geo>> latestGeoList= new ObservableField<>();
+    public ObservableField<List<Geo>> latestGeoList = new ObservableField<>();
     private final MediatorLiveData<Resource<List<Geo>>> mObservableGeos;
 
     @Inject
     public MapViewModel(Repository repository) {
-        this.repository = repository;
+
         mObservableGeos = new MediatorLiveData<>();
         mObservableGeos.setValue(null);
 

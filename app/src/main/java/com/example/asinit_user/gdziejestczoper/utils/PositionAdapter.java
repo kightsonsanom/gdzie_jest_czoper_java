@@ -19,8 +19,6 @@ public class PositionAdapter implements JsonSerializer<Position> {
     @Override
     public JsonElement serialize(Position src, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject obj = new JsonObject();
-        Timber.d("Serializing position: " + src.toString());
-
 
         obj.addProperty("id", src.getId());
         obj.addProperty("endDate", src.getEndDate());
