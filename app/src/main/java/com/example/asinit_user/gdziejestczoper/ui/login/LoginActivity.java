@@ -59,8 +59,8 @@ public class LoginActivity extends AppCompatActivity implements LoginCallback {
             }
         });
 
-//        binding.username.setText("Damian");
-//        binding.password.setText("damian");
+        binding.username.setText("maciej");
+        binding.password.setText("maciej");
 
     }
 

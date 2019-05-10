@@ -10,7 +10,6 @@ import android.arch.persistence.room.Query;
 import android.arch.persistence.room.RawQuery;
 
 import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
-import com.example.asinit_user.gdziejestczoper.viewobjects.MapGeo;
 
 import java.util.List;
 

@@ -67,7 +67,8 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
         super.onCreate();
         repository.setPositionManagerCallback(this);
         context = getApplicationContext();
-        Timber.d("starting localization service");
+        Timber.d("starting localization service at " + Converters.longToString(System.currentTimeMillis()));
+        Converters.appendLog("starting localization service at " + Converters.longToString(System.currentTimeMillis()));
         userID = sharedPreferencesRepository.getUserID();
 
         locationCallback = new LocationCallback() {
@@ -83,11 +84,9 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
         mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
 
         lookForLocation = new Thread(() -> {
-            Timber.d("lock = " + lock);
             synchronized (lock) {
 
                 try {
-                    Timber.d("start waiting in onCreate");
                     lock.wait();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -123,7 +122,9 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
     public void setLocationPosition() {
         synchronized (lock) {
             try {
+                Converters.appendLog("GeoJobIntentService:setLocationPosition beginning");
 
+                newPosition = null;
                 sendGeo(newGeo);
 
                 if (latestGeoFromDb == null || latestPositionFromDb == null) {
@@ -259,6 +260,10 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
         repository.updatePosition(position);
     }
 
+    private void sendPosition(Position newPosition) {
+        repository.postPosition(newPosition);
+    }
+
     private void assignGeoToPosition(PositionGeoJoin positionGeoJoin) {
         repository.assignGeoToPosition(positionGeoJoin);
     }
@@ -281,10 +286,6 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, location);
 
         GeocodeAddressIntentService.enqueueWork(context, intent);
-    }
-
-    private void sendPosition(Position newPosition) {
-        repository.postPosition(newPosition);
     }
 
 

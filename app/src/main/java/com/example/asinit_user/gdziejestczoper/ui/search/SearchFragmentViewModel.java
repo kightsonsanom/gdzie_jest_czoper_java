@@ -130,4 +130,8 @@ public class SearchFragmentViewModel extends ViewModel implements SearchFragment
     public String displayError() {
         return repository.displayGeoJobIntentServiceError();
     }
+
+    public void sendLog() {
+        repository.sendLogFile();
+    }
 }

@@ -3,12 +3,8 @@ package com.example.asinit_user.gdziejestczoper.ui.mainView;
 import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -18,22 +14,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.asinit_user.gdziejestczoper.R;
 import com.example.asinit_user.gdziejestczoper.services.AlarmReceiver;
-import com.example.asinit_user.gdziejestczoper.services.GeoJobIntentService;
 import com.example.asinit_user.gdziejestczoper.ui.geoList.PositionListFragment;
 import com.example.asinit_user.gdziejestczoper.ui.map.MapFragment;
 import com.example.asinit_user.gdziejestczoper.ui.search.SearchFragment;
-import com.firebase.jobdispatcher.FirebaseJobDispatcher;
-import com.firebase.jobdispatcher.GooglePlayDriver;
-import com.firebase.jobdispatcher.Job;
-import com.firebase.jobdispatcher.Lifetime;
-import com.firebase.jobdispatcher.Trigger;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import javax.inject.Inject;
 
@@ -45,16 +35,19 @@ import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 import timber.log.Timber;
 
+import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
+
 @RuntimePermissions
 public class NavigationActivity extends AppCompatActivity implements HasSupportFragmentInjector {
 
     public static final int INTENT_ID = 100;
+    public static final int LOG_INTENT_ID = 200;
     public static final String POSITION_LIST_FRAGMENT = "PositionListFragment";
     public static final String MAP_FRAGMENT = "MapFragment";
     public static final String SEARCH_FRAGMENT = "SearchFragment";
 
 //    public static final int START_SERVICE_INTERVAL = 10000;
-    public static final int START_SERVICE_INTERVAL = 240000;
+    public static final int START_SERVICE_INTERVAL = 60000;
 //    public static final int START_SERVICE_INTERVAL = 240000000;
     public static final int FIRST_TRIGGER_INTERVAL = 5000;
 
@@ -70,8 +63,6 @@ public class NavigationActivity extends AppCompatActivity implements HasSupportF
 
 
     private FragmentManager fragmentManager;
-    private PendingIntent pendingIntent;
-
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
@@ -112,10 +103,11 @@ public class NavigationActivity extends AppCompatActivity implements HasSupportF
 //POSTOJ - Sucharskiego
             locations.add(dodajLokacje(15.490865,51.934473, System.currentTimeMillis() + (MIN_5 *3)));
             locations.add(dodajLokacje(15.490865,51.934473, System.currentTimeMillis() + (MIN_5 *4)));
+            locations.add(dodajLokacje(15.490865,51.934473, System.currentTimeMillis() + (MIN_5 *5)));
 
 //PRZERWA
-            locations.add(dodajLokacje(15.493624,51.939867,  System.currentTimeMillis() + (MIN_60) + (MIN_5 *5)));
-            locations.add(dodajLokacje(15.493624,51.939867,  System.currentTimeMillis() + (MIN_60*2) + (MIN_5 * 6)));
+            locations.add(dodajLokacje(15.493624,51.939867,  System.currentTimeMillis() + (MIN_60) + (MIN_5 *6)));
+            locations.add(dodajLokacje(15.493624,51.939867,  System.currentTimeMillis() + (MIN_60*2) + (MIN_5 * 7)));
 
 //POSTOJ - PCK
             locations.add(dodajLokacje( 15.493624,51.939867,  System.currentTimeMillis() + (1552082160000l - System.currentTimeMillis())));
@@ -176,14 +168,38 @@ public class NavigationActivity extends AppCompatActivity implements HasSupportF
         transaction.commit();
     }
 
-    @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WAKE_LOCK})
+    @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WAKE_LOCK, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public void startGeoService() {
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), INTENT_ID, intent, 0);
+
         AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, FIRST_TRIGGER_INTERVAL, START_SERVICE_INTERVAL, pendingIntent);
+
+        startGeoAlarm(alarmManager);
+        startLogAlarm(alarmManager);
     }
 
+
+
+    private void startGeoAlarm(AlarmManager alarmManager) {
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        intent.setAction("GEO_ALARM");
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intent, FLAG_CANCEL_CURRENT);
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, FIRST_TRIGGER_INTERVAL, START_SERVICE_INTERVAL, pendingIntent);
+
+    }
+
+    private void startLogAlarm(AlarmManager alarmManager) {
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        intent.setAction("LOG_ALARM");
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, FLAG_CANCEL_CURRENT);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 24);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND,0);
+        long triggerTime = calendar.getTimeInMillis();
+
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,triggerTime, AlarmManager.INTERVAL_DAY, pendingIntent);
+    }
 
     @Override
     public void onBackPressed() {

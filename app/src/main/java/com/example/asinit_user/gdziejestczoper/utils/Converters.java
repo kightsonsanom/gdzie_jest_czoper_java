@@ -1,8 +1,21 @@
 package com.example.asinit_user.gdziejestczoper.utils;
 
 
+import android.os.Environment;
+
+import com.example.asinit_user.gdziejestczoper.db.Repository;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
@@ -13,6 +26,10 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import javax.inject.Inject;
+
+import timber.log.Timber;
 
 public class Converters {
 
@@ -58,4 +75,60 @@ public class Converters {
     public static void sortPositions(List<Position> data) {
         Collections.sort(data, (o1, o2) -> ((int)(o1.getFirstLocationDate() - o2.getFirstLocationDate())));
     }
+
+    public static void appendLog(String text)
+    {
+         String fileName = "czoperlog.txt";
+        File logFile = new File(Environment.getExternalStorageDirectory(),fileName);
+        if (!logFile.exists())
+        {
+            try
+            {
+                logFile.createNewFile();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        try
+        {
+            //BufferedWriter for performance, true to set append to file flag
+            BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
+            buf.append(text);
+            buf.newLine();
+            buf.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void readFromLogFile(){
+
+        String fileName = "czoperlog.txt";
+        File logFile = new File(Environment.getExternalStorageDirectory(),fileName);
+        BufferedReader br = null;
+
+        try {
+            br = new BufferedReader(new FileReader(logFile));
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
+
+            while (line != null) {
+                sb.append(line);
+                sb.append(System.lineSeparator());
+                line = br.readLine();
+            }
+            String everything = sb.toString();
+
+            Timber.d("Content of the file: " + everything);
+            br.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 }

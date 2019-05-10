@@ -6,6 +6,8 @@ import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.persistence.db.SimpleSQLiteQuery;
 import android.location.Location;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -19,10 +21,8 @@ import com.example.asinit_user.gdziejestczoper.db.dao.PositionGeoJoinDao;
 import com.example.asinit_user.gdziejestczoper.db.dao.UserDao;
 import com.example.asinit_user.gdziejestczoper.services.GeocodeAddressCallback;
 import com.example.asinit_user.gdziejestczoper.ui.login.LoginManagerCallback;
-import com.example.asinit_user.gdziejestczoper.utils.Constants;
 import com.example.asinit_user.gdziejestczoper.utils.Converters;
 import com.example.asinit_user.gdziejestczoper.viewobjects.AbsentLiveData;
-import com.example.asinit_user.gdziejestczoper.viewobjects.MapGeo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.PositionGeoJoin;
@@ -33,6 +33,7 @@ import com.example.asinit_user.gdziejestczoper.viewobjects.Resource;
 import com.example.asinit_user.gdziejestczoper.viewobjects.User;
 import com.google.gson.JsonElement;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,6 +42,9 @@ import java.util.TreeMap;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -191,6 +195,21 @@ public class Repository {
         appExecutors.diskIO().execute(() -> {
             positionDao.insertPosition(position);
         });
+
+        long positionIDFromPreferences = sharedPreferencesRepository.getPositionID();
+
+        if (positionIDFromPreferences == 0) {
+            sendPositionToServer(position);
+        } else {
+            getPositionsToSend(positionIDFromPreferences);
+        }
+    }
+
+
+    public void updatePosition(Position position) {
+        Timber.d("updating position ID = " + position.getId() + " czas: " + position.getLastLocationDate() + " status = " + position.getStatus());
+        appExecutors.diskIO().execute(() -> positionDao.updatePosition(position));
+
 
         long positionIDFromPreferences = sharedPreferencesRepository.getPositionID();
 
@@ -418,21 +437,6 @@ public class Repository {
 
     public void assignGeoToPosition(PositionGeoJoin positionGeoJoin) {
         appExecutors.diskIO().execute(() -> positionGeoJoinDao.insert(positionGeoJoin));
-    }
-
-
-    public void updatePosition(Position position) {
-        Timber.d("updating position ID = " + position.getId() + " czas: " + position.getLastLocationDate() + " status = " + position.getStatus());
-        appExecutors.diskIO().execute(() -> positionDao.updatePosition(position));
-
-
-        long positionIDFromPreferences = sharedPreferencesRepository.getPositionID();
-
-        if (positionIDFromPreferences == 0) {
-            sendPositionToServer(position);
-        } else {
-            getPositionsToSend(positionIDFromPreferences);
-        }
     }
 
     public void getLatestGeo() {
@@ -691,6 +695,7 @@ public class Repository {
             protected void saveCallResult(@NonNull List<Position> item) {
 
                 int userID = userDao.getUserID(name);
+                List<Position> positionsToRemove = new ArrayList();
 
                 for (Position networkPosition : item) {
                     networkPosition.setUser_id(userID);
@@ -700,13 +705,15 @@ public class Repository {
                         for (Position dbPosition: positionList.getValue()){
                             if (networkPosition.getId()==dbPosition.getId()){
                                 if(networkPosition.getLastLocationDate() < dbPosition.getLastLocationDate()){
-                                    item.remove(networkPosition);
+                                    positionsToRemove.add(networkPosition);
                                 }
                             }
                         }
                     }
                     Timber.d("position from network = " + networkPosition.toString());
                 }
+
+                item.removeAll(positionsToRemove);
                 positionDao.insertAll(item);
             }
 
@@ -786,4 +793,38 @@ public class Repository {
         return sharedPreferencesRepository.getUserID();
     }
 
+    public void sendLogFile()
+     {
+        String fileNameToRead = "czoperlog.txt";
+        File file = new File(Environment.getExternalStorageDirectory(),fileNameToRead);
+
+        RequestBody requestFile =
+                RequestBody.create(MediaType.parse("multipart/form-data"),
+                        file
+                );
+
+        String fileNameToSend = "czoperlog" + getUserID() + ".txt";
+        MultipartBody.Part multipartBody = MultipartBody.Part.createFormData("file", fileNameToSend,requestFile);
+
+        Call<Void> call = czoperApi.uploadLogs(multipartBody);
+
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Converters.readFromLogFile();
+                Timber.d("successfuly uploaded file");
+                file.delete();
+                Converters.readFromLogFile();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Timber.d("did not manage to send the file");
+            }
+        });
+
+
+
+
+    }
 }

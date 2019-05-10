@@ -1,7 +1,5 @@
 package com.example.asinit_user.gdziejestczoper.services;
 
-
-import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
@@ -10,21 +8,13 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.JobIntentService;
-import android.text.TextUtils;
 
 import com.example.asinit_user.gdziejestczoper.db.Repository;
 import com.example.asinit_user.gdziejestczoper.utils.Constants;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -84,10 +74,10 @@ public class GeocodeAddressIntentService extends JobIntentService implements Geo
                 addressString = getAddressString(addresses);
                 deliverResultToReceiver(Constants.SUCCESS_RESULT, addressString);
             }
-//            else {
-//                String address = String.format(Locale.ENGLISH, "https://maps.googleapis.com/maps/api/geocode/json?latlng=%1$f,%2$f&location_type=ROOFTOP&result_type=point_of_interest&key=AIzaSyADPN7X3cxWbdMfpi5aHoikbaOv9N1L1LY", lat, lng);
-//                repository.getReverseGeocoding(address);
-//            }
+            else {
+                String address = String.format(Locale.ENGLISH, "https://maps.googleapis.com/maps/api/geocode/json?latlng=%1$f,%2$f&location_type=ROOFTOP&result_type=point_of_interest&key=AIzaSyADPN7X3cxWbdMfpi5aHoikbaOv9N1L1LY", lat, lng);
+                repository.getReverseGeocoding(address);
+            }
         } catch (IOException e) {
             addressString = Constants.GEOCODING_FAILURE;
             deliverResultToReceiver(Constants.SUCCESS_RESULT, addressString);
@@ -162,8 +152,7 @@ public class GeocodeAddressIntentService extends JobIntentService implements Geo
 
     @Override
     public void onFailureGetAddress() {
-
-        deliverResultToReceiver(Constants.FAILURE_RESULT, Constants.GEOCODING_FAILURE);
+        deliverResultToReceiver(Constants.SUCCESS_RESULT, Constants.GEOCODING_FAILURE);
     }
 
 

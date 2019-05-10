@@ -17,6 +17,7 @@ import com.example.asinit_user.gdziejestczoper.databinding.SearchFragmentBinding
 import com.example.asinit_user.gdziejestczoper.ui.geoList.PositionsAdapter;
 import com.example.asinit_user.gdziejestczoper.ui.mainView.NavigationActivity;
 import com.example.asinit_user.gdziejestczoper.utils.Constants;
+import com.example.asinit_user.gdziejestczoper.utils.Converters;
 
 import javax.inject.Inject;
 
@@ -71,10 +72,6 @@ public class SearchFragment extends Fragment {
         setOnClickListeners();
         initUserSpinner();
 
-
-//        binding.latitude.setText("51.");
-//        binding.longitude.setText("15.");
-//        binding.time.setText("1551985200000");
     }
 
     private void initUserSpinner() {
@@ -130,13 +127,14 @@ public class SearchFragment extends Fragment {
 
 //         wywolanie przycisku, ktory symulowal pobranie nowej lokalizacji z GPS
         binding.acceptGeoBtn.setOnClickListener((v) -> {
-            viewModel.setNewLocation(((NavigationActivity) getActivity()).getLocation());
+//            viewModel.setNewLocation(((NavigationActivity) getActivity()).getLocation());
+            Converters.readFromLogFile();
+            viewModel.sendLog();
         });
 
         binding.getPosBtn.setOnClickListener((v) -> {
             viewModel.getLatestGeo();
             viewModel.getAllInfoFromDB();
-
         });
     }
 

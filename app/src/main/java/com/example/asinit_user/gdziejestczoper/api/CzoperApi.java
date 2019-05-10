@@ -4,25 +4,23 @@ package com.example.asinit_user.gdziejestczoper.api;
 import android.arch.lifecycle.LiveData;
 
 import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
-import com.example.asinit_user.gdziejestczoper.viewobjects.MapGeo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
-import com.example.asinit_user.gdziejestczoper.viewobjects.PositionGeoJoin;
 import com.example.asinit_user.gdziejestczoper.viewobjects.RemotePositionGeoJoin;
 import com.example.asinit_user.gdziejestczoper.viewobjects.User;
-import com.google.android.gms.common.api.Api;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 
 import java.util.List;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
-import retrofit2.http.Header;
 import retrofit2.http.Headers;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.Url;
@@ -69,7 +67,11 @@ public interface CzoperApi {
     @GET("position/positionForDayAndUser")
     Call<List<Position>> getPositionsForDayAndUser(@Query("userName") String userName, @Query("rangeFrom") long rangeFrom, @Query("rangeTo") long rangeTo);
 
-
     @GET
     Call<JsonElement> getReverseGeocoding(@Url String url);
+
+    @Multipart
+    @POST("file")
+    Call<Void> uploadLogs(@Part MultipartBody.Part file);
+
 }

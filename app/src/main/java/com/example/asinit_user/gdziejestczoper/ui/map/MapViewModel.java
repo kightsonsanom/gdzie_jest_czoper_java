@@ -8,7 +8,6 @@ import android.databinding.ObservableField;
 
 import com.example.asinit_user.gdziejestczoper.db.Repository;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Geo;
-import com.example.asinit_user.gdziejestczoper.viewobjects.MapGeo;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Resource;
 
 import java.util.List;
@@ -20,6 +19,7 @@ public class MapViewModel extends ViewModel {
 
     public ObservableField<List<Geo>> latestGeoList = new ObservableField<>();
     private final MediatorLiveData<Resource<List<Geo>>> mObservableGeos;
+    public int userID;
 
     @Inject
     public MapViewModel(Repository repository) {
@@ -29,6 +29,8 @@ public class MapViewModel extends ViewModel {
 
         LiveData<Resource<List<Geo>>> observableGeo = repository.getLatestGeoForUsers();
         mObservableGeos.addSource(observableGeo, value -> mObservableGeos.setValue(value));
+
+        userID = repository.getUserID();
     }
 
     public LiveData<Resource<List<Geo>>> getObservableGeo() {
@@ -38,4 +40,5 @@ public class MapViewModel extends ViewModel {
     public void setMapGeos(List<Geo> mapGeoList) {
         this.latestGeoList.set(mapGeoList);
     }
+
 }

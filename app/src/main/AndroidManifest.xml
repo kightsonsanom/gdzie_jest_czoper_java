@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.READ_SYNC_STATS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-feature android:name="android.hardware.location.gps" />
 
@@ -35,16 +36,14 @@
             android:name=".services.GeoJobIntentService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-
         <service android:name=".services.GeocodeAddressIntentService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-
-
+        <service android:name=".services.LogJobIntentService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <receiver android:name=".services.AlarmReceiver"
             android:directBootAware="true" />
-
 
         <activity
             android:name=".ui.mainView.NavigationActivity"

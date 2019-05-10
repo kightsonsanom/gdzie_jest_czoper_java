@@ -20,7 +20,8 @@
             android:id="@+id/mapview"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            app:initMap="@{model.latestGeoList}"/>
+            app:geoList="@{model.latestGeoList}"
+            app:userID="@{model.userID}"/>
 
     </LinearLayout>
 
