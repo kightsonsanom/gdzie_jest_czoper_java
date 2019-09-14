@@ -134,4 +134,8 @@ public class SearchFragmentViewModel extends ViewModel implements SearchFragment
     public void sendLog() {
         repository.sendLogFile();
     }
+
+    public void deleteLog() {
+        repository.deleteLogFile();
+    }
 }

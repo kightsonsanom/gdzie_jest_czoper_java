@@ -45,22 +45,16 @@ public class LoginActivity extends AppCompatActivity implements LoginCallback {
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
-        Timber.d("Main activity onCreate");
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         loginManager.setLoginCallback(this);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         loginManager.isUserLoggedIn();
 
-        binding.usernameSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });
+        binding.usernameSignInButton.setOnClickListener(view -> attemptLogin());
 
-        binding.username.setText("maciej");
-        binding.password.setText("maciej");
+        binding.username.setText("Tomek");
+        binding.password.setText("Tomek");
 
     }
 
@@ -116,8 +110,7 @@ public class LoginActivity extends AppCompatActivity implements LoginCallback {
             cancel = false;
         }
 
-        Timber.d("attempt login before asynctask");
-        Log.d("TAG", "attempt login before asynctask");
+
         if (cancel) {
             focusView.requestFocus();
         } else {
@@ -134,9 +127,6 @@ public class LoginActivity extends AppCompatActivity implements LoginCallback {
     }
 
     private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
         binding.usernameLoginForm.setVisibility(show ? View.GONE : View.VISIBLE);

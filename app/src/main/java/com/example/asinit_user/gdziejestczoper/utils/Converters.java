@@ -80,6 +80,8 @@ public class Converters {
     {
          String fileName = "czoperlog.txt";
         File logFile = new File(Environment.getExternalStorageDirectory(),fileName);
+        String date = getCurrentDay() + " " + longToString(System.currentTimeMillis()) + "  ";
+
         if (!logFile.exists())
         {
             try
@@ -95,7 +97,10 @@ public class Converters {
         {
             //BufferedWriter for performance, true to set append to file flag
             BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
+            buf.append(date);
             buf.append(text);
+            buf.append("\r\n");
+            buf.newLine();
             buf.newLine();
             buf.close();
         }

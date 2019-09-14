@@ -12,19 +12,6 @@ import java.util.UUID;
 @Entity(tableName = Position.TABLE_NAME)
 public class Position {
 
-//    private enum Status{
-//        RUCH(0),
-//        POSTOJ(1),
-//        NIEZNANY(2),
-//        PRZERWA(3);
-//
-//        private int intValue;
-//
-//        Status(int value){
-//            this.intValue = value;
-//        }
-//    }
-
     public static final String TABLE_NAME = "position";
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_END_DATE = "endDate";

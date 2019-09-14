@@ -50,7 +50,6 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         return new DatePickerDialog(getActivity(), android.R.style.Theme_Material_Light_Dialog_Alert, this, year, month, day);
     }
 
-
     public void onDateSet(DatePicker view, int year, int month, int day) {
         Calendar c = Calendar.getInstance();
 

@@ -20,13 +20,10 @@ import com.example.asinit_user.gdziejestczoper.databinding.PositionListFragmentV
 import com.example.asinit_user.gdziejestczoper.utils.Converters;
 import com.example.asinit_user.gdziejestczoper.viewobjects.Position;
 
+
 import com.example.asinit_user.gdziejestczoper.viewobjects.Resource;
-import com.example.asinit_user.gdziejestczoper.viewobjects.User;
-
 import java.util.List;
-
 import javax.inject.Inject;
-
 import dagger.android.support.AndroidSupportInjection;
 import timber.log.Timber;
 
@@ -82,25 +79,22 @@ public class PositionListFragment extends Fragment {
 
     private void setEventListeners() {
 
-        binding.userList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                binding.positionRecycler.setAdapter(positionsAdapter);
-                LiveData<Resource<List<Position>>> positions = viewModel.getPositionsForUserAndDay(position);
+        binding.userList.setOnItemClickListener((parent, view, position, id) -> {
+            binding.positionRecycler.setAdapter(positionsAdapter);
+            LiveData<Resource<List<Position>>> positions = viewModel.getPositionsForUserAndDay(position);
 
-                positions.observe(currentFragment, resource -> {
-                    if (resource != null && resource.data != null) {
-                        Converters.sortPositions(resource.data);
-                        positionsAdapter.setPositionsList(resource.data);
-                    }
-                });
+            positions.observe(currentFragment, resource -> {
+                if (resource != null && resource.data != null) {
+                    Converters.sortPositions(resource.data);
+                    positionsAdapter.setPositionsList(resource.data);
+                }
+            });
 
-                binding.userList.setVisibility(View.GONE);
-                binding.currentDay.setVisibility(View.VISIBLE);
-                binding.positionRecycler.setVisibility(View.VISIBLE);
-                userListVisible = false;
+            binding.userList.setVisibility(View.GONE);
+            binding.currentDay.setVisibility(View.VISIBLE);
+            binding.positionRecycler.setVisibility(View.VISIBLE);
+            userListVisible = false;
 //                viewModel.onListClick(position);
-            }
         });
     }
 
@@ -110,14 +104,6 @@ public class PositionListFragment extends Fragment {
         binding.positionRecycler.setVisibility(View.GONE);
         userListVisible = true;
 
-    }
-
-    private void displayPositions(List<Position> data) {
-        Timber.d("before and after");
-
-        for (Position p : data) {
-            Timber.d(" position = " + p);
-        }
     }
 
     public boolean isUserListVisible() {

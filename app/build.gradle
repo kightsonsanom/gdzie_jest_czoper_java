@@ -4,7 +4,7 @@ android {
     compileSdkVersion 26
     defaultConfig {
         applicationId 'com.example.asinit_user.gdziejestczoper'
-        minSdkVersion 22
+        minSdkVersion 23
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -57,8 +57,8 @@ dependencies {
     implementation 'com.android.support:design:26.1.0'
 
     //    Googleservices
-    implementation "com.google.android.gms:play-services-location:11.6.0"
-    implementation 'com.google.android.gms:play-services-maps:11.6.0'
+    implementation "com.google.android.gms:play-services-location:11.8.0"
+    implementation 'com.google.android.gms:play-services-maps:11.8.0'
 
 //    JobDispatcher
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
@@ -69,6 +69,3 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
 }
-
-
-

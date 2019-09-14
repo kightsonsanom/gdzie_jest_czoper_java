@@ -126,10 +126,14 @@ public class SearchFragment extends Fragment {
 
 
 //         wywolanie przycisku, ktory symulowal pobranie nowej lokalizacji z GPS
-        binding.acceptGeoBtn.setOnClickListener((v) -> {
+        binding.sendFile.setOnClickListener((v) -> {
 //            viewModel.setNewLocation(((NavigationActivity) getActivity()).getLocation());
-            Converters.readFromLogFile();
             viewModel.sendLog();
+        });
+
+        binding.deleteFile.setOnClickListener((v) -> {
+//            viewModel.setNewLocation(((NavigationActivity) getActivity()).getLocation());
+            viewModel.deleteLog();
         });
 
         binding.getPosBtn.setOnClickListener((v) -> {

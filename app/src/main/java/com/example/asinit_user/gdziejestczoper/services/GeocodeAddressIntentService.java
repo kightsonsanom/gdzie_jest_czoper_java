@@ -72,16 +72,29 @@ public class GeocodeAddressIntentService extends JobIntentService implements Geo
             addresses = geocoder.getFromLocation(lat, lng, 1);
             if (addresses != null && addresses.size() > 0) {
                 addressString = getAddressString(addresses);
+                if (addressString==null){
+                    addressString = getFirstPartOfAddress(addresses);
+                }
                 deliverResultToReceiver(Constants.SUCCESS_RESULT, addressString);
             }
             else {
-                String address = String.format(Locale.ENGLISH, "https://maps.googleapis.com/maps/api/geocode/json?latlng=%1$f,%2$f&location_type=ROOFTOP&result_type=point_of_interest&key=AIzaSyADPN7X3cxWbdMfpi5aHoikbaOv9N1L1LY", lat, lng);
-                repository.getReverseGeocoding(address);
+                callGeocodingApi(lat, lng);
             }
         } catch (IOException e) {
             addressString = Constants.GEOCODING_FAILURE;
             deliverResultToReceiver(Constants.SUCCESS_RESULT, addressString);
         }
+    }
+
+    private String getFirstPartOfAddress(List<Address> addresses) {
+        Address address = addresses.get(0);
+        String splitAddress [] = address.getAddressLine(0).split(",");
+        return splitAddress[0];
+    }
+
+    private void callGeocodingApi(double lat, double lng) {
+        String address = String.format(Locale.ENGLISH, "https://maps.googleapis.com/maps/api/geocode/json?latlng=%1$f,%2$f&location_type=ROOFTOP&result_type=point_of_interest&key=AIzaSyADPN7X3cxWbdMfpi5aHoikbaOv9N1L1LY", lat, lng);
+        repository.getReverseGeocoding(address);
     }
 
     private String getAddressString(List<Address> addresses) {

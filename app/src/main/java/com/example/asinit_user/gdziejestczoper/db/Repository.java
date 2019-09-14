@@ -34,6 +34,11 @@ import com.example.asinit_user.gdziejestczoper.viewobjects.User;
 import com.google.gson.JsonElement;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -567,7 +572,7 @@ public class Repository {
 
     }
 
-    private void getInitialPositionData(String login){
+    private void getInitialPositionData(String login) {
 
         long timeFrom = System.currentTimeMillis() - (System.currentTimeMillis() % 86400000);
         long timeTo = System.currentTimeMillis() - (System.currentTimeMillis() % 86400000) + 86400000;
@@ -594,7 +599,7 @@ public class Repository {
         });
     }
 
-    private void getInitialGeoData(String login){
+    private void getInitialGeoData(String login) {
 //        Call<List<Geo>> call = czoperApi.getPositionsForDayAndUser(login, Constants.START_DAY, Constants.END_DAY);
     }
 
@@ -617,7 +622,6 @@ public class Repository {
         appExecutors.diskIO().execute(() -> {
             List<User> userList = userDao.getAllUsers();
             if (userList != null && userList.size() > 0) {
-                Timber.d("są userzy w bazie, a pierwszy to = " + userList.get(0).toString());
                 loginManagerCallback.onLoginSuccess();
             }
 
@@ -701,10 +705,10 @@ public class Repository {
                     networkPosition.setUser_id(userID);
 
 // don't update DB elements if they are more recent than elements from network
-                    if (positionList.getValue()!=null){
-                        for (Position dbPosition: positionList.getValue()){
-                            if (networkPosition.getId()==dbPosition.getId()){
-                                if(networkPosition.getLastLocationDate() < dbPosition.getLastLocationDate()){
+                    if (positionList.getValue() != null) {
+                        for (Position dbPosition : positionList.getValue()) {
+                            if (networkPosition.getId() == dbPosition.getId()) {
+                                if (networkPosition.getLastLocationDate() < dbPosition.getLastLocationDate()) {
                                     positionsToRemove.add(networkPosition);
                                 }
                             }
@@ -789,7 +793,7 @@ public class Repository {
         return sharedPreferencesRepository.getErrorValue();
     }
 
-    public int getUserID(){
+    public int getUserID() {
         return sharedPreferencesRepository.getUserID();
     }
 
@@ -798,33 +802,64 @@ public class Repository {
         String fileNameToRead = "czoperlog.txt";
         File file = new File(Environment.getExternalStorageDirectory(),fileNameToRead);
 
-        RequestBody requestFile =
+        String fileCopyName = "czoperlogCopy.txt";
+        File fileCopy = new File(Environment.getExternalStorageDirectory(),fileCopyName);
+
+         try {
+             copy(file, fileCopy);
+         } catch (IOException e) {
+             e.printStackTrace();
+         }
+
+         RequestBody requestFile =
                 RequestBody.create(MediaType.parse("multipart/form-data"),
-                        file
+                        fileCopy
                 );
 
         String fileNameToSend = "czoperlog" + getUserID() + ".txt";
         MultipartBody.Part multipartBody = MultipartBody.Part.createFormData("file", fileNameToSend,requestFile);
-
+        Converters.appendLog("sending the log file...");
         Call<Void> call = czoperApi.uploadLogs(multipartBody);
 
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Converters.readFromLogFile();
-                Timber.d("successfuly uploaded file");
-                file.delete();
-                Converters.readFromLogFile();
+                Timber.d("successfuly uploaded file " + response);
+                Converters.appendLog("successfuly uploaded file");
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 Timber.d("did not manage to send the file");
+                Converters.appendLog("did not manage to send the file " + t);
+
             }
         });
+    }
+
+    public void copy(File src, File dst) throws IOException {
+        try (InputStream in = new FileInputStream(src)) {
+            try (OutputStream out = new FileOutputStream(dst)) {
+                // Transfer bytes from in to out
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+            }
+        }
+    }
+    public void deleteLogFile() {
+        String fileToDelete = "czoperlog.txt";
+        File file = new File(Environment.getExternalStorageDirectory(), fileToDelete);
+        file.delete();
+
+        fileToDelete = "czoperlogCopy.txt";
+        file = new File(Environment.getExternalStorageDirectory(), fileToDelete);
+        file.delete();
 
 
-
-
+        Timber.d("Files deleted");
     }
 }

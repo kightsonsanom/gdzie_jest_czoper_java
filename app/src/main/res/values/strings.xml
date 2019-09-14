@@ -20,4 +20,7 @@
     </string>
     <string name="wyloguj">Wyloguj</string>
     <string name="sendGeo">Wyślij lokalizację</string>
+    <string name="position_list_fragment">PositionListFragment</string>
+    <string name="map_fragment">MapFragment</string>
+    <string name="search_fragment">SearchFragment</string>
 </resources>

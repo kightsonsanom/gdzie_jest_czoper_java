@@ -39,7 +39,8 @@ public class Geo {
         this.location = location;
         this.date = date;
         this.user_id = user_id;
-        displayText = "Date = " + Converters.longToString(date);
+        displayText = "Date = " + Converters.longToString(date) + "\n" +
+                "Locaiton(lat, lon) = " + location.getLatitude() + ", " + location.getLongitude();
     }
 
 

@@ -97,6 +97,7 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
     }
 
     public static void enqueueWork(Context context, Intent work) {
+        Converters.appendLog("enqueueWork GeoJobIntentService");
         enqueueWork(context, GeoJobIntentService.class, JOB_ID, work);
     }
 
@@ -193,6 +194,10 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
                         newPosition.setLastLocationDate(newGeo.getDate() + NEW_POSITION_OFFSET);
                         newPosition.setStartDate(latestPositionFromDb.getEndDate());
                         newPosition.setEndDate(Converters.longToString(newGeo.getDate()));
+                        Converters.appendLog("Creating RUCH Position after POSTOJ + \n" +
+                                "Previous geo: " + latestGeoFromDb.getDisplayText() + "\n" +
+                                "Current geo: " + newGeo.getDisplayText());
+
                         sendPosition(newPosition);
                     } else {
                         latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
@@ -223,6 +228,11 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
                         newPosition.setStartDate(latestPositionFromDb.getEndDate());
                         newPosition.setEndDate(Converters.longToString(newGeo.getDate()));
                         newPosition.setLastLocationDate(newGeo.getDate() + NEW_POSITION_OFFSET);
+                        Converters.appendLog("Creating POSTOJ Position after RUCH + \n" +
+                                "Previous geo: " + latestGeoFromDb.getDisplayText() + "\n" +
+                                "Current geo: " + newGeo.getDisplayText());
+
+
                         sendPosition(newPosition);
                     }
 

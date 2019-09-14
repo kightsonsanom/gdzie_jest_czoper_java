@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="model"
             type="com.example.asinit_user.gdziejestczoper.ui.geoList.PositionListFragmentViewModel">
