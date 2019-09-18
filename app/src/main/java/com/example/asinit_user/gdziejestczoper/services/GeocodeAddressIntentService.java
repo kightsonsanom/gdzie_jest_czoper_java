@@ -88,7 +88,7 @@ public class GeocodeAddressIntentService extends JobIntentService implements Geo
 
     private String getFirstPartOfAddress(List<Address> addresses) {
         Address address = addresses.get(0);
-        String splitAddress [] = address.getAddressLine(0).split(",");
+        String[] splitAddress = address.getAddressLine(0).split(",");
         return splitAddress[0];
     }
 

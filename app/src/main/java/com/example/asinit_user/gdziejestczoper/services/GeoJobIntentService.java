@@ -39,7 +39,6 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
     private Context context;
 
     private final static float ACCEPTABLE_DISTANCE_BETWEEN_GEO = 250f;
-    // kiedy konczy sie ruch i zaczyna postoj to postoj musi byc bardziej aktualny od ruchu
     private static final long NEW_POSITION_OFFSET = 1;
 
     private AddressResultReceiver addressResultReceiver = new AddressResultReceiver(new Handler());
@@ -67,8 +66,6 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
         super.onCreate();
         repository.setPositionManagerCallback(this);
         context = getApplicationContext();
-        Timber.d("starting localization service at " + Converters.longToString(System.currentTimeMillis()));
-        Converters.appendLog("starting localization service at " + Converters.longToString(System.currentTimeMillis()));
         userID = sharedPreferencesRepository.getUserID();
 
         locationCallback = new LocationCallback() {
@@ -97,39 +94,31 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
     }
 
     public static void enqueueWork(Context context, Intent work) {
-        Converters.appendLog("enqueueWork GeoJobIntentService");
         enqueueWork(context, GeoJobIntentService.class, JOB_ID, work);
     }
 
 
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
-
         try {
-            Timber.d("waiting for thread to finish in onHandleWork");
             lookForLocation.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Timber.d("thread finished in onHandleWork");
     }
 
     @Override
     public void onDestroy() {
-        Timber.d("getjobintentservice on destroy");
         super.onDestroy();
     }
 
     public void setLocationPosition() {
         synchronized (lock) {
             try {
-                Converters.appendLog("GeoJobIntentService:setLocationPosition beginning");
-
                 newPosition = null;
                 sendGeo(newGeo);
 
                 if (latestGeoFromDb == null || latestPositionFromDb == null) {
-                    Timber.d("latestPositionFromDb is null lub geo za stare");
 
                     newPosition = new Position(userID);
                     newPosition.setStartLocation(locationAddress);
@@ -141,7 +130,6 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
                     sendPosition(newPosition);
 
                 } else if (isLatestGeoFromDbTooOld()) {
-                    Timber.d("Geo za stare");
                     newPosition = new Position(userID);
                     newPosition.setStartDate(Converters.longToString(latestPositionFromDb.getLastLocationDate()));
                     newPosition.setEndDate(Converters.longToString(newGeo.getDate()));
@@ -162,17 +150,13 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 
                 } else if (latestPositionFromDb.getStatus() == STATUS_NIEZNANY) {
 
-                    Timber.d("status geo nieznany");
-
                     if (isLastGeoFarAway()) {
-                        Timber.d("bylo przemieszczenie");
                         latestPositionFromDb.setStatus(STATUS_RUCH);
                         latestPositionFromDb.setEndLocation(locationAddress);
                         latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
 
 
                     } else {
-                        Timber.d("nie bylo przemieszczenia");
                         latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
                         latestPositionFromDb.setStatus(STATUS_POSTOJ);
                     }
@@ -182,10 +166,8 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 
 
                 } else if (latestPositionFromDb.getStatus() == STATUS_POSTOJ) {
-                    Timber.d("status geo postój");
 
                     if (isLastGeoFarAway()) {
-                        Timber.d("bylo przemieszczenie");
                         newPosition = new Position(userID);
                         newPosition.setStatus(STATUS_RUCH);
                         newPosition.setStartLocation(latestPositionFromDb.getStartLocation());
@@ -194,9 +176,6 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
                         newPosition.setLastLocationDate(newGeo.getDate() + NEW_POSITION_OFFSET);
                         newPosition.setStartDate(latestPositionFromDb.getEndDate());
                         newPosition.setEndDate(Converters.longToString(newGeo.getDate()));
-                        Converters.appendLog("Creating RUCH Position after POSTOJ + \n" +
-                                "Previous geo: " + latestGeoFromDb.getDisplayText() + "\n" +
-                                "Current geo: " + newGeo.getDisplayText());
 
                         sendPosition(newPosition);
                     } else {
@@ -209,17 +188,14 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
                     }
 
                 } else if (latestPositionFromDb.getStatus() == STATUS_RUCH) {
-                    Timber.d("status geo ruch");
 
                     if (isLastGeoFarAway()) {
-                        Timber.d("bylo przemieszczenie");
                         latestPositionFromDb.setLastLocationDate(newGeo.getDate());
                         latestPositionFromDb.setEndDate(Converters.longToString(newGeo.getDate()));
                         latestPositionFromDb.setEndLocation(locationAddress);
                         updatePosition(latestPositionFromDb);
 
                     } else {
-                        Timber.d("nie bylo przemieszczenia");
 
                         newPosition = new Position(userID);
                         newPosition.setStatus(STATUS_POSTOJ);
@@ -228,35 +204,28 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
                         newPosition.setStartDate(latestPositionFromDb.getEndDate());
                         newPosition.setEndDate(Converters.longToString(newGeo.getDate()));
                         newPosition.setLastLocationDate(newGeo.getDate() + NEW_POSITION_OFFSET);
-                        Converters.appendLog("Creating POSTOJ Position after RUCH + \n" +
-                                "Previous geo: " + latestGeoFromDb.getDisplayText() + "\n" +
-                                "Current geo: " + newGeo.getDisplayText());
 
 
                         sendPosition(newPosition);
                     }
 
                 } else {
-                    Timber.d("Zaden status sie nie zgadzal");
                     throw new RuntimeException("Wrong position status");
                 }
 
                 if (newPosition != null) {
                     PositionGeoJoin positionGeoJoin = new PositionGeoJoin(newPosition.getId(), newGeo.getId(), newGeo.getDate());
-                    Timber.d("assignGeoToPosition = " + positionGeoJoin.toString());
                     assignGeoToPosition(positionGeoJoin);
                 } else {
                     PositionGeoJoin positionGeoJoin = new PositionGeoJoin(latestPositionFromDb.getId(), newGeo.getId(), newGeo.getDate());
-                    Timber.d("assignGeoToPosition = " + positionGeoJoin.toString());
                     assignGeoToPosition(positionGeoJoin);
                 }
 
 
                 mFusedLocationClient.removeLocationUpdates(locationCallback);
-            } catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 String values = "latestPositionFromDB = " + latestPositionFromDb +
                         "\nlatestGeoFromDB = " + latestGeoFromDb +
-//                        "\nuserID = " + repository.getUserID() +
                         "\nrepository = " + repository;
 
                 sharedPreferencesRepository.setErrorValue(values);
@@ -280,17 +249,15 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 
     private boolean isLastGeoFarAway() {
         float distance = newGeo.getLocation().distanceTo(latestGeoFromDb.getLocation());
-        Timber.d("distance between locations = " + distance);
         return distance > ACCEPTABLE_DISTANCE_BETWEEN_GEO;
     }
 
     public void startProcessingGeo(Location location) {
         newGeo = new Geo(location, userID);
-        Timber.d("Creating new geo: " + newGeo);
         startGeoCodingService(location);
     }
 
-    public void startGeoCodingService(Location location){
+    public void startGeoCodingService(Location location) {
         Intent intent = new Intent(context, GeocodeAddressIntentService.class);
         intent.putExtra(Constants.RECEIVER, addressResultReceiver);
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, location);
@@ -314,7 +281,6 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 
 
     private void getLastGeoFromDb() {
-        Timber.d("getLastGeoFromDb");
         repository.getLatestGeo();
     }
 
@@ -326,13 +292,11 @@ public class GeoJobIntentService extends JobIntentService implements PositionMan
 
     @Override
     public void setNewLocation(Location location) {
-        Timber.d("nowe location z łapy");
         newGeo = new Geo(location, userID, location.getTime());
         startGeoCodingService(location);
     }
 
     private void getLastPositionFromDb() {
-        Timber.d("getLastPositionFromDb");
         repository.getLatestPosition();
     }
 
