@@ -4,7 +4,7 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
-    <string name="preference_file_key">com.example.asinit_user.gdziejestczoper.PREFERENCE_FILE_KEY</string>
+    <string name="preference_file_key">pl.tolichwer.gdziejestczoper.PREFERENCE_FILE_KEY</string>
     <string name="title_activity_login">Zaloguj się</string>
 
     <!-- Strings related to login -->
@@ -13,8 +13,7 @@
     <string name="action_sign_in">Zaloguj się</string>
     <string name="action_sign_in_short">Zaloguj się</string>
     <string name="error_invalid_username">Nazwa użytkownika jest nieprawidłowa</string>
-    <string name="error_invalid_password">Hasło jest za krótkie</string>
-    <string name="error_incorrect_password">Hasło jest nieprawidłowe</string>
+    <string name="error_invalid_password">Hasło jest nieprawidłowe</string>
     <string name="error_field_required">To pole jest wymagane</string>
     <string name="permission_rationale">Dostęp do kontatków jest wymagany
     </string>
@@ -23,4 +22,10 @@
     <string name="position_list_fragment">PositionListFragment</string>
     <string name="map_fragment">MapFragment</string>
     <string name="search_fragment">SearchFragment</string>
+    <string name="btn_search">Szukaj</string>
+    <string name="date_to">DO</string>
+    <string name="date_from">OD</string>
+    <string name="dialog_fragment_tag">dialogFragment</string>
+    <string name="incorrect_credentials">Niepoprawne dane</string>
+    <string name="wrong_position_status">Wrong position status</string>
 </resources>

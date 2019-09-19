@@ -1,13 +1,11 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="model"
-            type="com.example.asinit_user.gdziejestczoper.ui.geoList.PositionListFragmentViewModel">
-
-        </variable>
+            type="pl.tolichwer.gdziejestczoper.ui.geoList.PositionListFragmentViewModel"></variable>
     </data>
 
     <LinearLayout
@@ -19,29 +17,26 @@
         <ListView
             android:id="@+id/user_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        </ListView>
+            android:layout_height="wrap_content"></ListView>
 
         <TextView
             android:id="@+id/current_day"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="20dp"
             android:gravity="center"
             android:text="@{model.currentDay}"
             android:textSize="20sp"
-            android:layout_margin="20dp"
             android:textStyle="bold"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/position_recycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            app:layoutManager="LinearLayoutManager"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            app:layoutManager="LinearLayoutManager" />
     </LinearLayout>
-
-
 
 </layout>

@@ -5,9 +5,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="position"
-            type="com.example.asinit_user.gdziejestczoper.viewobjects.Position" />
+            type="pl.tolichwer.gdziejestczoper.viewobjects.Position" />
     </data>
 
 
@@ -23,8 +24,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_margin="15dp"
-            app:srcCompat="@drawable/ic_pause_circle_outline_black_24dp"
-            />
+            app:srcCompat="@drawable/ic_pause_circle_outline_black_24dp" />
 
         <LinearLayout
             android:id="@+id/time"
@@ -38,22 +38,22 @@
                 android:id="@+id/przerwa_start_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:text="@{position.startDate}" />
+                android:text="@{position.startDate}"
+                android:textSize="18sp" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_arrow_forward_black_24dp"
                 android:paddingLeft="10dp"
-                android:paddingRight="10dp" />
+                android:paddingRight="10dp"
+                app:srcCompat="@drawable/ic_arrow_forward_black_24dp" />
 
             <TextView
                 android:id="@+id/przerwa_stop_time"
                 android:layout_width="wrap_content"
-                android:textSize="18sp"
                 android:layout_height="wrap_content"
-                android:text="@{position.endDate}" />
+                android:text="@{position.endDate}"
+                android:textSize="18sp" />
 
         </LinearLayout>
 

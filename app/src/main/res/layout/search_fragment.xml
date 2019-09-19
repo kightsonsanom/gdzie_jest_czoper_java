@@ -3,12 +3,11 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
     <data>
 
         <variable
             name="model"
-            type="com.example.asinit_user.gdziejestczoper.ui.search.SearchFragmentViewModel">
+            type="pl.tolichwer.gdziejestczoper.ui.search.SearchFragmentViewModel">
 
         </variable>
     </data>
@@ -41,7 +40,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
-                android:hint="OD"
+                android:hint="@string/date_from"
                 android:inputType="date"
                 android:text="@{model.startDate}" />
 
@@ -57,7 +56,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
-                android:hint="DO"
+                android:hint="@string/date_to"
                 android:inputType="date"
                 android:text="@{model.endDate}" />
 
@@ -75,83 +74,14 @@
                 android:id="@+id/search_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:background="@drawable/button_drawable"
                 android:layout_gravity="center"
-                android:text="SZUKAJ" />
-
-            <Button
-                android:id="@+id/show_error_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ShowError"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/show_error_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-
-            <Button
-                android:id="@+id/get_pos_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="get all" />
-
-            <Button
-                android:id="@+id/send_file"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="sendFile" />
-
-            <Button
-                android:id="@+id/delete_file"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="deleteFile" />
+                android:textColor="#FFFFFF"
+                android:text="@string/btn_search" />
 
 
         </LinearLayout>
-
-
-        <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginTop="20dp"-->
-        <!--android:gravity="center"-->
-        <!--android:orientation="vertical">-->
-
-        <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:gravity="center"-->
-        <!--android:orientation="horizontal">-->
-
-        <!--<EditText-->
-        <!--android:id="@+id/latitude"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_weight="1"-->
-        <!--android:hint="latitude" />-->
-
-        <!--<EditText-->
-        <!--android:id="@+id/longitude"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_weight="1"-->
-        <!--android:hint="longitude" />-->
-
-        <!--<EditText-->
-        <!--android:id="@+id/time"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_weight="1"-->
-        <!--android:hint="time" />-->
-
-        <!--</LinearLayout>-->
-
-
-        <!--</LinearLayout>-->
 
         <TextView
             android:id="@+id/position_from_today"
@@ -159,7 +89,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@{model.latestGeo}" />
-
 
         <ExpandableListView
             android:id="@+id/positions_expandable"

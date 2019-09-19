@@ -2,13 +2,13 @@
 
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="position"
-            type="com.example.asinit_user.gdziejestczoper.viewobjects.Position" />
+            type="pl.tolichwer.gdziejestczoper.viewobjects.Position" />
     </data>
 
 
@@ -44,9 +44,9 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_arrow_forward_black_24dp"
                 android:paddingLeft="10dp"
-                android:paddingRight="10dp" />
+                android:paddingRight="10dp"
+                app:srcCompat="@drawable/ic_arrow_forward_black_24dp" />
 
             <TextView
                 android:id="@+id/postoj_stop_time"
@@ -61,8 +61,8 @@
             android:id="@+id/postoj_lokalizacja"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
             android:layout_below="@id/time"
+            android:layout_margin="5dp"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -70,7 +70,7 @@
                 android:id="@+id/postoj_gdzie"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{position.startLocation}"/>
+                android:text="@{position.startLocation}" />
 
         </LinearLayout>
 

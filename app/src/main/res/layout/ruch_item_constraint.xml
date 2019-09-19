@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<layout xmlns:tools="http://schemas.android.com/tools"
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <variable
             name="position"
-            type="com.example.asinit_user.gdziejestczoper.viewobjects.Position" />
+            type="pl.tolichwer.gdziejestczoper.viewobjects.Position" />
     </data>
 
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -41,7 +41,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="52dp"
             android:layout_marginTop="20dp"
-            android:text="ruch srart time"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -66,7 +65,6 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="32dp"
             android:layout_marginTop="20dp"
-            android:text="ruch_stop_time"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -78,7 +76,6 @@
             android:layout_marginBottom="16dp"
             android:layout_marginStart="52dp"
             android:layout_marginTop="8dp"
-            android:text="ruch_gdzie_od"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ruch_start_time"
@@ -91,7 +88,6 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="32dp"
-            android:text="ruch_gdzie_do"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -113,6 +109,6 @@
             app:srcCompat="@drawable/ic_arrow_forward_black_24dp" />
 
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

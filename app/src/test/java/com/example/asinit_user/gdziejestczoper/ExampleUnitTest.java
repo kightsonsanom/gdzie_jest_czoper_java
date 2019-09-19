@@ -1,4 +1,4 @@
-package com.example.asinit_user.gdziejestczoper;
+package pl.tolichwer.gdziejestczoper;
 
 import org.junit.Test;
 
